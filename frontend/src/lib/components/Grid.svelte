@@ -1,63 +1,69 @@
 <script lang="ts">
-	// Zoom-aware, themeable world grid for canvas/stage backdrops
-	// - Anchored in world space (origin at `offset`)
-	// - Subtle by default, fades minor lines at low zoom
-	// - Themeable via Tailwind CSS variables declared in app.css
+	// Highly-configurable, zoom-aware world grid
+	// Designed to be placed as the last layer before the viewport background.
+	// Use absolute positioning (in parent) and pointer-events: none to keep it non-interactive.
 
 	export let width: number = 0; // viewport width in px
 	export let height: number = 0; // viewport height in px
 
-	// View transform from world -> screen
+	// View transform from world -> screen (same semantics as Stage config)
 	export let scale: number = 1; // world units -> px
 	export let offset: { x: number; y: number } = { x: 0, y: 0 }; // screen px of world origin
 
-	// Grid geometry
+	// Grid configuration
 	export let baseSize = 50; // world units between MAJOR lines
 	export let subdivisions = 50; // minor lines per major cell
 
-	// Visual pattern
-	type Pattern = 'lines' | 'dots' | 'none';
-	export let pattern: Pattern = 'lines';
-
-	// Axes
-	export let showAxes = true;
-	export let axesStyle: 'solid' | 'dashed' = 'solid';
-	export let axesCrosshair = true;
-	export let axesCrosshairSize = 4; // px diameter
-
-	// Behavior
-	export let autoFade = false; // fade minor/major lines by zoom
-	export let hairline = true; // attempt 0.5px hairlines on HiDPI
-	export let vignette = false; // soft focus vignette overlay
-	export let vignetteOpacity = 0.06; // 0..1
-
-	// Theme-aware defaults (from app.css @theme tokens)
 	export let colors = {
-		minor: 'var(--color-border)',
-		major: 'var(--color-muted-foreground)',
-		axes: 'var(--color-primary)'
+		minor: '#6b7280', // tailwind gray-500
+		major: '#9ca3af', // tailwind gray-400
+		axes: '#22d3ee' // tailwind cyan-400
 	};
 
 	export let opacities = {
-		minor: 0.08,
-		major: 0.22,
-		axes: 0.35
+		minor: 0.05,
+		major: 0.08,
+		axes: 0.2
 	};
 
 	export let thickness = {
 		minor: 1,
-		major: 1.25,
+		major: 1,
 		axes: 1.5
 	};
+
+	export let showAxes = true;
+
+	// Helpers
+	function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+		const m = hex.replace('#', '').trim();
+		if (m.length === 3) {
+			const r = parseInt(m[0] + m[0], 16);
+			const g = parseInt(m[1] + m[1], 16);
+			const b = parseInt(m[2] + m[2], 16);
+			return { r, g, b };
+		}
+		if (m.length === 6) {
+			const r = parseInt(m.slice(0, 2), 16);
+			const g = parseInt(m.slice(2, 4), 16);
+			const b = parseInt(m.slice(4, 6), 16);
+			return { r, g, b };
+		}
+		return null;
+	}
+
+	function withAlpha(color: string, a: number): string {
+		const rgb = hexToRgb(color);
+		if (rgb) return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${a})`;
+		// Fallback for named/rgb/hsl inputs: use color-mix if available
+		const pct = Math.round(a * 100);
+		return `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+	}
 
 	function modWrap(value: number, period: number): number {
 		if (period === 0) return 0;
 		const r = value % period;
 		return r < 0 ? r + period : r;
-	}
-
-	function clamp(n: number, min: number, max: number) {
-		return Math.max(min, Math.min(max, n));
 	}
 
 	// Derived lengths in screen pixels
@@ -69,72 +75,37 @@
 	$: minorVisible = minorStepPx >= MIN_VIS_PX;
 	$: majorVisible = majorStepPx >= MIN_VIS_PX;
 
-	// Auto-fade by zoom
-	$: minorFade = autoFade ? clamp((minorStepPx - 6) / 24, 0, 1) : 1;
-	$: majorFade = autoFade ? clamp((majorStepPx - 6) / 24, 0, 1) : 1;
-
-	// Hairline support on HiDPI
-	$: dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1;
-	$: hairlineScale = hairline && dpr >= 2 ? 0.5 : 1;
-	$: tMinor = thickness.minor * hairlineScale;
-	$: tMajor = thickness.major * hairlineScale;
-	$: tAxes = thickness.axes * hairlineScale;
-	// Ensure gradient stripes are at least 1px so they render on all displays
-	$: gMinor = Math.max(1, Math.round(tMinor));
-	$: gMajor = Math.max(1, Math.round(tMajor));
-
 	// Compute per-layer offsets so grid is anchored in world space (origin at offset)
 	$: minorX = modWrap(offset.x, minorStepPx || 1);
 	$: minorY = modWrap(offset.y, minorStepPx || 1);
 	$: majorX = modWrap(offset.x, majorStepPx || 1);
 	$: majorY = modWrap(offset.y, majorStepPx || 1);
 
-	// Layer opacities
-	$: minorOpacity = minorVisible ? opacities.minor * (autoFade ? minorFade : 1) : 0;
-	$: majorOpacity = majorVisible ? opacities.major * (autoFade ? majorFade : 1) : 0;
+	// Colors with opacity
+	$: minorRGBA = withAlpha(colors.minor, opacities.minor);
+	$: majorRGBA = withAlpha(colors.major, opacities.major);
+	$: axesRGBA = withAlpha(colors.axes, opacities.axes);
 
-	// Backgrounds for minor/major layers using currentColor
-	$: minorBgImages =
-		pattern === 'lines'
-			? `repeating-linear-gradient(to right, currentColor 0px, currentColor ${gMinor}px, transparent ${gMinor}px, transparent ${Math.max(1, minorStepPx)}px), repeating-linear-gradient(to bottom, currentColor 0px, currentColor ${gMinor}px, transparent ${gMinor}px, transparent ${Math.max(1, minorStepPx)}px)`
-			: pattern === 'dots'
-			? `radial-gradient(currentColor ${Math.max(0.5, tMinor)}px, transparent ${Math.max(0.5, tMinor)}px)`
-			: 'none';
+	// Build the layered repeating-linear-gradient background
+	// 4 layers: minor-x, minor-y, major-x, major-y
+	$: bgImages = [
+		// minor vertical lines (to right)
+		`repeating-linear-gradient(to right, ${minorVisible ? minorRGBA : 'transparent'} 0px, ${minorVisible ? minorRGBA : 'transparent'} ${minorVisible ? thickness.minor : 0}px, transparent ${minorVisible ? thickness.minor : 0}px, transparent ${Math.max(1, minorStepPx)}px)`,
+		// minor horizontal lines (to bottom)
+		`repeating-linear-gradient(to bottom, ${minorVisible ? minorRGBA : 'transparent'} 0px, ${minorVisible ? minorRGBA : 'transparent'} ${minorVisible ? thickness.minor : 0}px, transparent ${minorVisible ? thickness.minor : 0}px, transparent ${Math.max(1, minorStepPx)}px)`,
+		// major vertical lines
+		`repeating-linear-gradient(to right, ${majorVisible ? majorRGBA : 'transparent'} 0px, ${majorVisible ? majorRGBA : 'transparent'} ${majorVisible ? thickness.major : 0}px, transparent ${majorVisible ? thickness.major : 0}px, transparent ${Math.max(1, majorStepPx)}px)`,
+		// major horizontal lines
+		`repeating-linear-gradient(to bottom, ${majorVisible ? majorRGBA : 'transparent'} 0px, ${majorVisible ? majorRGBA : 'transparent'} ${majorVisible ? thickness.major : 0}px, transparent ${majorVisible ? thickness.major : 0}px, transparent ${Math.max(1, majorStepPx)}px)`
+	].join(', ');
 
-	$: minorBgPositions =
-		pattern === 'lines'
-			? `${minorX}px 0px, 0px ${minorY}px`
-			: pattern === 'dots'
-			? `${minorX}px ${minorY}px`
-			: '0px 0px';
-
-	$: minorBgSizes =
-		pattern === 'lines'
-			? 'auto, auto'
-			: pattern === 'dots'
-			? `${Math.max(1, minorStepPx)}px ${Math.max(1, minorStepPx)}px`
-			: 'auto';
-
-	$: majorBgImages =
-		pattern === 'lines'
-			? `repeating-linear-gradient(to right, currentColor 0px, currentColor ${gMajor}px, transparent ${gMajor}px, transparent ${Math.max(1, majorStepPx)}px), repeating-linear-gradient(to bottom, currentColor 0px, currentColor ${gMajor}px, transparent ${gMajor}px, transparent ${Math.max(1, majorStepPx)}px)`
-			: pattern === 'dots'
-			? `radial-gradient(currentColor ${Math.max(0.75, tMajor)}px, transparent ${Math.max(0.75, tMajor)}px)`
-			: 'none';
-
-	$: majorBgPositions =
-		pattern === 'lines'
-			? `${majorX}px 0px, 0px ${majorY}px`
-			: pattern === 'dots'
-			? `${majorX}px ${majorY}px`
-			: '0px 0px';
-
-	$: majorBgSizes =
-		pattern === 'lines'
-			? 'auto, auto'
-			: pattern === 'dots'
-			? `${Math.max(1, majorStepPx)}px ${Math.max(1, majorStepPx)}px`
-			: 'auto';
+	// layer-aligned positions
+	$: bgPositions = [
+		`${minorX}px 0px`,
+		`0px ${minorY}px`,
+		`${majorX}px 0px`,
+		`0px ${majorY}px`
+	].join(', ');
 
 	// Axes positions (screen coords of world origin)
 	$: axisXTop = offset.y; // horizontal axis (X) runs across at y = offset.y
@@ -144,7 +115,7 @@
 	$: showAxisX = showAxes && axisXTop >= 0 && axisXTop <= height;
 	$: showAxisY = showAxes && axisYLeft >= 0 && axisYLeft <= width;
 
-	// Exposed helpers for snapping and transforms
+	// Exposed helpers for future snapping (can be used via bind:this)
 	export function nearestSnap(point: { x: number; y: number }, stepWorld?: number) {
 		const step = stepWorld ?? (subdivisions > 0 ? baseSize / subdivisions : baseSize);
 		const sx = Math.round(point.x / step) * step;
@@ -161,54 +132,36 @@
 	}
 </script>
 
-{#if pattern !== 'none'}
-	<!-- Minor lines/dots layer -->
-	<div
-		class="absolute inset-0 pointer-events-none"
-		role="presentation"
-		aria-hidden="true"
-		style={`color:${colors.minor}; opacity:${minorOpacity}; background-image:${minorBgImages}; background-position:${minorBgPositions}; background-size:${minorBgSizes}; background-repeat:repeat;`}
+<!-- Grid -->
+<div
+	class="absolute inset-0 pointer-events-none"
+	role="presentation"
+	aria-hidden="true"
+	style={`background-image: ${bgImages}; background-position: ${bgPositions}; background-repeat: repeat;`}
 	></div>
-
-	<!-- Major lines/dots layer -->
-	<div
-		class="absolute inset-0 pointer-events-none"
-		role="presentation"
-		aria-hidden="true"
-		style={`color:${colors.major}; opacity:${majorOpacity}; background-image:${majorBgImages}; background-position:${majorBgPositions}; background-size:${majorBgSizes}; background-repeat:repeat;`}
-	></div>
-{/if}
 
 {#if showAxes}
 	{#if showAxisX}
 		<div
 			class="absolute left-0 right-0 pointer-events-none"
-			style={`top:${axisXTop}px; border-top:${tAxes}px ${axesStyle} currentColor; color:${colors.axes}; opacity:${opacities.axes};`}
+			style={`top:${axisXTop}px; border-top:${thickness.axes}px solid ${axesRGBA};`}
 			aria-hidden="true"
 		></div>
 	{/if}
 	{#if showAxisY}
 		<div
 			class="absolute top-0 bottom-0 pointer-events-none"
-			style={`left:${axisYLeft}px; border-left:${tAxes}px ${axesStyle} currentColor; color:${colors.axes}; opacity:${opacities.axes};`}
+			style={`left:${axisYLeft}px; border-left:${thickness.axes}px solid ${axesRGBA};`}
 			aria-hidden="true"
 		></div>
 	{/if}
-	{#if axesCrosshair && showAxisX && showAxisY}
+	{#if showAxisX && showAxisY}
 		<div
 			class="absolute pointer-events-none rounded-full"
-			style={`left:${axisYLeft - axesCrosshairSize / 2}px; top:${axisXTop - axesCrosshairSize / 2}px; width:${axesCrosshairSize}px; height:${axesCrosshairSize}px; background:currentColor; color:${colors.axes}; opacity:${opacities.axes}; outline:1px solid var(--color-background);`}
+			style={`left:${axisYLeft - 2}px; top:${axisXTop - 2}px; width:4px; height:4px; background:${axesRGBA};`}
 			aria-hidden="true"
 		></div>
 	{/if}
-{/if}
-
-{#if vignette}
-	<div
-		class="absolute inset-0 pointer-events-none"
-		style={`opacity:${clamp(vignetteOpacity, 0, 1)}; background: radial-gradient(ellipse at center, transparent 55%, var(--color-background) 100%);`}
-		aria-hidden="true"
-	></div>
 {/if}
 
 <style>
