@@ -30,6 +30,90 @@ If you add new top-level paths, update this section.
 
 ---
 
+# WebBuddy Project
+
+This project is a web-based application designed to provide a user-friendly interface for managing and interacting with digital assets in order to build presentations.
+
+## Core technologies
+
+The WebBuddy project is built using the following core technologies:
+
+- Svelte 5
+- Sveltekit
+- `bun`
+- `uv` for python FastAPI Backend
+
+## Libraries and frameworks
+
+If a user's request
+
+### [runed](https://runed.dev/docs/)
+
+- [LLMs](https://github.com/svecosystem/runed/tree/main/sites/docs/src/content/utilities)
+
+### [daisyUI](https://daisyui.com/llms.txt)
+
+- [Components](https://daisyui.com/components/)
+
+#### Actions
+
+- modal
+- Swap
+- button
+- Theme Controller
+
+#### Data Input
+
+- radio
+- range
+- select
+- input field
+- textarea
+- toggle
+
+#### Feedback
+
+- alert
+- loading
+- progress / radial progress
+- skeleton
+- toast
+- tooltip
+
+#### Navigation
+
+- breadcrumbs
+- steps / timeline
+- menu
+- tab
+
+#### Data Display
+
+- badge
+- diff
+- Kbd
+- stat
+- list
+- label
+- status
+
+#### Layout
+
+- indicator
+- divider
+- Join
+- Mask
+- Stack
+
+External Resources and their purpose
+-
+
+- [DaisyUI]
+- [diaper](https://github.com/devantic/diaper)
+- [Pixel UI](https://pixelui.dev/components)
+
+--
+
 ## Commands (copy-paste runnable)
 
 ### Backend (Python 3.11+)
@@ -145,14 +229,6 @@ docker compose up --build
 
 ---
 
-## Security & Config
-
-- CORS locked down in production via env.
-- Secrets only via environment / `pydantic-settings`.
-- Validate file uploads (type/size) if applicable.
-
----
-
 ## Contributing (agent workflow)
 
 1. Branch: `feat/<scope>-<desc>` or `fix/<scope>-<desc>`.
@@ -163,17 +239,9 @@ docker compose up --build
 
 ---
 
-## Quick Links
-
-- **OpenAPI JSON:** `GET http://localhost:8000/openapi.json`
-- **Swagger UI:** `http://localhost:8000/docs`
-- **Frontend dev:** `http://localhost:5173` (default Vite)
-- **Backend dev:** `http://localhost:8000`
-
----
-
 ## Do / Don’t
 
 - **Do:** use `bun` and `uv` for all install/run tasks; keep commands copy-pasteable.
 - **Do:** favor small, reversible changes; ask clarifying questions in PRs.
+- **Do:** make use of existing libraries and patterns; avoid custom frontend implementations whenever possilbe.
 - **Don’t:** add alternative build tools; violate Clean Code/DRY; break `/docs` or `/openapi.json`.

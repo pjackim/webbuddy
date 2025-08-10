@@ -10,6 +10,7 @@
         "vite": "^7.0.4",
       },
       "devDependencies": {
+        "@devantic/diaper": "^2.2.2",
         "@eslint/compat": "^1.2.5",
         "@eslint/js": "^9.18.0",
         "@sveltejs/adapter-auto": "^6.0.0",
@@ -52,6 +53,8 @@
     "@babel/helper-validator-identifier": ["@babel/helper-validator-identifier@7.27.1", "", {}, "sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow=="],
 
     "@babel/runtime": ["@babel/runtime@7.28.2", "", {}, "sha512-KHp2IflsnGywDjBWDkR9iEqiWSpc8GIi0lgTT3mOElT0PP1tG26P4tmFI2YvAdzgq9RGyoHZQEIEdZy6Ec5xCA=="],
+
+    "@devantic/diaper": ["@devantic/diaper@2.2.2", "", { "peerDependencies": { "@sveltejs/kit": "^2.20.7", "svelte": "^5.27.0" } }, "sha512-pcf+WblVG2H3VUF92+FHXRiK8V7daohlOvXTDXElDkp2yaXql9KzuENqGU2uc4LeS+//xdhZ5n2bHI1iCLNIXw=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.8", "", { "os": "aix", "cpu": "ppc64" }, "sha512-urAvrUedIqEiFR3FYSLTWQgLu5tb+m0qZw0NBEasUeo6wuqatkMDaRT+1uABiGXEu5vqgPd7FGE1BhsAIy9QVA=="],
 
