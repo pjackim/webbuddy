@@ -1,6 +1,6 @@
 # PureRef-Like Web App — Svelte5 + FastAPI (Monorepo v0.1)
 
-A production-ready starter implementing an infinite, multi-screen canvas with real‑time collaboration, offline mode, and a clean FastAPI backend that wraps an external screen-control service.
+A production-ready starter implementing an infinite, multi-screen canvas with real‑time collaboration, offline mode, and a clean FastAPI backend that wraps an external screen-control service. The frontend is built with Bun, and the backend installs Python dependencies via the fast `uv` tool.
 
 ---
 
@@ -600,11 +600,15 @@ WORKDIR /app
 # system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
  && rm -rf /var/lib/apt/lists/*
 
+# install uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv
+
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir -U pip && \
-    pip install --no-cache-dir -e .
+RUN uv pip install --system -e .
 
 COPY app ./app
 RUN mkdir -p /app/uploads
@@ -1060,12 +1064,12 @@ export function connectWS() {
 ### `frontend/Dockerfile`
 
 ```Dockerfile
-FROM node:20-alpine AS build
+FROM oven/bun:1 AS build
 WORKDIR /app
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN npm ci || npm i
+COPY package.json bun.lock* ./
+RUN bun install
 COPY . .
-RUN npm run build
+RUN bun run build
 
 FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
