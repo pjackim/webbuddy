@@ -9,32 +9,49 @@
 	}
 </script>
 
-<div class="navbar bg-base-300 shadow z-10 overflow-x-hidden">
+<div class="navbar bg-base-300 shadow z-10">
 	<div class="flex-1 px-2 min-w-0 truncate">Web Buddy</div>
-	<div class="flex-1 min-w-0 max-w-full basis-full sm:basis-auto flex flex-wrap items-center gap-2 gap-y-2 justify-start sm:justify-end px-2 overflow-hidden">
-		<label class="label cursor-pointer gap-2 w-full sm:w-auto justify-between sm:justify-normal order-last sm:order-none">
-			<span class="label-text hidden sm:inline">Offline Mode</span>
+
+	<!-- Hamburger (small screens) -->
+	<div class="flex-none lg:hidden">
+		<div class="dropdown dropdown-end">
+			<div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Open menu">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+				</svg>
+			</div>
+			<div class="dropdown-content z-20 w-80 max-w-[90vw] p-4 bg-base-200 rounded-box shadow">
+				<div class="flex flex-col gap-3">
+					<label class="label cursor-pointer gap-2">
+						<span class="label-text">Offline Mode</span>
+						<input aria-label="Offline Mode" type="checkbox" class="toggle" bind:checked={$online} />
+					</label>
+					<div class="form-control w-full">
+						<input class="input input-bordered w-full" placeholder="Name" bind:value={name} />
+					</div>
+					<div class="flex gap-2">
+						<input class="input input-bordered w-1/2" type="number" placeholder="Width" bind:value={width} />
+						<input class="input input-bordered w-1/2" type="number" placeholder="Height" bind:value={height} />
+					</div>
+					<button class="btn btn-primary w-full" on:click={addScreen}>Add Screen</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Inline controls (large screens) -->
+	<div class="flex-none hidden lg:flex items-center gap-2 px-2">
+		<label class="label cursor-pointer gap-2">
+			<span class="label-text">Offline Mode</span>
 			<input aria-label="Offline Mode" type="checkbox" class="toggle" bind:checked={$online} />
 		</label>
-		<div class="divider divider-horizontal hidden md:block"></div>
-		<div class="form-control w-full md:w-auto min-w-0">
-			<div class="grid grid-cols-1 sm:flex items-center gap-2 min-w-0 w-full">
-				<input
-			    class="input input-bordered min-w-0 grow sm:grow-0 w-full sm:w-40"
-					placeholder="Name"
-					bind:value={name}
-				/>
-				<input
-			    class="input input-bordered w-full sm:w-28 min-w-0"
-					type="number"
-					bind:value={width}
-				/>
-				<input
-			    class="input input-bordered w-full sm:w-28 min-w-0"
-					type="number"
-					bind:value={height}
-				/>
-				<button class="btn btn-primary w-full sm:w-auto" on:click={addScreen}>Add Screen</button>
+		<div class="divider divider-horizontal"></div>
+		<div class="form-control">
+			<div class="flex items-center gap-2">
+				<input class="input input-bordered w-40" placeholder="Name" bind:value={name} />
+				<input class="input input-bordered w-28" type="number" bind:value={width} />
+				<input class="input input-bordered w-28" type="number" bind:value={height} />
+				<button class="btn btn-primary" on:click={addScreen}>Add Screen</button>
 			</div>
 		</div>
 	</div>
