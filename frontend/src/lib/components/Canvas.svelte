@@ -4,13 +4,12 @@
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
 	import Grid from './Grid.svelte';
-	import { screens, assetsByScreen, online } from '../stores';
+	import Features from './Features.svelte';
+	import { screens } from '../stores';
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
 	import type { KonvaEventObject } from 'konva/lib/Node';
-
-
 
 	// Svelte 5 runes: make interactive state reactive so animations propagate to Stage
 	let scale = $state(0.25); // stage zoom
@@ -25,16 +24,14 @@
 
 	// Smooth zoom animation state
 	let rafId: number = 0;
-	let anim:
-		| {
-				start: number;
-				fromScale: number;
-				fromOffset: { x: number; y: number };
-				toScale: number;
-				toOffset: { x: number; y: number };
-				duration: number;
-		  }
-		| null = null;
+	let anim: {
+		start: number;
+		fromScale: number;
+		fromOffset: { x: number; y: number };
+		toScale: number;
+		toOffset: { x: number; y: number };
+		duration: number;
+	} | null = null;
 
 	function easeOutCubic(t: number) {
 		return 1 - Math.pow(1 - t, 3);
@@ -121,7 +118,10 @@
 
 		// Use current visual state (in-flight animation aware) to keep cursor focus stable
 		const vis = currentVisual();
-		const world = { x: (mouse.x - vis.offset.x) / vis.scale, y: (mouse.y - vis.offset.y) / vis.scale };
+		const world = {
+			x: (mouse.x - vis.offset.x) / vis.scale,
+			y: (mouse.y - vis.offset.y) / vis.scale
+		};
 
 		// Base zoom factor; hold Shift to double the zoom step (faster zoom)
 		const base = 1.15;
@@ -233,20 +233,23 @@
 					x: offset.x,
 					y: offset.y
 				}}
-			on:mousedown={onStageMouseDown}
+				on:mousedown={onStageMouseDown}
 			>
 				<Layer>
-				{#each $screens as sc (sc.id)}
+					{#each $screens as sc (sc.id)}
 						<ScreenFrame {sc} />
 					{/each}
 				</Layer>
 			</Stage>
 
 			{#if $screens.length === 0}
-				<div class="absolute inset-0 grid place-items-center pointer-events-none">
+				<div
+					class="absolute inset-0 overflow-y-auto flex flex-col items-center justify-center gap-8 p-4 pointer-events-none"
+				>
 					<div class="badge badge-lg bg-base-200 text-base-content/70 shadow">
 						No screens yet — use "Add Screen" in the toolbar
 					</div>
+					<Features />
 				</div>
 			{/if}
 		</div>
