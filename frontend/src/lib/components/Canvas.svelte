@@ -8,6 +8,7 @@
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
+	import type { KonvaEventObject } from 'konva/lib/Node';
 
 
 
@@ -135,8 +136,8 @@
 			y: mouse.y - world.y * targetScale
 		};
 
-	// Smoothly animate towards the new zoom/offset; shorter when holding Shift for speed
-	animateTo(targetScale, targetOffset, e.shiftKey ? 70 : 120);
+		// Smoothly animate towards the new zoom/offset for a snappy yet smooth experience
+		animateTo(targetScale, targetOffset, e.shiftKey ? 80 : 110);
 	}
 
 	function onMouseDown(e: MouseEvent) {
@@ -163,6 +164,12 @@
 	}
 	function onMouseUp() {
 		panning = false;
+	}
+
+	function onStageMouseDown(e: KonvaEventObject<MouseEvent>) {
+		if (e.target === e.target.getStage()) {
+			selected.set(null);
+		}
 	}
 
 	onMount(() => {
@@ -226,9 +233,10 @@
 					x: offset.x,
 					y: offset.y
 				}}
+			on:mousedown={onStageMouseDown}
 			>
 				<Layer>
-					{#each $screens as sc}
+				{#each $screens as sc (sc.id)}
 						<ScreenFrame {sc} />
 					{/each}
 				</Layer>
