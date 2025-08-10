@@ -1,13 +1,13 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
-from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 import uuid
+from pathlib import Path
+
 from app.core.config import settings
-from app.state.memory_state import STATE
 from app.models.asset_models import Asset, AssetCreate, AssetUpdate
-from app.util.connection_manager import WS_MANAGER
 from app.services.screen_service import SCREEN_CLIENT
+from app.state.memory_state import STATE
+from app.util.connection_manager import WS_MANAGER
+from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/assets", tags=["assets"])
 
@@ -16,9 +16,11 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Expose uploads as static at /uploads (mounted in main)
 
+
 @router.get("", response_model=list[Asset])
 async def list_assets(screen_id: str | None = None):
     return await STATE.list_assets(screen_id)
+
 
 @router.post("", response_model=Asset)
 async def create_asset(payload: AssetCreate):
@@ -28,6 +30,7 @@ async def create_asset(payload: AssetCreate):
     await WS_MANAGER.broadcast("asset_added", asset.model_dump())
     return asset
 
+
 @router.put("/{asset_id}", response_model=Asset)
 async def update_asset(asset_id: str, payload: AssetUpdate):
     asset = await STATE.update_asset(asset_id, payload)
@@ -36,6 +39,7 @@ async def update_asset(asset_id: str, payload: AssetUpdate):
     await SCREEN_CLIENT.apply_asset(asset)
     await WS_MANAGER.broadcast("asset_updated", asset.model_dump())
     return asset
+
 
 @router.delete("/{asset_id}")
 async def delete_asset(asset_id: str):
@@ -48,6 +52,7 @@ async def delete_asset(asset_id: str):
         await SCREEN_CLIENT.remove_asset(existing[0])
     await WS_MANAGER.broadcast("asset_deleted", {"id": asset_id})
     return {"ok": True}
+
 
 @router.post("/upload")
 async def upload_image(file: UploadFile = File(...)):

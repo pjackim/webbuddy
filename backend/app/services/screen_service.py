@@ -1,15 +1,18 @@
 import logging
+
 from app.core.config import settings
 from app.core.errors import ExternalServiceError
 from app.models.asset_models import Asset, ImageAsset, TextAsset
 
 log = logging.getLogger(__name__)
 
+
 class ScreenServiceClient:
     """Wrapper around the auto-generated client from the external service.
     For now, this class logs actions; set EXTERNAL_ENABLED=true and provide
     SCREEN_SERVICE_URL/TOKEN to actually integrate.
     """
+
     def __init__(self) -> None:
         self.enabled = bool(settings.EXTERNAL_ENABLED and settings.SCREEN_SERVICE_URL)
 
@@ -20,7 +23,13 @@ class ScreenServiceClient:
         try:
             if isinstance(asset, ImageAsset):
                 # TODO: call generated client method to display/update image
-                log.info("Updating image asset %s at (%s,%s) on screen %s", asset.id, asset.x, asset.y, asset.screen_id)
+                log.info(
+                    "Updating image asset %s at (%s,%s) on screen %s",
+                    asset.id,
+                    asset.x,
+                    asset.y,
+                    asset.screen_id,
+                )
             elif isinstance(asset, TextAsset):
                 # TODO: call generated client method to display/update text
                 log.info("Updating text asset %s '%s'", asset.id, asset.text)
@@ -38,5 +47,6 @@ class ScreenServiceClient:
         except Exception as exc:
             log.exception("External service failure")
             raise ExternalServiceError(str(exc))
+
 
 SCREEN_CLIENT = ScreenServiceClient()

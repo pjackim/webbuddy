@@ -1,12 +1,13 @@
+import logging
+from pathlib import Path
+
+from app.api import api
+from app.api.websocket import router as ws_router
+from app.core.config import settings
+from app.core.logging_config import configure_logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-import logging
-from app.core.config import settings
-from app.core.logging_config import configure_logging
-from app.api import api
-from app.api.websocket import router as ws_router
-from pathlib import Path
 
 configure_logging(logging.DEBUG if settings.ENV == "dev" else logging.INFO)
 app = FastAPI(title=settings.APP_NAME)
@@ -30,6 +31,7 @@ app.include_router(api, prefix="/api")
 
 # WS (must be added on app, not APIRouter under prefix)
 app.include_router(ws_router)
+
 
 @app.get("/health")
 async def health():

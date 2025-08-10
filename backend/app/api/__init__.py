@@ -1,6 +1,7 @@
 from fastapi import APIRouter
-from .routes_screens import router as screens
+
 from .routes_assets import router as assets
+from .routes_screens import router as screens
 from .websocket import router as ws
 
 api = APIRouter()

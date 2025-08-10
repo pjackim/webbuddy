@@ -1,7 +1,9 @@
-from typing import Set
-from fastapi import WebSocket
 import asyncio
 import json
+from typing import Set
+
+from fastapi import WebSocket
+
 
 class ConnectionManager:
     def __init__(self) -> None:
@@ -27,5 +29,6 @@ class ConnectionManager:
                 dead.append(ws)
         for ws in dead:
             await self.disconnect(ws)
+
 
 WS_MANAGER = ConnectionManager()

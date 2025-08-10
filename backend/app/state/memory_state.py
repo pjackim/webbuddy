@@ -1,9 +1,16 @@
 import asyncio
 import uuid
 from typing import Dict, List
-from .typing import TypedDict  # local helper, but we will inline types below to keep simple
+
+from app.models.asset_models import (
+    Asset,
+    AssetCreate,
+    AssetUpdate,
+    ImageAsset,
+    TextAsset,
+)
 from app.models.screen_models import Screen, ScreenCreate, ScreenUpdate
-from app.models.asset_models import Asset, ImageAsset, TextAsset, AssetCreate, AssetUpdate
+
 
 class InMemoryState:
     def __init__(self) -> None:
@@ -29,7 +36,9 @@ class InMemoryState:
             sc = self._screens.get(screen_id)
             if not sc:
                 return None
-            upd = sc.model_copy(update={k: v for k, v in data.model_dump(exclude_none=True).items()})
+            upd = sc.model_copy(
+                update={k: v for k, v in data.model_dump(exclude_none=True).items()}
+            )
             self._screens[screen_id] = upd
             return upd
 
@@ -38,7 +47,9 @@ class InMemoryState:
             existed = screen_id in self._screens
             if existed:
                 # remove assets for that screen
-                to_del = [aid for aid, a in self._assets.items() if a.screen_id == screen_id]
+                to_del = [
+                    aid for aid, a in self._assets.items() if a.screen_id == screen_id
+                ]
                 for aid in to_del:
                     self._assets.pop(aid, None)
                 self._screens.pop(screen_id, None)
@@ -66,12 +77,15 @@ class InMemoryState:
             a = self._assets.get(asset_id)
             if not a:
                 return None
-            updated = a.model_copy(update={k: v for k, v in data.model_dump(exclude_none=True).items()})
+            updated = a.model_copy(
+                update={k: v for k, v in data.model_dump(exclude_none=True).items()}
+            )
             self._assets[asset_id] = updated
             return updated
 
     async def delete_asset(self, asset_id: str) -> bool:
         async with self._lock:
             return self._assets.pop(asset_id, None) is not None
+
 
 STATE = InMemoryState()

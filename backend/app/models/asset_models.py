@@ -1,5 +1,7 @@
-from pydantic import BaseModel, HttpUrl, Field
-from typing import Optional, Literal, Union, Annotated
+from typing import Annotated, Literal, Optional, Union
+
+from pydantic import BaseModel, Field, HttpUrl
+
 
 class AssetBase(BaseModel):
     id: str
@@ -12,6 +14,7 @@ class AssetBase(BaseModel):
     scale_y: float = 1.0
     type: Literal["image", "text"]
 
+
 class ImageAsset(AssetBase):
     type: Literal["image"] = "image"
     src: HttpUrl
@@ -20,13 +23,16 @@ class ImageAsset(AssetBase):
     width: Optional[float] = None
     height: Optional[float] = None
 
+
 class TextAsset(AssetBase):
     type: Literal["text"] = "text"
     text: str
     font_size: float = 24
     color: str = "#ffffff"
 
+
 Asset = Annotated[Union[ImageAsset, TextAsset], Field(discriminator="type")]
+
 
 class AssetCreate(BaseModel):
     # For creation, allow no id, server will assign
@@ -44,6 +50,7 @@ class AssetCreate(BaseModel):
     color: Optional[str] = "#ffffff"
     width: Optional[float] = None
     height: Optional[float] = None
+
 
 class AssetUpdate(BaseModel):
     x: Optional[float] = None

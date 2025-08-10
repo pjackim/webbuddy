@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
 from typing import Optional
+
+from pydantic import BaseModel, Field
+
 
 class ScreenCreate(BaseModel):
     name: str
@@ -8,8 +10,10 @@ class ScreenCreate(BaseModel):
     x: int = 0  # position on global canvas
     y: int = 0
 
+
 class Screen(ScreenCreate):
     id: str
+
 
 class ScreenUpdate(BaseModel):
     name: Optional[str] = None

@@ -1,6 +1,8 @@
-from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl
 from typing import Optional
+
+from pydantic import AnyHttpUrl
+from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
     APP_NAME: str = "preref-backend"
@@ -24,5 +26,6 @@ class Settings(BaseSettings):
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
