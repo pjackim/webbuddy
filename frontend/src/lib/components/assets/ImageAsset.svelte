@@ -16,12 +16,12 @@
 		htmlImage.src = a.src;
 	});
 
-	function onDown(e) {
+	function onDown(e: any) {
 		isDragging = true;
 		start = { x: e.evt.clientX, y: e.evt.clientY };
 		orig = { x: a.x, y: a.y };
 	}
-	function onMove(e) {
+	function onMove(e: any) {
 		if (!isDragging) return;
 		const dx = e.evt.clientX - start.x;
 		const dy = e.evt.clientY - start.y;
@@ -36,10 +36,12 @@
 </script>
 
 <Image
-	image={htmlImage}
-	x={a.x}
-	y={a.y}
-	draggable={false}
+	config={{
+		image: htmlImage,
+		x: a.x,
+		y: a.y,
+		draggable: false
+	}}
 	on:mousedown={onDown}
 	on:mousemove={onMove}
 	on:mouseup={onUp}
