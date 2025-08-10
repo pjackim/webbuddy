@@ -4,6 +4,10 @@ requires = ["setuptools", "wheel"]
 [project]
 name = "web-buddy-backend"
 version = "0.1.0"
+requires-python = ">=3.12"
+authors = [{ name = "Web Buddy Team", email = "example@email.com" }]
+description = "Backend for Web Buddy application"
+readme = "README.md"
 dependencies = [
     "fastapi>=0.111.0",
     "uvicorn[standard]>=0.30.0",
@@ -14,20 +18,20 @@ dependencies = [
     "orjson>=3.10.0",
 ]
 
+[dependency-groups]
+dev = ["pytest>=8.4.1", "pytest-sugar>=1.0.0", "ruff>=0.5.0", "build>=1.2.1"]
+
+[project.scripts]
+start = "app.scripts.start:main"
+lint = "app.scripts.lint:main"
+debug = "app.scripts.debug:main"
+test = "app.scripts.test:main"
+format = "app.scripts.format:main"
+build = "app.scripts.build:main"
+clean = "app.scripts.clean:main"
+
 [tool.uvicorn]
 factory = true
 host = "0.0.0.0"
 port = 8000
 reload = false
-
-[tool.hatch.envs.default.scripts]
-build = "python -m build"
-test = "pytest -q"
-clean = "python -c \"import shutil, pathlib; [shutil.rmtree(p, ignore_errors=True) for p in ('build','dist','.pytest_cache')]; [shutil.rmtree(str(d), ignore_errors=True) for d in pathlib.Path('.').glob('*.egg-info')]\""
-debug = "uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --reload"
-
-[dependency-groups]
-dev = [
-    "pytest>=8.4.1",
-    "pytest-sugar>=1.0.0",
-]
