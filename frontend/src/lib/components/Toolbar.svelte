@@ -62,9 +62,6 @@
 	<!-- Inline controls (large screens) -->
 	<div class="flex-none hidden lg:flex items-center gap-4 px-2">
 		<div class="form-control">
-			<div class="label">
-				<span class="label-text">Mode</span>
-			</div>
 			<div class="join">
 				<label class="join-item label cursor-pointer gap-2 px-3">
 					<span class="label-text">Online</span>
