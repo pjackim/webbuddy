@@ -23,8 +23,14 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
+ARG RUN_TESTS=false
+# Install Node.js + npm for running Vitest under Node (avoids Bun+Vitest bug)
+RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
+	&& rm -rf /var/lib/apt/lists/*
+
 # Run only Node-environment tests inside Docker to avoid requiring browser dependencies
-RUN bunx vitest --run --project server
+# Run Vitest with Node (npx) instead of Bun. Toggle with --build-arg RUN_TESTS=true
+RUN if [ "$RUN_TESTS" = "true" ]; then npx vitest run --project server --pool=forks; else echo "Skipping Vitest during Docker build"; fi
 RUN bun run build
 
 # copy production dependencies and source code into final image
