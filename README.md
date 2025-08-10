@@ -1,35 +1,39 @@
-# PureRef-Like Web App — SvelteKit (Svelte 5) + FastAPI (Monorepo v0.2)
+# Web Buddy — Infinite Canvas (SvelteKit 5) + FastAPI (Monorepo)
 
-A production‑ready starter implementing an infinite, multi‑screen canvas with real‑time collaboration, offline mode, and a clean FastAPI backend. The frontend now uses SvelteKit (Vite 7), Tailwind CSS v4 (via @tailwindcss/vite), DaisyUI v5, and ships with ESLint + Prettier and Vitest (browser + node) powered by Playwright.
+Production-ready monorepo for a PureRef-like, infinite canvas with multi-screen layout, real-time collaboration (WebSocket), uploads, and a clean FastAPI backend. The frontend is SvelteKit (Svelte 5) + Vite 7 + Tailwind CSS v4 (via @tailwindcss/vite) + DaisyUI v5 with ESLint, Prettier, and Vitest (browser + node) powered by Playwright. The backend targets Python 3.12+ and serves a custom Swagger UI.
 
 ---
 
-## Repo Structure
+## Repository Structure
 
 ```
-preref-webapp/
+webbuddy/
 ├─ backend/
-│  ├─ app/...
+│  ├─ app/
+│  │  ├─ api/...
+│  │  ├─ core/...
+│  │  ├─ models/...
+│  │  ├─ scripts/...
+│  │  ├─ services/...
+│  │  ├─ state/...
+│  │  ├─ static/...
+│  │  └─ util/...
 │  ├─ pyproject.toml
 │  ├─ uvicorn.ini
 │  └─ Dockerfile
 ├─ frontend/
 │  ├─ src/
-│  │  ├─ app.d.ts
 │  │  ├─ app.html
-│  │  ├─ routes/
-│  │  │  ├─ +layout.svelte
-│  │  │  └─ +page.svelte
+│  │  ├─ app.d.ts
+│  │  ├─ app.css
+│  │  ├─ routes/{+layout.svelte,+page.svelte}
 │  │  └─ lib/
 │  │     ├─ api.ts
 │  │     ├─ ws.ts
 │  │     ├─ stores.ts
+│  │     ├─ utils.ts
 │  │     ├─ assets/favicon.svg
-│  │     └─ components/
-│  │        ├─ Toolbar.svelte
-│  │        ├─ Canvas.svelte
-│  │        ├─ ScreenFrame.svelte
-│  │        └─ assets/{ImageAsset.svelte,TextAsset.svelte}
+│  │     └─ components/{Toolbar.svelte,Canvas.svelte,ScreenFrame.svelte,Grid.svelte,assets/...}
 │  ├─ static/robots.txt
 │  ├─ package.json
 │  ├─ eslint.config.js
@@ -39,306 +43,167 @@ preref-webapp/
 │  ├─ tailwind.config.cjs
 │  ├─ postcss.config.cjs
 │  ├─ vitest-setup-client.ts
-│  ├─ README.md
 │  ├─ bun.lock
 │  └─ Dockerfile
 ├─ docker-compose.yml
 └─ README.md
 ```
 
----
-
-## Backend — FastAPI (Python 3.11+)
-
-The backend structure, models, services, and API routes remain as previously documented. See source files under `backend/app` for full details, including:
-
-- Core config and logging: `backend/app/core/{config.py,logging_config.py}`
-- Pydantic v2 models: `backend/app/models/{screen_models.py,asset_models.py}`
-- In‑memory state: `backend/app/state/memory_state.py`
-- Services and WS manager: `backend/app/services/screen_service.py` and `backend/app/util/connection_manager.py`
-- API routers: `backend/app/api/{routes_screens.py,routes_assets.py,websocket.py}`
-
-Uvicorn is containerized via `backend/Dockerfile`. Environment variables are read from `backend/.env` or docker‑compose.
+Key files:
+- App factory and mounts: [backend/app/main.py](backend/app/main.py) → [create_app()](backend/app/main.py:70)
+- REST routers: [backend/app/api/routes_screens.py](backend/app/api/routes_screens.py), [backend/app/api/routes_assets.py](backend/app/api/routes_assets.py)
+- WebSocket endpoint: [backend/app/api/websocket.py](backend/app/api/websocket.py)
+- Settings: [backend/app/core/config.py](backend/app/core/config.py)
+- Swagger UI CSS override: [backend/app/static/swagger-docs.css](backend/app/static/swagger-docs.css)
+- Frontend canvas: [frontend/src/lib/components/Canvas.svelte](frontend/src/lib/components/Canvas.svelte), frames: [frontend/src/lib/components/ScreenFrame.svelte](frontend/src/lib/components/ScreenFrame.svelte), grid: [frontend/src/lib/components/Grid.svelte](frontend/src/lib/components/Grid.svelte)
+- Frontend runtime config: [frontend/src/lib/api.ts](frontend/src/lib/api.ts), WebSocket client: [frontend/src/lib/ws.ts](frontend/src/lib/ws.ts)
+- Compose: [docker-compose.yml](docker-compose.yml)
+- Frontend build/test config: [frontend/vite.config.ts](frontend/vite.config.ts), [frontend/svelte.config.js](frontend/svelte.config.js), [frontend/tailwind.config.cjs](frontend/tailwind.config.cjs), [frontend/postcss.config.cjs](frontend/postcss.config.cjs)
 
 ---
 
-## Frontend — SvelteKit (Svelte 5), Tailwind v4 + DaisyUI, Konva
+## Backend — FastAPI (Python 3.12+)
 
-Note: Uses `svelte-konva` for a declarative Konva API in Svelte.
+The FastAPI app is initialized in [backend/app/main.py](backend/app/main.py) via [create_app()](backend/app/main.py:70). It mounts:
+- REST API under `/api` (see routers in [backend/app/api/routes_screens.py](backend/app/api/routes_screens.py) and [backend/app/api/routes_assets.py](backend/app/api/routes_assets.py))
+- WebSocket at `/ws` (see [backend/app/api/websocket.py](backend/app/api/websocket.py))
+- Static uploads at `/uploads`
+- Custom Swagger UI at `/docs` using [backend/app/static/swagger-docs.css](backend/app/static/swagger-docs.css)
 
-### `frontend/package.json` (key scripts and deps)
+Configuration is managed via Pydantic Settings in [backend/app/core/config.py](backend/app/core/config.py). Notable env vars:
+- ENV
+- CORS_ORIGINS (list JSON)
+- PUBLIC_BASE_URL
+- SCREEN_SERVICE_URL, SCREEN_SERVICE_TOKEN
+- EXTERNAL_ENABLED
+- POLL_INTERVAL_SEC
 
+Scripts (exposed via pyproject entry points):
+- [start()](backend/app/scripts/start.py:1) → `uvicorn` factory mode
+- [test()](backend/app/scripts/test.py:1) → `pytest`
+- [lint()](backend/app/scripts/lint.py:1) → `ruff check`
+- [format()](backend/app/scripts/format.py:1) → `ruff format`
+- [build()](backend/app/scripts/build.py:1) → `python -m build`
+- [clean()](backend/app/scripts/clean.py:96) → remove build/cache artifacts
+
+Dockerized backend installs via `uv` and runs Uvicorn; see [backend/Dockerfile](backend/Dockerfile).
+
+---
+
+## Frontend — SvelteKit (Svelte 5), Vite 7, Tailwind v4 + DaisyUI, Konva
+
+- SvelteKit 2 + Vite 7 with Tailwind v4 via @tailwindcss/vite (see [frontend/vite.config.ts](frontend/vite.config.ts))
+- UI stack: DaisyUI v5, Bits UI, Lucide icons, mode-watcher (for theme), runed/paneforge (utils)
+- Infinite canvas via Konva + svelte-konva with smooth pan/zoom ([frontend/src/lib/components/Canvas.svelte](frontend/src/lib/components/Canvas.svelte))
+- Global styles/colors using CSS custom properties in [frontend/src/app.css](frontend/src/app.css)
+- SSR-safe layout and favicon wiring in [frontend/src/routes/+layout.svelte](frontend/src/routes/+layout.svelte)
+
+Key scripts (see [frontend/package.json](frontend/package.json)):
 ```json
 {
-    "name": "frontend",
-    "private": true,
-    "version": "0.0.1",
-    "type": "module",
-    "scripts": {
-        "dev": "vite dev",
-        "build": "vite build",
-        "preview": "vite preview",
-        "prepare": "svelte-kit sync || echo ''",
-        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "test:unit": "vitest",
-        "test": "npm run test:unit -- --run",
-        "format": "prettier --write .",
-        "lint": "prettier --check . && eslint ."
-    },
-    "devDependencies": {
-        "@eslint/compat": "^1.2.5",
-        "@eslint/js": "^9.18.0",
-        "@sveltejs/adapter-auto": "^6.0.0",
-        "@sveltejs/kit": "^2.22.0",
-        "@sveltejs/vite-plugin-svelte": "^6.0.0",
-        "@tailwindcss/forms": "^0.5.9",
-        "@tailwindcss/typography": "^0.5.15",
-        "@tailwindcss/vite": "^4.0.0",
-        "@vitest/browser": "^3.2.3",
-        "autoprefixer": "^10.4.21",
-        "daisyui": "^5.0.50",
-        "eslint": "^9.18.0",
-        "eslint-config-prettier": "^10.0.1",
-        "eslint-plugin-svelte": "^3.0.0",
-        "globals": "^16.0.0",
-        "playwright": "^1.53.0",
-        "postcss": "^8.5.6",
-        "prettier": "^3.4.2",
-        "prettier-plugin-svelte": "^3.3.3",
-        "svelte": "^5.0.0",
-        "svelte-check": "^4.0.0",
-        "tailwindcss": "^4.0.0",
-        "typescript": "^5.0.0",
-        "typescript-eslint": "^8.20.0",
-        "vite": "^7.0.4",
-        "vite-plugin-devtools-json": "^0.2.0",
-        "vitest": "^3.2.3",
-        "vitest-browser-svelte": "^0.1.0"
-    },
-    "dependencies": {
-        "konva": "^9.3.22",
-        "svelte-konva": "^0.3.1"
-    }
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "test:unit": "vitest",
+    "test": "npm run test:unit -- --run",
+    "format": "prettier --write .",
+    "lint": "prettier --check . && eslint ."
+  }
 }
 ```
 
-### `frontend/svelte.config.js`
+Frontend environment variables:
+- `VITE_API_BASE` (default `http://localhost:8000/api`) read in [API_BASE](frontend/src/lib/api.ts:1)
+- `VITE_WS_BASE` (default `ws://localhost:8000`) read in [WS_BASE](frontend/src/lib/api.ts:2)
 
-```js
-import adapter from '@sveltejs/adapter-auto';
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
- // Consult https://svelte.dev/docs/kit/integrations
- // for more information about preprocessors
- preprocess: vitePreprocess(),
- kit: { adapter: adapter() }
-};
-
-export default config;
-```
-
-### `frontend/vite.config.ts`
-
-```ts
-import devtoolsJson from 'vite-plugin-devtools-json';
-import tailwindcss from '@tailwindcss/vite';
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
-  server: { port: 5173, host: true },
-  test: {
-    expect: { requireAssertions: true },
-    projects: [
-      {
-        extends: './vite.config.ts',
-        test: {
-          name: 'client',
-          environment: 'browser',
-          browser: { enabled: true, provider: 'playwright', instances: [{ browser: 'chromium' }] },
-          include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-          exclude: ['src/lib/server/**'],
-          setupFiles: ['./vitest-setup-client.ts']
-        }
-      },
-      {
-        extends: './vite.config.ts',
-        test: {
-          name: 'server',
-          environment: 'node',
-          include: ['src/**/*.{test,spec}.{js,ts}'],
-          exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-        }
-      }
-    ]
-  }
-});
-```
-
-### `frontend/tailwind.config.cjs`
-
-```js
-/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: ['./src/**/*.{html,js,svelte,ts}'],
-  theme: { extend: {} },
-  plugins: [require('daisyui')],
-  daisyui: { themes: ['dark'] }
-};
-```
-
-### `frontend/postcss.config.cjs`
-
-```js
-module.exports = {
-  plugins: { tailwindcss: {}, autoprefixer: {} }
-};
-```
-
-### `frontend/src/app.css`
-
-```css
-@import 'tailwindcss';
-@plugin '@tailwindcss/forms';
-@plugin '@tailwindcss/typography';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-html, body, #app { height: 100%; }
-body { @apply bg-base-200 text-base-content; }
-
-```
-
-### `frontend/src/app.html`
-
-```html
-<!doctype html>
-<html lang="en">
- <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  %sveltekit.head%
- </head>
- <body data-sveltekit-preload-data="hover">
-  <div style="display: contents">%sveltekit.body%</div>
- </body>
-</html>
-
-```
-
-### `frontend/src/routes/+layout.svelte`
-
-```svelte
-<script lang="ts">
-  import '../app.css';
-  import favicon from '$lib/assets/favicon.svg';
-
-  let { children } = $props();
-</script>
-
-<svelte:head>
-  <link rel="icon" href={favicon} />
-</svelte:head>
-
-{@render children?.()}
-```
-
-### Environment variables consumed by the frontend
-
-- `VITE_API_BASE` (default `http://localhost:8000/api`)
-- `VITE_WS_BASE` (default `ws://localhost:8000`)
+Testing:
+- Vitest projects for browser + node configured in [frontend/vite.config.ts](frontend/vite.config.ts)
+- Playwright powers browser runs
+- Setup file: [frontend/vitest-setup-client.ts](frontend/vitest-setup-client.ts)
 
 ---
 
 ## Docker and Compose
 
-- Backend container builds with `uv` and runs `uvicorn`.
-- Frontend container builds the SvelteKit app and serves it via Nginx. See `frontend/Dockerfile`.
+- Backend: Python 3.12, installed via `uv`, runs with Uvicorn factory; uploads volume persisted
+- Frontend: Bun-based image builds SvelteKit and serves `vite preview` (no Nginx) from port `3000` by default; optional test run during build controlled by `RUN_TESTS`
 
-Root `docker-compose.yml`:
-
-```yaml
-services:
-  backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
-    environment:
-      - ENV=dev
-      - CORS_ORIGINS=http://localhost:5173
-      - PUBLIC_BASE_URL=http://localhost:8000
-      - EXTERNAL_ENABLED=false
-    volumes:
-      - backend_uploads:/app/uploads
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-volumes:
-  backend_uploads:
-```
+See [docker-compose.yml](docker-compose.yml) for full configuration. Defaults:
+- Backend: `http://localhost:8000` (ENV `BACKEND_PORT=8000`, `BACKEND_CONTAINER_PORT=8000`)
+- Frontend: `http://localhost:${FRONTEND_PORT:-3000}` (default `3000`)
+- CORS defaults to allowing the frontend origin: `CORS_ORIGINS='["http://localhost:3000"]'`
+- Uploads persisted at `backend_uploads` volume
 
 ---
 
 ## Quickstart
 
-Prereqs: Docker & Docker Compose
+Using Docker (recommended):
 
 ```bash
 docker compose up --build
 ```
 
-- Backend: http://localhost:8000 (docs at `/docs`)
-- Frontend: http://localhost:5173
+Then:
+- Backend API: http://localhost:8000 (Swagger UI at `/docs`)
+- Frontend: http://localhost:3000
+
+Local development (optional):
+- Backend
+  - From `backend/`: install with `uv pip install -e .` (first time), then `uv run start`
+- Frontend
+  - From `frontend/`: `npm install` (or `bun install`), then `npm run dev` (Vite dev server on 5173)
 
 ---
 
 ## Features
 
-- Infinite canvas with pan/zoom (Konva)
-- Multi‑screen layout: add/drag screen frames; per‑screen assets
-- Image & text assets; drag to move
-- Real‑time collaboration via WebSocket broadcast
-- Offline mode toggle (local‑only edits if off)
-- File uploads to backend (`/api/assets/upload`) serving from `/uploads`
+- Infinite canvas with smooth pan/zoom (Konva + svelte-konva)
+- Multi-screen layout: add/drag screen frames; per-screen assets
+- Image & text assets; drag to move; drop-to-upload on canvas
+- Real-time collaboration via WebSocket broadcast
+- Offline mode toggle (local-only edits if off)
+- File uploads to backend (`/api/assets/upload`) served from `/uploads`
 - Clean Pydantic v2 models with discriminated unions
-- External service wrapper (dry‑run by default)
-- Tailwind CSS v4 with DaisyUI v5
+- Custom Swagger UI with dark code highlighting
+- Tailwind CSS v4 + DaisyUI v5
 - Vitest (browser + node) with Playwright, ESLint + Prettier
 
 ---
 
-## Config
+## Configuration
 
-Set in `backend/.env` or docker‑compose envs:
+Backend (.env or docker-compose env):
+- `ENV`
+- `CORS_ORIGINS` — list JSON; default allows local frontend
+- `PUBLIC_BASE_URL` — used for absolute upload URLs
+- `EXTERNAL_ENABLED` — enable external screen service calls
+- `SCREEN_SERVICE_URL`, `SCREEN_SERVICE_TOKEN` — external service integration
+- `POLL_INTERVAL_SEC` — optional background polling (0 disables)
 
-- `PUBLIC_BASE_URL` – build absolute URLs for uploaded files
-- `EXTERNAL_ENABLED=true` + `SCREEN_SERVICE_URL` + `SCREEN_SERVICE_TOKEN` – to call the external screen service
-- `POLL_INTERVAL_SEC` – enable background polling of the source‑of‑truth (future; stub)
-
-Frontend `.env` (optional):
-
-- `VITE_API_BASE` – override backend API base
-- `VITE_WS_BASE` – override WS base
+Frontend (.env, optional):
+- `VITE_API_BASE` — override backend API base
+- `VITE_WS_BASE` — override WebSocket base
 
 ---
 
 ## Extending
 
-- Add new asset type: create model (backend), Svelte component (frontend), and mapping in `screen_service.py`.
-- Add resize/rotate: use Konva `Transformer` attached to selected nodes; send PUT with `width/height/rotation`.
-- Merge offline edits: queue diffs locally; upon rejoin, POST changes or discard (current behavior = discard).
+- Add a new asset type: backend model + endpoints and a Svelte component; broadcast via WS in relevant route handler(s)
+- Resize/rotate: attach Konva Transformer to selected nodes; persist `width/height/rotation`
+- Offline merging: queue diffs locally; push on reconnect (current behavior = discard)
+
+Reference code:
+- WS events broadcast: [broadcast()](backend/app/util/connection_manager.py:?) usage in [routes_assets.py](backend/app/api/routes_assets.py) and [routes_screens.py](backend/app/api/routes_screens.py)
+- Frontend WS handling: [connectWS()](frontend/src/lib/ws.ts:6) and update stores in [stores.ts](frontend/src/lib/stores.ts)
 
 ---
 
-## What’s implemented vs. planned
-- ✅ Infinite canvas, multi‑screen frames, image/text assets, real‑time WS, offline toggle, uploads, Dockerized, Tailwind v4, tests and linting.
-- 🔜 Konva Transformer (resize/rotate), snapping guides, background polling to single source‑of‑truth, Redis cache, auth.
+## Roadmap
+
+- ✅ Infinite canvas, multi-screen frames, image/text assets, WS, offline toggle, uploads, Dockerized, Tailwind v4, tests and linting
+- 🔜 Konva Transformer (resize/rotate), snapping guides, background polling to single source-of-truth, Redis cache, auth
