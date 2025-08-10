@@ -2,21 +2,24 @@
 	import { Text as KText } from 'svelte-konva';
 	import { online, upsertAsset } from '../../stores';
 	import { api } from '../../api';
+	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	export let a: any; // TextAsset
 	let isDragging = false;
 	let start = { x: 0, y: 0 };
 	let orig = { x: 0, y: 0 };
 
-	function onDown(e: any) {
+	function onDown(e: KonvaMouseEvent) {
 		isDragging = true;
-		start = { x: e.evt.clientX, y: e.evt.clientY };
+		const { evt } = e.detail;
+		start = { x: evt.clientX, y: evt.clientY };
 		orig = { x: a.x, y: a.y };
 	}
-	function onMove(e: any) {
+	function onMove(e: KonvaMouseEvent) {
 		if (!isDragging) return;
-		const dx = e.evt.clientX - start.x;
-		const dy = e.evt.clientY - start.y;
+		const { evt } = e.detail;
+		const dx = evt.clientX - start.x;
+		const dy = evt.clientY - start.y;
 		a = { ...a, x: orig.x + dx, y: orig.y + dy };
 	}
 	async function onUp() {
