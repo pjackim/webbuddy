@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "preref-backend"
+    APP_NAME: str = "web-buddy-backend"
     ENV: str = "dev"
 
     # CORS

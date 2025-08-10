@@ -1,0 +1,69 @@
+/* Pull in Swagger UI's default CSS first */
+/* @import url('https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css'); */
+
+/* Only apply dark styles when the system prefers dark */
+@media (prefers-color-scheme: dark) {
+  :root { color-scheme: dark; }
+
+  body, .swagger-ui, .swagger-ui .wrapper {
+    background: #0b1116 !important;
+    color: #e5e7eb !important;
+  }
+
+  /* Headings / title */
+  .swagger-ui .info .title,
+  .swagger-ui .info__version,
+  .swagger-ui .info__url,
+  .swagger-ui .opblock-tag {
+    color: #f3f4f6 !important;
+  }
+
+  /* Operation blocks */
+  .swagger-ui .opblock {
+    background: #111821 !important;
+    border-color: #1f2a37 !important;
+  }
+  .swagger-ui .opblock .opblock-summary {
+    background: #0f1720 !important;
+    border-color: #1f2a37 !important;
+  }
+  .swagger-ui .opblock .opblock-summary-method {
+    color: #ffffff !important;
+  }
+
+  /* Tables */
+  .swagger-ui table thead tr th,
+  .swagger-ui .responses-table td {
+    background: #111821 !important;
+    color: #e5e7eb !important;
+    border-color: #374151 !important;
+  }
+
+  /* Inputs */
+  .swagger-ui input[type="text"],
+  .swagger-ui select,
+  .swagger-ui textarea {
+    background: #0b1116 !important;
+    color: #e5e7eb !important;
+    border-color: #374151 !important;
+  }
+
+  /* Buttons */
+  .swagger-ui .btn, .swagger-ui .btn.execute {
+    background: #0ea5e9 !important; /* blue-ish */
+    border-color: #0284c7 !important;
+    color: #0b1116 !important;
+  }
+
+  /* Links */
+  .swagger-ui a, .swagger-ui .link {
+    color: #93c5fd !important;
+  }
+
+  /* Misc chips/badges */
+  .swagger-ui .version-stamp,
+  .swagger-ui .tab li.active {
+    background: #1f2937 !important;
+    color: #e5e7eb !important;
+  }
+}
