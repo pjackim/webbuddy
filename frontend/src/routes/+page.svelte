@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Toolbar from '../lib/components/Toolbar.svelte';
 	import Canvas from '../lib/components/Canvas.svelte';
+	import * as Card from '$lib/components/ui/card/index.js';
 	import { api, uploadFile } from '../lib/api';
 	import { online, upsertAsset, screens, type Asset } from '../lib/stores';
 
@@ -29,8 +30,6 @@
 
 <div
 	class="flex flex-col h-screen"
-	role="region"
-	aria-label="Canvas drop area"
 	on:dragover|preventDefault={() => (hover = true)}
 	on:dragleave={() => (hover = false)}
 	on:drop={onDrop}
@@ -38,9 +37,13 @@
 	<Toolbar />
 	<div class="relative flex-1">
 		{#if hover}
-			<div
-				class="absolute inset-0 border-4 border-dashed border-primary z-20 pointer-events-none"
-			></div>
+			<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+				<Card.Root class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center">
+					<Card.Content class="text-center">
+						<h2 class="text-2xl font-bold">Drop files to upload</h2>
+					</Card.Content>
+				</Card.Root>
+			</div>
 		{/if}
 		<Canvas />
 	</div>
