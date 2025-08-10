@@ -2,6 +2,6 @@
 node_modules
 __pycache__
 
-preref_backend.egg-info
+web_buddy_backend.egg-info
 .venv
 build
