@@ -23,9 +23,6 @@
 			<div class="dropdown-content z-20 w-80 max-w-[90vw] p-4 bg-base-200 rounded-box shadow">
 				<div class="flex flex-col gap-3">
 					<div class="form-control">
-						<div class="label">
-							<span class="label-text">Mode</span>
-						</div>
 						<div class="join">
 							<label class="join-item label cursor-pointer gap-2 px-3">
 								<span class="label-text">Online</span>
