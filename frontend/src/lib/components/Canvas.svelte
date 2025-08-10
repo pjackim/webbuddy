@@ -17,8 +17,8 @@
 	let container: HTMLElement;
 
 	async function load() {
-		const sc = await api('/screens');
-		screens.set(sc as StoreScreen[]);
+			const sc = await api('/screens');
+			screens.set(sc as StoreScreen[]);
 		const all = await api('/assets');
 		// assets store filled indirectly in ScreenFrame via events or do it here if preferred
 		// We'll broadcast on initial GET too for simplicity: update locally
@@ -71,20 +71,20 @@
 	bind:this={container}
 	aria-label="Canvas area"
 >
-	<Stage
-		config={{
+			<Stage
+				config={{
 			width: innerWidth,
 			height: innerHeight - 64,
-			scaleX: scale,
-			scaleY: scale,
-			x: offset.x,
-			y: offset.y
-		}}
-	>
-		<Layer>
+					scaleX: scale,
+					scaleY: scale,
+					x: offset.x,
+					y: offset.y
+				}}
+			>
+				<Layer>
 			{#each $screens as sc}
-				<ScreenFrame {sc} />
-			{/each}
-		</Layer>
-	</Stage>
+						<ScreenFrame {sc} />
+					{/each}
+				</Layer>
+			</Stage>
 </section>
