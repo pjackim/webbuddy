@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
 	import { screens, assetsByScreen, online } from '../stores';
@@ -15,6 +16,9 @@
 	let last = { x: 0, y: 0 };
 	// add a ref to the canvas container
 	let container: HTMLElement;
+	// viewport size (avoid window usage during SSR). Track container size for responsiveness
+	let viewport = { width: 1024, height: 768 };
+	let ro: ResizeObserver | undefined;
 
 	async function load() {
 		const sc = await api('/screens');
@@ -55,7 +59,25 @@
 	onMount(() => {
 		connectWS();
 		load();
+		// initialize viewport on client
+		if (browser) {
+			syncViewport();
+			// observe container size to keep stage responsive
+			if (container && 'ResizeObserver' in window) {
+				ro = new ResizeObserver(() => syncViewport());
+				ro.observe(container);
+			}
+		}
 	});
+
+	function syncViewport() {
+		if (container) {
+			const rect = container.getBoundingClientRect();
+			viewport = { width: Math.max(0, rect.width), height: Math.max(0, rect.height) };
+		} else if (browser) {
+			viewport = { width: window.innerWidth, height: window.innerHeight };
+		}
+	}
 </script>
 
 <!-- attach event listeners to window and gate them to the container -->
@@ -64,27 +86,30 @@
 	on:mousedown={onMouseDown}
 	on:mousemove={onMouseMove}
 	on:mouseup={onMouseUp}
+	on:resize={syncViewport}
 />
 
 <section
-	class="w-full h-[calc(100vh-64px)]"
+	class="w-full h-full min-h-[20rem]"
 	bind:this={container}
 	aria-label="Canvas area"
 >
-	<Stage
-		config={{
-			width: innerWidth,
-			height: innerHeight - 64,
-			scaleX: scale,
-			scaleY: scale,
-			x: offset.x,
-			y: offset.y
-		}}
-	>
-		<Layer>
-			{#each $screens as sc}
-				<ScreenFrame {sc} />
-			{/each}
-		</Layer>
-	</Stage>
+	{#if browser}
+		<Stage
+			config={{
+				width: viewport.width,
+				height: viewport.height,
+				scaleX: scale,
+				scaleY: scale,
+				x: offset.x,
+				y: offset.y
+			}}
+		>
+			<Layer>
+				{#each $screens as sc}
+					<ScreenFrame {sc} />
+				{/each}
+			</Layer>
+		</Stage>
+	{/if}
 </section>
