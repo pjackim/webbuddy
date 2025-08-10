@@ -25,6 +25,7 @@ Do not introduce alternative stacks (no npm/yarn/pip unless explicitly required)
 - `frontend/` — Svelte 5 app and assets
 - `backend/` — FastAPI app, Pydantic models, services, routers
 - `docker-compose.yml` — local orchestration
+- `.github/` — GitHub Actions workflows
 
 If you add new top-level paths, update this section.
 
