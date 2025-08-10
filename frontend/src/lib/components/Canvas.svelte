@@ -33,9 +33,23 @@
 		// only handle wheel inside the canvas container
 		if (!container || !(e.target instanceof Node) || !container.contains(e.target)) return;
 		e.preventDefault();
+
+		// Mouse position in container (screen coords relative to stage container)
+		const rect = container.getBoundingClientRect();
+		const mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+		// World coords under cursor before zoom
+		const world = { x: (mouse.x - offset.x) / scale, y: (mouse.y - offset.y) / scale };
+
 		const factor = 1.05;
 		const direction = e.deltaY > 0 ? -1 : 1;
-		scale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? factor : 1 / factor)));
+		const newScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? factor : 1 / factor)));
+
+		// Recenter so the world point under the mouse stays fixed after zoom
+		offset.x = mouse.x - world.x * newScale;
+		offset.y = mouse.y - world.y * newScale;
+
+		scale = newScale;
 	}
 
 	function onMouseDown(e: MouseEvent) {
