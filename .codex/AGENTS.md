@@ -9,17 +9,6 @@ Codex reads and **merges** `AGENTS.md` from:
 
 ---
 
-## Stack & Intent
-
-- **Frontend:** Svelte 5 (runes), TypeScript, Vite, Tailwind. Package/runtime: **bun**.
-- **Backend:** FastAPI, **Pydantic v2** (write code v3-aware), Uvicorn. Package/runner: **uv**.
-- **API:** OpenAPI 3 (keep `/openapi.json` valid and `/docs` working).
-- **Principles:** Clean Code, DRY, small pure modules, explicit errors, strong typing.
-
-Do not introduce alternative stacks (no npm/yarn/pip unless explicitly required).
-
----
-
 ## Repo Map (source of truth)
 
 - `frontend/` — Svelte 5 app and assets
@@ -40,7 +29,7 @@ Your primary directive is to use the specific libraries and components listed be
 
 ## Core Technologies
 - **Framework:** Svelte 5 / SvelteKit  
-- **Runtime:** bun  
+- **Runtime:** bun, uv (for Python FastAPI backend)
 - **Backend:** Python FastAPI (interfaced via API calls)  
 
 ---
@@ -184,7 +173,7 @@ After defining logic with **runed**, select a UI component from the libraries be
 **Solution:** Use `shadcn/Context Menu`.
 
 ### Scenario 3
-> I want a 'Layers' panel that is movable and non-blocking.  
+> I want a 'Layers' panel that is movable and non-blocking. Or I want a "Bottom Sheet".
 **Solution:** Use `diaper/Detached sheet`.
 
 ### Scenario 4
@@ -192,66 +181,7 @@ After defining logic with **runed**, select a UI component from the libraries be
 **Solution:** Use `DaisyUI/modal` + `runed/finite-state-machine` or `runed/resource`.
 
 
-## Commands (copy-paste runnable)
 
-### Backend (Python 3.11+)
-
-- Create venv (optional) & activate:
-
-  ```bash
-  uv venv .venv && source .venv/bin/activate
-  ```
-
-- Install deps:
-
-  ```bash
-  uv pip install -r backend/requirements.txt
-  # or, if a backend package exists:
-  uv pip install -e ./backend
-  ```
-
-- Run dev server:
-
-  ```bash
-  uv run uvicorn app.main:app --factory --host 0.0.0.0 --port 8000 --reload
-  ```
-
-- Lint/format/tests (if configured):
-
-  ```bash
-  uv run ruff check . && uv run ruff format .
-  uv run pytest -q
-  ```
-
-### Frontend
-
-- Install deps:
-
-  ```bash
-  (cd frontend && bun install)
-  ```
-
-- Dev server:
-
-  ```bash
-  (cd frontend && bun --bun run dev)
-  ```
-
-- Build / lint / format:
-
-  ```bash
-  (cd frontend && bun run build)
-  (cd frontend && bun run lint)
-  (cd frontend && bun run format)
-  ```
-
-### Docker (optional)
-
-```bash
-docker compose up --build
-```
-
----
 
 ## Coding Standards
 
@@ -270,50 +200,12 @@ docker compose up --build
 - **Serialization:** prefer `orjson` responses if available.
 - **Migrations:** for breaking changes, add new versioned models/routes and deprecate old ones with a window.
 
-### Frontend (Svelte 5)
-
-- Use **runes** (`$state`, `$derived`, `$effect`) for reactivity—no legacy `$:` in new code.
-- Co-locate state in `src/lib/stores.ts`; HTTP helpers in `src/lib/api.ts`; WS helpers in `src/lib/ws.ts`.
-- Components remain presentational; business logic lives in lib/stores or page load.
-- Accessibility: semantic HTML; keyboard support for interactive elements.
-- Styling: Tailwind; centralize design tokens; avoid deep custom CSS unless needed.
-
----
-
-## API Design Playbook
-
-1. **Model first:** define/extend Pydantic request/response models.
-2. **Route next:** add FastAPI route with `response_model`, status codes, and examples.
-3. **Validation:** prefer Pydantic validators over ad-hoc checks.
-4. **Docs:** endpoints must appear correctly in **OpenAPI** (`/openapi.json`) and **Swagger UI** (`/docs`).
-5. **Client:** add/extend `frontend/src/lib/api.ts` with typed calls.
-6. **WebSockets:** use discriminated unions (`type` field). Mirror shapes in TS types.
-
----
-
-## Testing
-
-- **Backend:** `pytest` (async where needed), test routers (`httpx.AsyncClient`), services, and models. Snapshot OpenAPI schema when practical.
-- **Frontend:** `@testing-library/svelte` + `vitest` (via bun). Test behavior, not implementation details.
-- **Contracts:** keep API schema changes deliberate; document in PR.
-
----
 
 ## Reliability & Perf
 
 - Non-blocking server; heavy tasks → background workers (if introduced).
 - Batch network calls; debounce UI updates.
 - Prefer UTC ISO-8601 timestamps; validate inputs at boundaries.
-
----
-
-## Contributing (agent workflow)
-
-1. Branch: `feat/<scope>-<desc>` or `fix/<scope>-<desc>`.
-2. Keep commits atomic; use conventional prefixes (`feat:`, `fix:`, `docs:`).
-3. Update tests/docs with behavior changes.
-4. PR must include: summary, rationale, screenshots (UI), **OpenAPI diff** notes.
-5. Ensure: bun/uv builds pass; tests green; schema valid.
 
 ---
 
