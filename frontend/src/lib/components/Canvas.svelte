@@ -4,11 +4,12 @@
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
 	import Grid from './Grid.svelte';
-	import { screens, assetsByScreen, online } from '../stores';
+	import { screens, assetsByScreen, online, selected } from '../stores';
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
 	import type { KonvaEventObject } from 'konva/lib/Node';
+	import type { KonvaMouseEvent } from 'svelte-konva';
 
 
 
@@ -166,8 +167,9 @@
 		panning = false;
 	}
 
-	function onStageMouseDown(e: KonvaEventObject<MouseEvent>) {
-		if (e.target === e.target.getStage()) {
+	function onStageMouseDown(e: KonvaMouseEvent) {
+		const evt = e.detail; // KonvaEventObject<MouseEvent>
+		if (evt.target === evt.target.getStage()) {
 			selected.set(null);
 		}
 	}
@@ -233,7 +235,7 @@
 					x: offset.x,
 					y: offset.y
 				}}
-			on:mousedown={onStageMouseDown}
+				on:mousedown={onStageMouseDown}
 			>
 				<Layer>
 				{#each $screens as sc (sc.id)}
