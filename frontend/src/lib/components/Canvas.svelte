@@ -2,9 +2,9 @@
   import { onMount } from 'svelte';
   import { Stage, Layer } from 'svelte-konva';
   import ScreenFrame from './ScreenFrame.svelte';
-  import { screens, assetsByScreen, online } from '$lib/stores';
-  import { api } from '$lib/api';
-  import { connectWS } from '$lib/ws';
+  import { screens, assetsByScreen, online } from '../stores';
+  import { api } from '../api';
+  import { connectWS } from '../ws';
 
   let scale = 0.25; // stage zoom
   let offset = { x: 0, y: 0 };

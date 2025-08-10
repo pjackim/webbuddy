@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Text as KText } from 'svelte-konva';
-  import { online, upsertAsset } from '$lib/stores';
-  import { api } from '$lib/api';
+  import { online, upsertAsset } from '../../stores';
+  import { api } from '../../api';
 
   export let a: any; // TextAsset
   let isDragging = false; let start = { x: 0, y: 0 }; let orig = { x: 0, y: 0 };
