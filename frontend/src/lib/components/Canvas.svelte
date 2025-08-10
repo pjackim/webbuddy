@@ -20,6 +20,60 @@
 	let viewport = { width: 1024, height: 768 };
 	let ro: ResizeObserver | undefined;
 
+	// Smooth zoom animation state
+	let rafId: number = 0;
+	let anim:
+		| {
+				start: number;
+				fromScale: number;
+				fromOffset: { x: number; y: number };
+				toScale: number;
+				toOffset: { x: number; y: number };
+				duration: number;
+		  }
+		| null = null;
+
+	function easeOutCubic(t: number) {
+		return 1 - Math.pow(1 - t, 3);
+	}
+
+	function animateTo(toScale: number, toOffset: { x: number; y: number }, duration = 120) {
+		// Start from current visual state to keep it snappy when chaining wheel events
+		const now = performance.now();
+		anim = {
+			start: now,
+			fromScale: scale,
+			fromOffset: { ...offset },
+			toScale,
+			toOffset: { ...toOffset },
+			duration
+		};
+		if (!rafId) rafId = requestAnimationFrame(step);
+	}
+
+	function step(now: number) {
+		if (!anim) {
+			rafId = 0;
+			return;
+		}
+		const t = Math.min(1, (now - anim.start) / anim.duration);
+		const e = easeOutCubic(t);
+
+		scale = anim.fromScale + (anim.toScale - anim.fromScale) * e;
+		offset.x = anim.fromOffset.x + (anim.toOffset.x - anim.fromOffset.x) * e;
+		offset.y = anim.fromOffset.y + (anim.toOffset.y - anim.fromOffset.y) * e;
+
+		if (t < 1) {
+			rafId = requestAnimationFrame(step);
+		} else {
+			// snap to target at the end
+			scale = anim.toScale;
+			offset = { ...anim.toOffset };
+			anim = null;
+			rafId = 0;
+		}
+	}
+
 	async function load() {
 		const sc = await api('/screens');
 		screens.set(sc as StoreScreen[]);
@@ -38,7 +92,7 @@
 		const rect = container.getBoundingClientRect();
 		const mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 
-		// World coords under cursor before zoom
+		// World coords under cursor before zoom (from current visual state)
 		const world = { x: (mouse.x - offset.x) / scale, y: (mouse.y - offset.y) / scale };
 
 		// Base zoom factor; hold Shift to double the zoom step (faster zoom)
@@ -46,19 +100,30 @@
 		const step = e.shiftKey ? base * base : base;
 
 		const direction = e.deltaY > 0 ? -1 : 1;
-		const newScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? step : 1 / step)));
+		const targetScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? step : 1 / step)));
 
-		// Recenter so the world point under the mouse stays fixed after zoom
-		offset.x = mouse.x - world.x * newScale;
-		offset.y = mouse.y - world.y * newScale;
+		// Compute target offset so the world point under the mouse stays fixed after zoom
+		const targetOffset = {
+			x: mouse.x - world.x * targetScale,
+			y: mouse.y - world.y * targetScale
+		};
 
-		scale = newScale;
+		// Smoothly animate towards the new zoom/offset for a snappy yet smooth experience
+		animateTo(targetScale, targetOffset, e.shiftKey ? 80 : 110);
 	}
 
 	function onMouseDown(e: MouseEvent) {
 		// only start panning when inside the canvas container
 		if (!container || !(e.target instanceof Node) || !container.contains(e.target)) return;
 		panning = true;
+
+		// cancel any ongoing zoom animation for responsive panning
+		if (rafId) {
+			cancelAnimationFrame(rafId);
+			rafId = 0;
+		}
+		anim = null;
+
 		last = { x: e.clientX, y: e.clientY };
 	}
 	function onMouseMove(e: MouseEvent) {
