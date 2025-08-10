@@ -10,7 +10,7 @@
 </script>
 
 <div class="navbar bg-base-300 shadow z-10">
-	<div class="flex-1 px-2">PureRef Web – <span class="opacity-70 ml-2">multi-screen</span></div>
+	<div class="flex-1 px-2">Web Buddy – <span class="opacity-70 ml-2">multi-screen</span></div>
 	<div class="flex gap-2 items-center">
 		<label class="label cursor-pointer gap-2">
 			<span class="label-text">Offline Mode</span>
