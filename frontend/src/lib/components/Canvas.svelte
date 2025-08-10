@@ -3,12 +3,11 @@
 	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
-	import { screens, assetsByScreen, online } from '../stores';
+	import { screens, selected } from '../stores';
+	import type { KonvaEventObject } from 'konva/lib/Node';
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
-
-
 
 	let scale = 0.25; // stage zoom
 	let offset = { x: 0, y: 0 };
@@ -22,16 +21,14 @@
 
 	// Smooth zoom animation state
 	let rafId: number = 0;
-	let anim:
-		| {
-				start: number;
-				fromScale: number;
-				fromOffset: { x: number; y: number };
-				toScale: number;
-				toOffset: { x: number; y: number };
-				duration: number;
-		  }
-		| null = null;
+	let anim: {
+		start: number;
+		fromScale: number;
+		fromOffset: { x: number; y: number };
+		toScale: number;
+		toOffset: { x: number; y: number };
+		duration: number;
+	} | null = null;
 
 	function easeOutCubic(t: number) {
 		return 1 - Math.pow(1 - t, 3);
@@ -77,10 +74,7 @@
 	async function load() {
 		const sc = await api('/screens');
 		screens.set(sc as StoreScreen[]);
-		const all = await api('/assets');
-		// assets store filled indirectly in ScreenFrame via events or do it here if preferred
-		// We'll broadcast on initial GET too for simplicity: update locally
-		// but to keep simple, ScreenFrame will fetch per screen.
+		// assets store filled indirectly in ScreenFrame via events
 	}
 
 	function onWheel(e: WheelEvent) {
@@ -138,6 +132,12 @@
 		panning = false;
 	}
 
+	function onStageMouseDown(e: KonvaEventObject<MouseEvent>) {
+		if (e.target === e.target.getStage()) {
+			selected.set(null);
+		}
+	}
+
 	onMount(() => {
 		connectWS();
 		load();
@@ -171,11 +171,7 @@
 	on:resize={syncViewport}
 />
 
-<section
-	class="w-full h-full min-h-[20rem]"
-	bind:this={container}
-	aria-label="Canvas area"
->
+<section class="w-full h-full min-h-[20rem]" bind:this={container} aria-label="Canvas area">
 	{#if browser}
 		<Stage
 			config={{
@@ -186,9 +182,10 @@
 				x: offset.x,
 				y: offset.y
 			}}
+			on:mousedown={onStageMouseDown}
 		>
 			<Layer>
-				{#each $screens as sc}
+				{#each $screens as sc (sc.id)}
 					<ScreenFrame {sc} />
 				{/each}
 			</Layer>
