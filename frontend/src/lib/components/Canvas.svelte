@@ -76,9 +76,13 @@
 	}
 
 	async function load() {
-		const sc = await api('/screens');
-		screens.set(sc as StoreScreen[]);
-		const all = await api('/assets');
+		try {
+			const sc = await api('/screens');
+			screens.set(sc as StoreScreen[]);
+			await api('/assets');
+		} catch (err) {
+			console.error('Failed to load initial data', err);
+		}
 		// assets store filled indirectly in ScreenFrame via events or do it here if preferred
 		// We'll broadcast on initial GET too for simplicity: update locally
 		// but to keep simple, ScreenFrame will fetch per screen.
@@ -207,6 +211,14 @@
 					{/each}
 				</Layer>
 			</Stage>
+
+			{#if $screens.length === 0}
+				<div class="absolute inset-0 grid place-items-center pointer-events-none">
+					<div class="badge badge-lg bg-base-200 text-base-content/70 shadow">
+						No screens yet — use "Add Screen" in the toolbar
+					</div>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </section>

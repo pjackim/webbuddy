@@ -6,6 +6,9 @@ let socket: WebSocket | null = null;
 export function connectWS() {
 	if (socket) return socket;
 	socket = new WebSocket(WS_BASE);
+	socket.onopen = () => {
+		console.info('WS connected', WS_BASE);
+	};
 	socket.onmessage = (ev) => {
 		try {
 			const msg = JSON.parse(ev.data);
@@ -18,7 +21,11 @@ export function connectWS() {
 			console.error('WS parse error', e);
 		}
 	};
-	socket.onclose = () => {
+	socket.onerror = (e) => {
+		console.error('WS error', e);
+	};
+	socket.onclose = (e) => {
+		console.warn('WS closed', e.code, e.reason);
 		socket = null;
 		setTimeout(connectWS, 1000); // simple reconnect
 	};
