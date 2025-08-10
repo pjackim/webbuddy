@@ -7,7 +7,7 @@ Your primary directive is to use the specific libraries and components listed be
 
 ## Core Technologies
 - **Framework:** Svelte 5 / SvelteKit  
-- **Runtime:** bun  
+- **Runtime:** bun, uv (for Python FastAPI backend)
 - **Backend:** Python FastAPI (interfaced via API calls)  
 
 ---
@@ -151,9 +151,20 @@ After defining logic with **runed**, select a UI component from the libraries be
 **Solution:** Use `shadcn/Context Menu`.
 
 ### Scenario 3
-> I want a 'Layers' panel that is movable and non-blocking.  
+> I want a 'Layers' panel that is movable and non-blocking. Or I want a "Bottom Sheet".
 **Solution:** Use `diaper/Detached sheet`.
 
 ### Scenario 4
 > While saving, prevent interaction and show message.  
 **Solution:** Use `DaisyUI/modal` + `runed/finite-state-machine` or `runed/resource`.
+
+
+
+
+## Coding Standards
+
+### General (Clean Code / DRY)
+
+- Small, cohesive modules; descriptive names; no duplication—extract shared logic to `frontend/src/lib/**` or `backend/app/**/util.py`.
+- Prefer pure functions; push validation to types/models.
+- Comments explain **why**, not what; code should be self-evident.

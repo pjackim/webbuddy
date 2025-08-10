@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
 	import { screens, assetsByScreen, online } from '../stores';
@@ -15,6 +16,7 @@
 	let last = { x: 0, y: 0 };
 	// add a ref to the canvas container
 	let container: HTMLElement;
+	let viewport = { width: 0, height: 0 };
 
 	async function load() {
 			const sc = await api('/screens');
@@ -55,6 +57,14 @@
 	onMount(() => {
 		connectWS();
 		load();
+		if (browser) {
+			const updateViewport = () => {
+				viewport = { width: window.innerWidth, height: window.innerHeight };
+			};
+			updateViewport();
+			window.addEventListener('resize', updateViewport);
+			return () => window.removeEventListener('resize', updateViewport);
+		}
 	});
 </script>
 
@@ -73,8 +83,8 @@
 >
 			<Stage
 				config={{
-			width: innerWidth,
-			height: innerHeight - 64,
+			width: viewport.width,
+			height: Math.max(0, viewport.height - 64),
 					scaleX: scale,
 					scaleY: scale,
 					x: offset.x,
