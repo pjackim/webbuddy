@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { online, screens } from '../stores';
 	import { api } from '../api';
-	let name = 'Screen';
-	let width = 1920;
-	let height = 1080;
+
+	let name = $state('Screen');
+	let width = $state(1920);
+	let height = $state(1080);
+
 	function addScreen() {
 		api('/screens', { method: 'POST', body: JSON.stringify({ name, width, height }) });
 	}
@@ -14,7 +16,7 @@
 	<div class="flex gap-2 items-center">
 		<label class="label cursor-pointer gap-2">
 			<span class="label-text">Offline Mode</span>
-			<input type="checkbox" class="toggle" bind:checked={$online} />
+			<input type="checkbox" class="toggle" bind:checked={online.current} />
 		</label>
 		<div class="divider divider-horizontal"></div>
 		<div class="form-control">
