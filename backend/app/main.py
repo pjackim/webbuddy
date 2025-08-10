@@ -5,7 +5,7 @@ from app.api import api
 from app.api.websocket import router as ws_router
 from app.core.config import settings
 from app.core.logging_config import configure_logging
-from app.models.screen_models import ScreenCreate
+# from app.models.screen_models import ScreenCreate  # removed: no default seeding
 from app.state.memory_state import STATE
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,17 +52,9 @@ async def health() -> dict[str, str]:
 
 @app.on_event("startup")
 async def seed_default_data() -> None:
-    try:
-        existing = await STATE.list_screens()
-        if not existing:
-            await STATE.create_screen(
-                ScreenCreate(name="Screen 1", width=1920, height=1080)
-            )
-    except Exception as e:
-        # Avoid crashing on startup for seed failures; log for visibility
-        logging.getLogger(__name__).warning("Seed default data failed: %s", e)
-
-
+    # Do not auto-create a default screen.
+    # Startup only ensures storage dirs exist (handled above).
+    return None
 @app.get("/docs", include_in_schema=False)
 def custom_swagger_ui() -> HTMLResponse:
     return get_swagger_ui_html(
