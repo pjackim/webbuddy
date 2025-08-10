@@ -2,16 +2,16 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "preref-backend"
+name = "web-buddy-backend"
 version = "0.1.0"
 dependencies = [
-  "fastapi>=0.111.0",
-  "uvicorn[standard]>=0.30.0",
-  "pydantic>=2.7.0",
-  "pydantic-settings>=2.2.1",
-  "python-multipart>=0.0.9",
-  "httpx>=0.27.0",
-  "orjson>=3.10.0"
+    "fastapi>=0.111.0",
+    "uvicorn[standard]>=0.30.0",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.1",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27.0",
+    "orjson>=3.10.0",
 ]
 
 [tool.uvicorn]
@@ -19,3 +19,15 @@ factory = true
 host = "0.0.0.0"
 port = 8000
 reload = false
+
+[tool.hatch.envs.default.scripts]
+build = "python -m build"
+test = "pytest -q"
+clean = "python -c \"import shutil, pathlib; [shutil.rmtree(p, ignore_errors=True) for p in ('build','dist','.pytest_cache')]; [shutil.rmtree(str(d), ignore_errors=True) for d in pathlib.Path('.').glob('*.egg-info')]\""
+debug = "uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --reload"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-sugar>=1.0.0",
+]
