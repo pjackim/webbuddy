@@ -1,4 +1,3 @@
-/// <reference path="./button.svelte.d.ts" />
 import Root, {
 	type ButtonProps,
 	type ButtonSize,

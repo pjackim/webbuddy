@@ -17,24 +17,20 @@
             "vite/client"
         ],
         "plugins": [
-            {
-                "name": "typescript-svelte-plugin"
-            }
+            // {
+            //     "name": "typescript-svelte-plugin"
+            // }
         ]
     },
     "include": [
         ".svelte-kit/ambient.d.ts",
         ".svelte-kit/non-ambient.d.ts",
         ".svelte-kit/types/**/$types.d.ts",
-        "vite.config.js",
-        "vite.config.ts",
-        "src/**/*.js",
-        "src/**/*.ts",
-        "src/**/*.svelte",
-        "src/**/*.d.ts",
-        "tests/**/*.js",
-        "tests/**/*.ts",
-        "tests/**/*.svelte"
+        "vite.config.*",
+        "src/**/*",
+        "tests/**/*",
+        "src/svelte-ambient.d.ts",
+        "**/**svelte-ambient.d.ts"
     ]
     // Path aliases are handled by https://svelte.dev/docs/kit/configuration#alias
     // except $lib which is handled by https://svelte.dev/docs/kit/configuration#files
