@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Image } from 'svelte-konva';
   import { onMount } from 'svelte';
-  import { online, upsertAsset } from '$lib/stores';
-  import { api } from '$lib/api';
+  import { online, upsertAsset } from '../../stores';
+  import { api } from '../../api';
 
   export let a: any; // ImageAsset
   let htmlImage: HTMLImageElement;

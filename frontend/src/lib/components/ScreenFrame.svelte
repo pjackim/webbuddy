@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Screen, Asset } from '$lib/stores';
+  import type { Screen, Asset } from '../stores';
   import { Group, Rect, Text as KText } from 'svelte-konva';
   import ImageAsset from './assets/ImageAsset.svelte';
   import TextAsset from './assets/TextAsset.svelte';
-  import { assets, assetsByScreen, online, upsertAsset } from '$lib/stores';
-  import { api } from '$lib/api';
+  import { assets, assetsByScreen, online, upsertAsset } from '../stores';
+  import { api } from '../api';
   import { onMount } from 'svelte';
 
   export let sc: Screen;

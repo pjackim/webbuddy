@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Toolbar from '$lib/components/Toolbar.svelte';
-  import Canvas from '$lib/components/Canvas.svelte';
-  import { api, uploadFile } from '$lib/api';
-  import { online, upsertAsset, screens } from '$lib/stores';
+  import Toolbar from './lib/components/Toolbar.svelte';
+  import Canvas from './lib/components/Canvas.svelte';
+  import { api, uploadFile } from './lib/api';
+  import { online, upsertAsset, screens } from './lib/stores';
 
   let hover = false;
 

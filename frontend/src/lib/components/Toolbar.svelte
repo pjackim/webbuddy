@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { online, screens } from '$lib/stores';
-  import { api } from '$lib/api';
+  import { online, screens } from '../stores';
+  import { api } from '../api';
   let name = 'Screen';
   let width = 1920; let height = 1080;
   function addScreen() {
