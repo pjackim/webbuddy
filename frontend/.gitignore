@@ -23,5 +23,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 
-!frontend\src\lib\components\ui\.gitkeep
-frontend\src\lib\components\ui
+!src\lib\components\ui\.gitkeep
+src\lib\components\ui
