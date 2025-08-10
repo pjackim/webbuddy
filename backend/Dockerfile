@@ -16,8 +16,12 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
 COPY pyproject.toml ./
 RUN uv pip install --system -e .
 
+# Then copy application code
 COPY app ./app
 RUN mkdir -p /app/uploads
 
+# Allow runtime override of host/port (compose will pass HOST/PORT)
+ENV HOST=0.0.0.0 \
+    PORT=8000
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-lc", "uvicorn app.main:app --host \"${HOST:-0.0.0.0}\" --port \"${PORT:-8000}\""]

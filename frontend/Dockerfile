@@ -2,6 +2,8 @@
 # see all versions at https://hub.docker.com/r/oven/bun/tags
 FROM oven/bun:latest AS base
 WORKDIR /usr/src/app
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 
 # install dependencies into temp directory
 # this will cache them and speed up future builds
@@ -18,28 +20,40 @@ RUN cd /temp/prod && bun install --frozen-lockfile --production
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
 FROM base AS prerelease
+ARG RUN_TESTS=false
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 
 # [optional] tests & build
-ENV NODE_ENV=production
-ARG RUN_TESTS=false
-# Install Node.js + npm for running Vitest under Node (avoids Bun+Vitest bug)
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs npm \
-	&& rm -rf /var/lib/apt/lists/*
-
-# Run only Node-environment tests inside Docker to avoid requiring browser dependencies
-# Run Vitest with Node (npx) instead of Bun. Toggle with --build-arg RUN_TESTS=true
-RUN if [ "$RUN_TESTS" = "true" ]; then npx vitest run --project server --pool=forks; else echo "Skipping Vitest during Docker build"; fi
+# Install Node.js + npm and run tests only when explicitly requested
+RUN if [ "$RUN_TESTS" = "true" ]; then \
+			set -eux; \
+			apt-get update; \
+			apt-get install -y --no-install-recommends nodejs npm; \
+			npx vitest run --project server --pool=forks; \
+			apt-get purge -y --auto-remove nodejs npm; \
+			rm -rf /var/lib/apt/lists/*; \
+		else \
+			echo "Skipping Vitest during Docker build"; \
+		fi
 RUN bun run build
 
 # copy production dependencies and source code into final image
 FROM base AS release
+ARG NODE_ENV=production
+ARG HOST=0.0.0.0
+ARG PORT=3000
+ENV NODE_ENV=${NODE_ENV}
+ENV HOST=${HOST}
+ENV PORT=${PORT}
 COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=prerelease /usr/src/app/.svelte-kit/output .svelte-kit/output
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
 USER bun
-EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "preview" ]
+EXPOSE ${PORT}/tcp
+# Use env-driven host/port for preview
+CMD ["sh", "-lc", "bun run preview --host \"${HOST:-0.0.0.0}\" --port \"${PORT:-3000}\""]

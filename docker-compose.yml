@@ -3,22 +3,37 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT:-8000}:${BACKEND_CONTAINER_PORT:-8000}"
     environment:
-      - ENV=dev
-      - CORS_ORIGINS=http://localhost:5173
-      - PUBLIC_BASE_URL=http://localhost:8000
-      - EXTERNAL_ENABLED=false
+      ENV: ${BACKEND_ENV:-dev}
+      CORS_ORIGINS: '["http://localhost:${FRONTEND_PORT:-3000}"]'
+      PUBLIC_BASE_URL: "http://localhost:${BACKEND_PORT:-8000}"
+      EXTERNAL_ENABLED: ${EXTERNAL_ENABLED:-false}
+      HOST: ${BACKEND_HOST:-0.0.0.0}
+      PORT: ${BACKEND_CONTAINER_PORT:-8000}
     volumes:
       - backend_uploads:/app/uploads
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        RUN_TESTS: ${RUN_TESTS:-false}
+        NODE_ENV: ${NODE_ENV:-production}
+        PORT: ${FRONTEND_PORT:-3000}
+        HOST: ${FRONTEND_HOST:-0.0.0.0}
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${FRONTEND_PORT:-3000}
+      HOST: ${FRONTEND_HOST:-0.0.0.0}
     ports:
-      - "5173:80"
+      - "${FRONTEND_PORT:-3000}:${FRONTEND_PORT:-3000}"
     depends_on:
       - backend
+
 volumes:
   backend_uploads:
