@@ -1,0 +1,9 @@
+from fastapi import APIRouter
+from .routes_screens import router as screens
+from .routes_assets import router as assets
+from .websocket import router as ws
+
+api = APIRouter()
+api.include_router(screens)
+api.include_router(assets)
+# WebSocket routes are included in main (need app.websocket)
