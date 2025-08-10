@@ -6,11 +6,15 @@ WORKDIR /app
 # system deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
  && rm -rf /var/lib/apt/lists/*
 
+# install uv (Python package manager)
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
+    mv /root/.local/bin/uv /usr/local/bin/uv
+
 COPY pyproject.toml ./
-RUN pip install --no-cache-dir -U pip && \
-    pip install --no-cache-dir -e .
+RUN uv pip install --system -e .
 
 COPY app ./app
 RUN mkdir -p /app/uploads
