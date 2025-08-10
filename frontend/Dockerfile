@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1 AS base
+FROM oven/bun:latest AS base
 WORKDIR /usr/src/app
 
 # install dependencies into temp directory
@@ -40,7 +40,7 @@ ENTRYPOINT [ "bun", "run", "index.ts" ]
 
 
 
-FROM nginx:alpine
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# FROM nginx:alpine
+# COPY --from=build /app/build /usr/share/nginx/html
+# EXPOSE 80
+# CMD ["nginx", "-g", "daemon off;"]
