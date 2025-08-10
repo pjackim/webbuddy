@@ -5,9 +5,9 @@
 	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	export let a: any; // TextAsset
-	let isDragging = false;
-	let start = { x: 0, y: 0 };
-	let orig = { x: 0, y: 0 };
+	let isDragging = $state(false);
+	let start = $state({ x: 0, y: 0 });
+	let orig = $state({ x: 0, y: 0 });
 
 	function onDown(e: KonvaMouseEvent) {
 		isDragging = true;
@@ -25,7 +25,7 @@
 	async function onUp() {
 		isDragging = false;
 		upsertAsset(a);
-		if ($online)
+		if (online.current)
 			await api(`/assets/${a.id}`, { method: 'PUT', body: JSON.stringify({ x: a.x, y: a.y }) });
 	}
 </script>
