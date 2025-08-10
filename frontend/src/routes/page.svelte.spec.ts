@@ -1,6 +1,8 @@
 import { page } from '@vitest/browser/context';
 import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
+
+// @ts-expect-error: Vite handles .svelte imports at runtime; no TS types needed here
 import Page from './+page.svelte';
 
 describe('/+page.svelte', () => {
