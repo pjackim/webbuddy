@@ -13,8 +13,6 @@ The WebBuddy project is built using the following core technologies:
 
 ## Libraries
 
-### [shadcn]()
-
 ### [runed](https://runed.dev/docs/)
 
 You are required to use the `runed` library as often as possible.  
@@ -100,6 +98,25 @@ Allowed DaisyUI Components:
   - Join
   - Mask
   - Stack
+
+### [shadcn](https://shadcn-svelte.com/docs/components)
+
+Allowed `shadcn` components:
+- Context Menu (Right Click Menu)
+- Hover Card
+- Popover
+- Resizeable
+- Toggle-group
+- Toggle
+- menu-bar
+- Command (search bar)
+
+### [shadcn-extras](https://www.shadcn-svelte-extras.com/)
+
+Allowed `shadcn-extras` components:
+- tree-view
+- code
+- is-mac
 
 ### [Pixel UI](https://pixelui.dev/components)
 
