@@ -2,7 +2,7 @@
 	import Toolbar from '../lib/components/Toolbar.svelte';
 	import Canvas from '../lib/components/Canvas.svelte';
 	import { api, uploadFile } from '../lib/api';
-	import { online, upsertAsset, screens } from '../lib/stores';
+	import { online, upsertAsset, screens, type Asset } from '../lib/stores';
 
 	let hover = false;
 
@@ -16,8 +16,9 @@
 			// Upload to backend to get a URL
 			const { url } = await uploadFile(file);
 			// Place on the first screen by default at (50,50)
-			const sc = (await screens.get())[0];
-			const asset = await api('/assets', {
+			const sc = $screens[0];
+			if (!sc) continue;
+			const asset = await api<Asset>('/assets', {
 				method: 'POST',
 				body: JSON.stringify({ type: 'image', screen_id: sc.id, x: 50, y: 50, src: url })
 			});
@@ -28,6 +29,8 @@
 
 <div
 	class="flex flex-col h-screen"
+	role="region"
+	aria-label="Canvas drop area"
 	on:dragover|preventDefault={() => (hover = true)}
 	on:dragleave={() => (hover = false)}
 	on:drop={onDrop}
