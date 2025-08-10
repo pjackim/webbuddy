@@ -8,12 +8,12 @@
 	let start = { x: 0, y: 0 };
 	let orig = { x: 0, y: 0 };
 
-	function onDown(e) {
+	function onDown(e: any) {
 		isDragging = true;
 		start = { x: e.evt.clientX, y: e.evt.clientY };
 		orig = { x: a.x, y: a.y };
 	}
-	function onMove(e) {
+	function onMove(e: any) {
 		if (!isDragging) return;
 		const dx = e.evt.clientX - start.x;
 		const dy = e.evt.clientY - start.y;
@@ -28,11 +28,13 @@
 </script>
 
 <KText
-	text={a.text}
-	x={a.x}
-	y={a.y}
-	fontSize={a.font_size}
-	fill={a.color}
+	config={{
+		text: a.text,
+		x: a.x,
+		y: a.y,
+		fontSize: a.font_size,
+		fill: a.color
+	}}
 	on:mousedown={onDown}
 	on:mousemove={onMove}
 	on:mouseup={onUp}
