@@ -11,14 +11,15 @@
 
 
 
-	let scale = 0.25; // stage zoom
-	let offset = { x: 0, y: 0 };
-	let panning = false;
+	// Svelte 5 runes: make interactive state reactive so animations propagate to Stage
+	let scale = $state(0.25); // stage zoom
+	let offset = $state({ x: 0, y: 0 });
+	let panning = $state(false);
 	let last = { x: 0, y: 0 };
 	// add a ref to the canvas container
 	let container: HTMLElement;
 	// viewport size (avoid window usage during SSR). Track container size for responsiveness
-	let viewport = { width: 1024, height: 768 };
+	let viewport = $state({ width: 1024, height: 768 });
 	let ro: ResizeObserver | undefined;
 
 	// Smooth zoom animation state
@@ -38,17 +39,37 @@
 		return 1 - Math.pow(1 - t, 3);
 	}
 
-	function animateTo(toScale: number, toOffset: { x: number; y: number }, duration = 120) {
-		// Start from current visual state to keep it snappy when chaining wheel events
+	function currentVisual() {
+		if (!anim) return { scale, offset: { ...offset } };
 		const now = performance.now();
-		anim = {
-			start: now,
-			fromScale: scale,
-			fromOffset: { ...offset },
-			toScale,
-			toOffset: { ...toOffset },
-			duration
+		const t = Math.min(1, Math.max(0, (now - anim.start) / anim.duration));
+		const e = easeOutCubic(t);
+		const vScale = anim.fromScale + (anim.toScale - anim.fromScale) * e;
+		const vOffset = {
+			x: anim.fromOffset.x + (anim.toOffset.x - anim.fromOffset.x) * e,
+			y: anim.fromOffset.y + (anim.toOffset.y - anim.fromOffset.y) * e
 		};
+		return { scale: vScale, offset: vOffset };
+	}
+
+	function animateTo(toScale: number, toOffset: { x: number; y: number }, duration = 120) {
+		const now = performance.now();
+		if (!anim) {
+			anim = {
+				start: now,
+				fromScale: scale,
+				fromOffset: { ...offset },
+				toScale,
+				toOffset: { ...toOffset },
+				duration
+			};
+		} else {
+			// Retarget the ongoing animation instead of restarting to avoid jitter
+			anim.toScale = toScale;
+			anim.toOffset = { ...toOffset };
+			// Keep animation responsive by not lengthening it on frequent wheel events
+			anim.duration = Math.min(anim.duration, duration);
+		}
 		if (!rafId) rafId = requestAnimationFrame(step);
 	}
 
@@ -97,15 +118,16 @@
 		const rect = container.getBoundingClientRect();
 		const mouse = { x: e.clientX - rect.left, y: e.clientY - rect.top };
 
-		// World coords under cursor before zoom (from current visual state)
-		const world = { x: (mouse.x - offset.x) / scale, y: (mouse.y - offset.y) / scale };
+		// Use current visual state (in-flight animation aware) to keep cursor focus stable
+		const vis = currentVisual();
+		const world = { x: (mouse.x - vis.offset.x) / vis.scale, y: (mouse.y - vis.offset.y) / vis.scale };
 
 		// Base zoom factor; hold Shift to double the zoom step (faster zoom)
 		const base = 1.15;
 		const step = e.shiftKey ? base * base : base;
 
 		const direction = e.deltaY > 0 ? -1 : 1;
-		const targetScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? step : 1 / step)));
+		const targetScale = Math.max(0.05, Math.min(5, vis.scale * (direction > 0 ? step : 1 / step)));
 
 		// Compute target offset so the world point under the mouse stays fixed after zoom
 		const targetOffset = {
@@ -113,8 +135,8 @@
 			y: mouse.y - world.y * targetScale
 		};
 
-		// Smoothly animate towards the new zoom/offset for a snappy yet smooth experience
-		animateTo(targetScale, targetOffset, e.shiftKey ? 80 : 110);
+	// Smoothly animate towards the new zoom/offset; shorter when holding Shift for speed
+	animateTo(targetScale, targetOffset, e.shiftKey ? 70 : 120);
 	}
 
 	function onMouseDown(e: MouseEvent) {
@@ -169,7 +191,7 @@
 
 <!-- attach event listeners to window and gate them to the container -->
 <svelte:window
-	on:wheel={onWheel}
+	on:wheel|nonpassive={onWheel}
 	on:mousedown={onMouseDown}
 	on:mousemove={onMouseMove}
 	on:mouseup={onMouseUp}
