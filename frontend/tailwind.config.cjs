@@ -2,6 +2,6 @@
 module.exports = {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: { extend: {} },
-  plugins: [require('daisyui')],
+  plugins: [require('daisyui'), require('tw-animate-css')],
   daisyui: { themes: ['dark'] }
 };

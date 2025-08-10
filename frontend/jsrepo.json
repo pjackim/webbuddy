@@ -1,14 +1,17 @@
 {
-    "$schema": "https://unpkg.com/jsrepo@2.4.5/schemas/project-config.json",
-    "repos": [],
-    "includeTests": true,
-    "includeDocs": true,
+    "$schema": "https://unpkg.com/jsrepo@1.32.0/schemas/project-config.json",
+    "repos": [
+        "@ieedan/std"
+    ],
+    "includeTests": false,
     "watermark": true,
     "formatter": "prettier",
-    "configFiles": {},
     "paths": {
         "*": "./src/blocks",
-        "components": "$lib/components",
-        "hooks": "$lib/hooks"
+        "types": "$lib/utils/types",
+        "utils": "$lib/utils",
+        "ui": "$lib/components/ui",
+        "hooks": "$lib/hooks",
+        "ts": "$lib/utils"
     }
 }
