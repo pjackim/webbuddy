@@ -10,19 +10,17 @@
 	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	export let sc: Screen;
-	let myAssets: Asset[] = [];
+	let myAssets = $derived($assetsByScreen.get(sc.id) || []);
 
 	async function load() {
 		const list: Asset[] = await api<Asset[]>(`/assets?screen_id=${sc.id}`);
 		for (const a of list) upsertAsset(a);
 	}
 
-	$: myAssets = $assetsByScreen.get(sc.id) || [];
-
 	// Drag the whole screen in canvas (moves its x,y)
-	let dragging = false;
-	let start = { x: 0, y: 0 };
-	let orig = { x: 0, y: 0 };
+	let dragging = $state(false);
+	let start = $state({ x: 0, y: 0 });
+	let orig = $state({ x: 0, y: 0 });
 	function onScreenDown(e: KonvaMouseEvent) {
 		dragging = true;
 		const { evt } = e.detail;
@@ -38,7 +36,7 @@
 	}
 	function onScreenUp(_e: KonvaMouseEvent) {
 		dragging = false;
-		if ($online)
+		if (online.current)
 			api(`/screens/${sc.id}`, { method: 'PUT', body: JSON.stringify({ x: sc.x, y: sc.y }) });
 	}
 

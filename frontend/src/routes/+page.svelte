@@ -4,12 +4,12 @@
 	import { api, uploadFile } from '../lib/api';
 	import { online, upsertAsset, screens, type Asset } from '../lib/stores';
 
-	let hover = false;
+	let hover = $state(false);
 
 	async function onDrop(e: DragEvent) {
 		e.preventDefault();
 		hover = false;
-		if (!$online) return; // keep local only? For now, require online to upload
+		if (!online.current) return; // keep local only? For now, require online to upload
 		const files = e.dataTransfer?.files;
 		if (!files) return;
 		for (const file of Array.from(files)) {
