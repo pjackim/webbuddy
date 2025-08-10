@@ -41,9 +41,12 @@
 		// World coords under cursor before zoom
 		const world = { x: (mouse.x - offset.x) / scale, y: (mouse.y - offset.y) / scale };
 
-		const factor = 1.05;
+		// Base zoom factor; hold Shift to double the zoom step (faster zoom)
+		const base = 1.15;
+		const step = e.shiftKey ? base * base : base;
+
 		const direction = e.deltaY > 0 ? -1 : 1;
-		const newScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? factor : 1 / factor)));
+		const newScale = Math.max(0.05, Math.min(5, scale * (direction > 0 ? step : 1 / step)));
 
 		// Recenter so the world point under the mouse stays fixed after zoom
 		offset.x = mouse.x - world.x * newScale;
