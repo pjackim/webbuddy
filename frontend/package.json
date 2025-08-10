@@ -46,6 +46,7 @@
         "vitest-browser-svelte": "^0.1.0"
     },
     "dependencies": {
+        "canvas": "^3.1.2",
         "konva": "^9.3.22",
         "svelte-konva": "^0.3.1",
         "vite": "^7.0.4"
