@@ -7,6 +7,8 @@
 	import { api } from '../api';
 	import { connectWS } from '../ws';
 
+
+
 	let scale = 0.25; // stage zoom
 	let offset = { x: 0, y: 0 };
 	let panning = false;
