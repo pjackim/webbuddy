@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
+	import Grid from './Grid.svelte';
 	import { screens, assetsByScreen, online } from '../stores';
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
@@ -172,26 +173,40 @@
 />
 
 <section
-	class="w-full h-full min-h-[20rem]"
+	class="relative isolate w-full h-full min-h-[20rem]"
 	bind:this={container}
 	aria-label="Canvas area"
 >
 	{#if browser}
-		<Stage
-			config={{
-				width: viewport.width,
-				height: viewport.height,
-				scaleX: scale,
-				scaleY: scale,
-				x: offset.x,
-				y: offset.y
-			}}
-		>
-			<Layer>
-				{#each $screens as sc}
-					<ScreenFrame {sc} />
-				{/each}
-			</Layer>
-		</Stage>
+		<!-- Grid: last thing before viewport background, anchored to world transform -->
+		<Grid
+			width={viewport.width}
+			height={viewport.height}
+			{scale}
+			{offset}
+			baseSize={50}
+			subdivisions={5}
+			showAxes={true}
+		/>
+
+		<!-- Stage content above grid -->
+		<div class="absolute inset-0 z-10">
+			<Stage
+				config={{
+					width: viewport.width,
+					height: viewport.height,
+					scaleX: scale,
+					scaleY: scale,
+					x: offset.x,
+					y: offset.y
+				}}
+			>
+				<Layer>
+					{#each $screens as sc}
+						<ScreenFrame {sc} />
+					{/each}
+				</Layer>
+			</Stage>
+		</div>
 	{/if}
 </section>
