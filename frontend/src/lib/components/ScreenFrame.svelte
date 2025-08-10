@@ -6,12 +6,14 @@
 	import { assets, assetsByScreen, online, upsertAsset } from '../stores';
 	import { api } from '../api';
 	import { onMount } from 'svelte';
+	import type Konva from 'konva';
+	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	export let sc: Screen;
 	let myAssets: Asset[] = [];
 
 	async function load() {
-		const list = await api(`/assets?screen_id=${sc.id}`);
+		const list: Asset[] = await api<Asset[]>(`/assets?screen_id=${sc.id}`);
 		for (const a of list) upsertAsset(a);
 	}
 
@@ -21,18 +23,20 @@
 	let dragging = false;
 	let start = { x: 0, y: 0 };
 	let orig = { x: 0, y: 0 };
-	function onScreenDown(e) {
+	function onScreenDown(e: KonvaMouseEvent) {
 		dragging = true;
-		start = { x: e.evt.clientX, y: e.evt.clientY };
+		const { evt } = e.detail;
+		start = { x: evt.clientX, y: evt.clientY };
 		orig = { x: sc.x, y: sc.y };
 	}
-	function onScreenMove(e) {
+	function onScreenMove(e: KonvaMouseEvent) {
 		if (!dragging) return;
-		const dx = e.evt.clientX - start.x;
-		const dy = e.evt.clientY - start.y;
+		const { evt } = e.detail;
+		const dx = evt.clientX - start.x;
+		const dy = evt.clientY - start.y;
 		sc = { ...sc, x: orig.x + dx, y: orig.y + dy };
 	}
-	function onScreenUp() {
+	function onScreenUp(_e: KonvaMouseEvent) {
 		dragging = false;
 		if ($online)
 			api(`/screens/${sc.id}`, { method: 'PUT', body: JSON.stringify({ x: sc.x, y: sc.y }) });
@@ -42,21 +46,30 @@
 </script>
 
 <Group
-	x={sc.x}
-	y={sc.y}
+	config={{ x: sc.x, y: sc.y }}
 	on:mousedown={onScreenDown}
 	on:mouseup={onScreenUp}
 	on:mousemove={onScreenMove}
 >
 	<Rect
-		width={sc.width}
-		height={sc.height}
-		fill="#222"
-		stroke="#555"
-		strokeWidth={2}
-		cornerRadius={8}
+		config={{
+			width: sc.width,
+			height: sc.height,
+			fill: '#222',
+			stroke: '#555',
+			strokeWidth: 2,
+			cornerRadius: 8
+		}}
 	/>
-	<KText text={`${sc.name} (${sc.width}×${sc.height})`} fill="#aaa" fontSize={16} x={8} y={8} />
+	<KText
+		config={{
+			text: `${sc.name} (${sc.width}×${sc.height})`,
+			fill: '#aaa',
+			fontSize: 16,
+			x: 8,
+			y: 8
+		}}
+	/>
 	{#each myAssets as a (a.id)}
 		{#if a.type === 'image'}
 			<ImageAsset {a} />
