@@ -1,4 +1,5 @@
-import { writable, derived, get } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import { PersistedState } from 'runed';
 
 export type Screen = {
 	id: string;
@@ -37,7 +38,10 @@ export type Asset = ImageAsset | TextAsset;
 
 export const screens = writable<Screen[]>([]);
 export const assets = writable<Asset[]>([]);
-export const online = writable<boolean>(true); // Offline Mode toggle
+// Persist the offline mode preference across sessions
+export const online = new PersistedState<boolean>('online', true);
+// Persist the selected theme across sessions
+export const theme = new PersistedState<string>('theme', 'light');
 export const selected = writable<string | null>(null);
 
 export const screensById = derived(screens, ($s) => new Map($s.map((sc) => [sc.id, sc])));

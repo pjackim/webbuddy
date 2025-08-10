@@ -7,9 +7,9 @@
 
 	export let a: any; // ImageAsset
 	let htmlImage: HTMLImageElement;
-	let isDragging = false;
-	let start = { x: 0, y: 0 };
-	let orig = { x: 0, y: 0 };
+	let isDragging = $state(false);
+	let start = $state({ x: 0, y: 0 });
+	let orig = $state({ x: 0, y: 0 });
 
 	onMount(() => {
 		htmlImage = new window.Image();
@@ -33,7 +33,7 @@
 	async function onUp() {
 		isDragging = false;
 		upsertAsset(a);
-		if ($online)
+		if (online.current)
 			await api(`/assets/${a.id}`, { method: 'PUT', body: JSON.stringify({ x: a.x, y: a.y }) });
 	}
 </script>
