@@ -14,7 +14,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 configure_logging(logging.DEBUG if settings.ENV == "dev" else logging.INFO)
-app = FastAPI(title=settings.APP_NAME)
+# Disable default docs so we can provide a customized /docs route below
+app = FastAPI(title=settings.APP_NAME, docs_url=None, redoc_url=None)
 
 # CORS
 app.add_middleware(
@@ -30,13 +31,16 @@ UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 
+# Static assets (e.g., custom Swagger CSS)
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+STATIC_DIR.mkdir(parents=True, exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
 # REST API
 app.include_router(api, prefix="/api")
 
 # WS (must be added on app, not APIRouter under prefix)
 app.include_router(ws_router)
-
-app.docs_url = "/docs"
 
 
 @app.get("/health")
@@ -52,7 +56,7 @@ def custom_swagger_ui() -> HTMLResponse:
         # use the v5 bundle so selectors are consistent
         swagger_js_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js",
         # point to our overrides (which import the base CSS)
-        swagger_css_url=".\\static\\swagger-docs.css",
+        swagger_css_url="/static/swagger-docs.css",
         swagger_ui_parameters={
             # dark code blocks
             "syntaxHighlight.theme": "monokai",

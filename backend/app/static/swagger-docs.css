@@ -1,69 +1,156 @@
-/* Pull in Swagger UI's default CSS first */
-/* @import url('https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css'); */
+/* 1) Base Swagger UI v5 */
+@import url('https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css');
 
-/* Only apply dark styles when the system prefers dark */
-@media (prefers-color-scheme: dark) {
-  :root { color-scheme: dark; }
+/* 2) Design tokens (Material-ish + OpenAI accent) */
+:root {
+	/* Surfaces  */
+	--bg:            #0d1117;   /* app shell */
+	--surface-1:     #0f141b;   /* cards */
+	--surface-2:     #0b1016;   /* header / summary */
+	--surface-3:     #111926;   /* deeper panels */
 
-  body, .swagger-ui, .swagger-ui .wrapper {
-    background: #0b1116 !important;
-    color: #e5e7eb !important;
-  }
+	/* Text */
+	--text-1:        #e6e7eb;   /* primary */
+	--text-2:        #b6bcc6;   /* secondary */
+	--text-muted:    #8a93a4;
 
-  /* Headings / title */
-  .swagger-ui .info .title,
-  .swagger-ui .info__version,
-  .swagger-ui .info__url,
-  .swagger-ui .opblock-tag {
-    color: #f3f4f6 !important;
-  }
+	/* Accents (OpenAI green, complementary blues) */
+	--accent:        #10a37f;   /* primary brand accent */
+	--accent-press:  #0e8e6f;
+	--link:          #8ab4ff;
 
-  /* Operation blocks */
-  .swagger-ui .opblock {
-    background: #111821 !important;
-    border-color: #1f2a37 !important;
-  }
-  .swagger-ui .opblock .opblock-summary {
-    background: #0f1720 !important;
-    border-color: #1f2a37 !important;
-  }
-  .swagger-ui .opblock .opblock-summary-method {
-    color: #ffffff !important;
-  }
+	/* HTTP method hues (soft, readable on dark) */
+	--get:    #3b82f6;   /* blue */
+	--post:   #22c55e;   /* green */
+	--put:    #f59e0b;   /* amber */
+	--delete: #ef4444;   /* red */
+	--patch:  #a78bfa;   /* purple */
+	--head:   #67e8f9;   /* cyan */
+	--options:#f472b6;   /* pink */
 
-  /* Tables */
-  .swagger-ui table thead tr th,
-  .swagger-ui .responses-table td {
-    background: #111821 !important;
-    color: #e5e7eb !important;
-    border-color: #374151 !important;
-  }
-
-  /* Inputs */
-  .swagger-ui input[type="text"],
-  .swagger-ui select,
-  .swagger-ui textarea {
-    background: #0b1116 !important;
-    color: #e5e7eb !important;
-    border-color: #374151 !important;
-  }
-
-  /* Buttons */
-  .swagger-ui .btn, .swagger-ui .btn.execute {
-    background: #0ea5e9 !important; /* blue-ish */
-    border-color: #0284c7 !important;
-    color: #0b1116 !important;
-  }
-
-  /* Links */
-  .swagger-ui a, .swagger-ui .link {
-    color: #93c5fd !important;
-  }
-
-  /* Misc chips/badges */
-  .swagger-ui .version-stamp,
-  .swagger-ui .tab li.active {
-    background: #1f2937 !important;
-    color: #e5e7eb !important;
-  }
+	/* Shape & motion */
+	--radius:        14px;
+	--radius-sm:     10px;
+	--shadow-1:      0 1px 0 rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.35);
+	--shadow-2:      0 1px 0 rgba(0,0,0,.45), 0 14px 40px rgba(0,0,0,.45);
+	--ring:          0 0 0 3px rgba(16,163,127,.35);
 }
+
+@media (prefers-color-scheme: light) {
+/* Keep dark theme regardless of system to ensure consistent look */
+:root { color-scheme: dark; }
+}
+
+/* 3) App shell */
+html, body, .swagger-ui, .swagger-ui .wrapper { background: var(--bg) !important; color: var(--text-1) !important; }
+.swagger-ui { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+.swagger-ui .wrapper { max-width: 1200px; }
+
+/* 4) Topbar (subtle glass, sticky feel) */
+.swagger-ui .topbar { background: linear-gradient(180deg, rgba(17,23,32,.75), rgba(15,20,27,.6)); backdrop-filter: saturate(1.1) blur(6px); border-bottom: 1px solid rgba(255,255,255,.06); box-shadow: var(--shadow-1); }
+.swagger-ui .topbar .download-url-wrapper .select-label { color: var(--text-2) !important; }
+.swagger-ui .topbar .download-url-wrapper input[type="text"] { background: var(--surface-1); color: var(--text-1); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius-sm); }
+
+/* 5) Typography */
+.swagger-ui .info .title { color: var(--text-1) !important; letter-spacing: -0.01em; }
+.swagger-ui .info .base-url, .swagger-ui .info__url, .swagger-ui .info__version, .swagger-ui .opblock-tag { color: var(--text-2) !important; }
+
+/* 6) Links */
+.swagger-ui a, .swagger-ui .link { color: var(--link) !important; text-decoration: none; }
+.swagger-ui a:hover, .swagger-ui .link:hover { text-decoration: underline; }
+
+/* 7) Cards / opblocks */
+.swagger-ui .opblock { background: var(--surface-1) !important; border: 1px solid rgba(255,255,255,.07) !important; border-radius: var(--radius) !important; box-shadow: var(--shadow-1); overflow: hidden; }
+.swagger-ui .opblock.is-open { box-shadow: var(--shadow-2); }
+.swagger-ui .opblock .opblock-summary { background: var(--surface-2) !important; border-bottom: 1px solid rgba(255,255,255,.06); padding: 14px 16px !important; transition: background .2s ease, border-color .2s ease; }
+.swagger-ui .opblock .opblock-summary:hover { background: #0e1620 !important; }
+.swagger-ui .opblock .opblock-section-header { background: transparent; border-color: rgba(255,255,255,.08); }
+
+/* 8) Method badges */
+.swagger-ui .opblock .opblock-summary-method { border-radius: 999px; padding: 4px 10px; font-weight: 700; box-shadow: inset 0 -1px 0 rgba(0,0,0,.25); }
+.swagger-ui .opblock-get .opblock-summary-method { background: color-mix(in srgb, var(--get) 22%, transparent); color: #cfe0ff; }
+.swagger-ui .opblock-post .opblock-summary-method { background: color-mix(in srgb, var(--post) 22%, transparent); color: #d8ffe6; }
+.swagger-ui .opblock-put .opblock-summary-method { background: color-mix(in srgb, var(--put) 22%, transparent); color: #ffe9c2; }
+.swagger-ui .opblock-delete .opblock-summary-method { background: color-mix(in srgb, var(--delete) 22%, transparent); color: #ffd3d3; }
+.swagger-ui .opblock-patch .opblock-summary-method { background: color-mix(in srgb, var(--patch) 22%, transparent); color: #efe5ff; }
+.swagger-ui .opblock-head .opblock-summary-method { background: color-mix(in srgb, var(--head) 22%, transparent); color: #d7fbff; }
+.swagger-ui .opblock-options .opblock-summary-method { background: color-mix(in srgb, var(--options) 22%, transparent); color: #ffd8ec; }
+
+/* Accent borders for quick visual cue */
+.swagger-ui .opblock.opblock-get { border-left: 3px solid var(--get) !important; }
+.swagger-ui .opblock.opblock-post { border-left: 3px solid var(--post) !important; }
+.swagger-ui .opblock.opblock-put { border-left: 3px solid var(--put) !important; }
+.swagger-ui .opblock.opblock-delete { border-left: 3px solid var(--delete) !important; }
+.swagger-ui .opblock.opblock-patch { border-left: 3px solid var(--patch) !important; }
+.swagger-ui .opblock.opblock-head { border-left: 3px solid var(--head) !important; }
+.swagger-ui .opblock.opblock-options { border-left: 3px solid var(--options) !important; }
+
+/* 9) Buttons */
+.swagger-ui .btn, .swagger-ui .btn.execute, .swagger-ui .authorization__btn {
+border-radius: 12px; border: 1px solid rgba(255,255,255,.08);
+background: #1b2430; color: var(--text-1); box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+transition: transform .06s ease, background .15s ease, border-color .15s ease;
+}
+.swagger-ui .btn:hover, .swagger-ui .authorization__btn:hover { background: #222c39; }
+.swagger-ui .btn:active { transform: translateY(1px); }
+
+/* Primary (Execute) */
+.swagger-ui .btn.execute, .swagger-ui .btn.authorize { background: var(--accent) !important; color: #0b1117 !important; border-color: transparent !important; }
+.swagger-ui .btn.execute:hover, .swagger-ui .btn.authorize:hover { background: var(--accent-press) !important; }
+.swagger-ui .btn.execute:focus-visible, .swagger-ui .btn.authorize:focus-visible { outline: none; box-shadow: var(--ring); }
+
+/* 10) Inputs */
+.swagger-ui input[type="text"],
+.swagger-ui select,
+.swagger-ui textarea {
+background: #0c1218 !important; color: var(--text-1) !important;
+border: 1px solid rgba(255,255,255,.08) !important; border-radius: var(--radius-sm) !important;
+transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.swagger-ui input::placeholder, .swagger-ui textarea::placeholder { color: var(--text-muted); }
+.swagger-ui input:focus, .swagger-ui select:focus, .swagger-ui textarea:focus { outline: none; border-color: rgba(16,163,127,.55) !important; box-shadow: var(--ring); }
+
+/* 11) Tables */
+.swagger-ui table thead tr th { background: var(--surface-3) !important; color: var(--text-2) !important; border-color: rgba(255,255,255,.06) !important; }
+.swagger-ui .responses-table td, .swagger-ui table tbody tr td { background: var(--surface-1) !important; color: var(--text-1) !important; border-color: rgba(255,255,255,.06) !important; }
+.swagger-ui table tbody tr:hover td { background: #0f1823 !important; }
+.swagger-ui table { border-radius: var(--radius); overflow: hidden; }
+
+/* 12) Code blocks */
+.swagger-ui .highlight-code, .swagger-ui .microlight, .swagger-ui pre, code {
+background: #0b0f14 !important; color: #e9eef7 !important; border: 1px solid rgba(255,255,255,.06) !important; border-radius: var(--radius) !important; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; line-height: 1.5; }
+.swagger-ui .curl-command { background: #0b0f14 !important; }
+.swagger-ui .copy-to-clipboard { background: #0f141b !important; border: 1px solid rgba(255,255,255,.06); border-radius: 8px; }
+
+/* 13) Tabs & badges */
+.swagger-ui .tab { border-bottom: 1px solid rgba(255,255,255,.06); }
+.swagger-ui .tab li a { background: transparent; color: var(--text-2); border-radius: 999px; padding: 6px 12px; }
+.swagger-ui .tab li.active a { background: #1a2230 !important; color: var(--text-1) !important; }
+.swagger-ui .version-stamp { background: #1a2532 !important; color: var(--text-2) !important; border-radius: 10px; border: 1px solid rgba(255,255,255,.06); }
+
+/* 14) Models / schema panels */
+.swagger-ui .model-container, .swagger-ui .models { background: var(--surface-1); border: 1px solid rgba(255,255,255,.07); border-radius: var(--radius); box-shadow: var(--shadow-1); }
+.swagger-ui .models h4 span { color: var(--text-2); }
+
+/* 15) Collapsible arrows & small UI bits */
+.swagger-ui .expand-operation, .swagger-ui .expand-methods, .swagger-ui .models-control { color: var(--text-muted) !important; }
+
+/* 16) Small utilities */
+.swagger-ui .markdown code { background: rgba(255,255,255,.06); padding: 2px 6px; border-radius: 6px; }
+.swagger-ui .info { background: transparent; }
+
+/* 17) Scrollbars (only for Chromium/WebKit) */
+*::-webkit-scrollbar { height: 12px; width: 12px; }
+*::-webkit-scrollbar-thumb { background: #2a3342; border-radius: 999px; border: 2px solid #0d1117; }
+*::-webkit-scrollbar-thumb:hover { background: #364055; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* 18) Accessibility: high-contrast focus for links & controls */
+.swagger-ui a:focus-visible, .swagger-ui button:focus-visible, .swagger-ui [role="button"]:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 10px; }
+
+/* 19) Execute results panel */
+.swagger-ui .responses-wrapper { background: var(--surface-1); border: 1px solid rgba(255,255,255,.07); border-radius: var(--radius); box-shadow: var(--shadow-1); }
+.swagger-ui .response .response-col_status { background: #122132 !important; color: var(--text-1) !important; }
+
+/* 20) Footer muted */
+.swagger-ui .footer { color: var(--text-muted); }
