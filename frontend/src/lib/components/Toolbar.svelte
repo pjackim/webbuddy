@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { online, screens } from '../stores';
+	import { online } from '../stores';
 	import { api } from '../api';
+	import Button from './ui/button.svelte';
+	import Input from './ui/input.svelte';
 	let name = 'Screen';
 	let width = 1920;
 	let height = 1080;
@@ -16,8 +18,19 @@
 	<div class="flex-none lg:hidden">
 		<div class="dropdown dropdown-end">
 			<div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Open menu">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+					/>
 				</svg>
 			</div>
 			<div class="dropdown-content z-20 w-80 max-w-[90vw] p-4 bg-base-200 rounded-box shadow">
@@ -47,13 +60,13 @@
 						</div>
 					</div>
 					<div class="form-control w-full">
-						<input class="input input-bordered w-full" placeholder="Name" bind:value={name} />
+						<Input class="w-full" placeholder="Name" bind:value={name} />
 					</div>
 					<div class="flex gap-2">
-						<input class="input input-bordered w-1/2" type="number" placeholder="Width" bind:value={width} />
-						<input class="input input-bordered w-1/2" type="number" placeholder="Height" bind:value={height} />
+						<Input class="w-1/2" type="number" placeholder="Width" bind:value={width} />
+						<Input class="w-1/2" type="number" placeholder="Height" bind:value={height} />
 					</div>
-					<button class="btn btn-primary w-full" on:click={addScreen}>Add Screen</button>
+					<Button class="w-full" on:click={addScreen}>Add Screen</Button>
 				</div>
 			</div>
 		</div>
@@ -88,10 +101,10 @@
 		<div class="divider divider-horizontal"></div>
 		<div class="form-control">
 			<div class="flex items-center gap-2">
-				<input class="input input-bordered w-40" placeholder="Name" bind:value={name} />
-				<input class="input input-bordered w-28" type="number" bind:value={width} />
-				<input class="input input-bordered w-28" type="number" bind:value={height} />
-				<button class="btn btn-primary" on:click={addScreen}>Add Screen</button>
+				<Input class="w-40" placeholder="Name" bind:value={name} />
+				<Input class="w-28" type="number" bind:value={width} />
+				<Input class="w-28" type="number" bind:value={height} />
+				<Button on:click={addScreen}>Add Screen</Button>
 			</div>
 		</div>
 	</div>
