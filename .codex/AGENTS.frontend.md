@@ -13,6 +13,8 @@ The WebBuddy project is built using the following core technologies:
 
 ## Libraries
 
+### [shadcn]()
+
 ### [runed](https://runed.dev/docs/)
 
 You are required to use the `runed` library as often as possible.  
