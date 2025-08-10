@@ -23,7 +23,8 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-RUN bun test
+# Run only Node-environment tests inside Docker to avoid requiring browser dependencies
+RUN bunx vitest --run --project server
 RUN bun run build
 
 # copy production dependencies and source code into final image
