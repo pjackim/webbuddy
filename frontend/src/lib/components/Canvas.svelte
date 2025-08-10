@@ -4,7 +4,7 @@
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
 	import Grid from './Grid.svelte';
-	import { screens, assetsByScreen, online, selected } from '../stores';
+	import { screens, assetsByScreen, online, selected, dragging } from '../stores';
 	import type { Screen as StoreScreen } from '../stores';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
@@ -141,20 +141,7 @@
 		animateTo(targetScale, targetOffset, e.shiftKey ? 80 : 110);
 	}
 
-	function onMouseDown(e: MouseEvent) {
-		// only start panning when inside the canvas container
-		if (!container || !(e.target instanceof Node) || !container.contains(e.target)) return;
-		panning = true;
-
-		// cancel any ongoing zoom animation for responsive panning
-		if (rafId) {
-			cancelAnimationFrame(rafId);
-			rafId = 0;
-		}
-		anim = null;
-
-		last = { x: e.clientX, y: e.clientY };
-	}
+	// Panning is initiated only when clicking on empty Stage background (see onStageMouseDown)
 	function onMouseMove(e: MouseEvent) {
 		if (!panning) return;
 		const dx = e.clientX - last.x;
@@ -169,7 +156,27 @@
 
 	function onStageMouseDown(e: KonvaMouseEvent) {
 		const evt = e.detail; // KonvaEventObject<MouseEvent>
+		// If a drag is in progress, ignore stage mousedown entirely
+		if ($dragging) return;
 		if (evt.target === evt.target.getStage()) {
+			// click on empty background: deselect any selection
+			selected.set(null);
+			// start panning from this point
+			const domEvt = evt.evt as MouseEvent;
+			panning = true;
+			// cancel any ongoing zoom animation for responsive panning
+			if (rafId) {
+				cancelAnimationFrame(rafId);
+				rafId = 0;
+			}
+			anim = null;
+			last = { x: domEvt.clientX, y: domEvt.clientY };
+		}
+	}
+
+	function onStageClick(e: KonvaMouseEvent) {
+		const evt = e.detail;
+		if (evt.target === evt.target.getStage() && !$dragging) {
 			selected.set(null);
 		}
 	}
@@ -201,9 +208,9 @@
 <!-- attach event listeners to window and gate them to the container -->
 <svelte:window
 	on:wheel|nonpassive={onWheel}
-	on:mousedown={onMouseDown}
 	on:mousemove={onMouseMove}
-	on:mouseup={onMouseUp}
+	on:mouseup={() => { onMouseUp(); }}
+	on:mouseleave={() => { panning = false; }}
 	on:resize={syncViewport}
 />
 
@@ -236,6 +243,7 @@
 					y: offset.y
 				}}
 				on:mousedown={onStageMouseDown}
+				on:click={onStageClick}
 			>
 				<Layer>
 				{#each $screens as sc (sc.id)}

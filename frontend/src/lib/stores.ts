@@ -39,6 +39,8 @@ export const screens = writable<Screen[]>([]);
 export const assets = writable<Asset[]>([]);
 export const online = writable<boolean>(true); // Offline Mode toggle
 export const selected = writable<string | null>(null);
+// true while a Konva node (e.g., a screen or asset) is being dragged
+export const dragging = writable<boolean>(false);
 
 export const screensById = derived(screens, ($s) => new Map($s.map((sc) => [sc.id, sc])));
 export const assetsByScreen = derived(assets, ($a) => {

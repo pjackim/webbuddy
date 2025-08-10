@@ -7,8 +7,9 @@
 	import { api } from '../api';
 	import { onMount } from 'svelte';
 	import type Konva from 'konva';
-	import type { KonvaMouseEvent } from 'svelte-konva';
-    import type { KonvaEventObject } from 'konva/lib/Node';
+	import type { KonvaMouseEvent, KonvaDragTransformEvent } from 'svelte-konva';
+	import type { KonvaEventObject } from 'konva/lib/Node';
+	import { dragging } from '../stores';
     let group: Konva.Group;
 	export let sc: Screen;
 	let myAssets: Asset[] = [];
@@ -20,18 +21,33 @@
 
 	$: myAssets = $assetsByScreen.get(sc.id) || [];
 
-	function selectThis(e: KonvaEventObject<MouseEvent>) {
+	function selectThis(e: KonvaMouseEvent) {
 		selected.set(sc.id);
 		// prevent stage-level handlers from firing
-		if (e && e.cancelBubble !== undefined) e.cancelBubble = true;
+		const evt = e.detail;
+		if (evt && evt.cancelBubble !== undefined) evt.cancelBubble = true;
 	}
 
-	function dragEnd(e: KonvaEventObject<DragEvent>) {
-		const node = e.target as Konva.Group;
+	function dragStart(e: KonvaDragTransformEvent) {
+		const node = e.detail.target as Konva.Group;
+		if ($selected !== sc.id) {
+			// First drag attempts select without moving
+			selected.set(sc.id);
+			node.stopDrag();
+			dragging.set(false);
+			return;
+		}
+		dragging.set(true);
+	}
+
+	function dragEnd(e: KonvaDragTransformEvent) {
+		const node = e.detail.target as Konva.Group;
 		sc = { ...sc, x: node.x(), y: node.y() };
 		upsertScreen(sc);
 		if ($online)
 			api(`/screens/${sc.id}`, { method: 'PUT', body: JSON.stringify({ x: sc.x, y: sc.y }) });
+		// Defer clearing so Stage click (which fires after dragend) won't see dragging=false
+		setTimeout(() => dragging.set(false), 0);
 	}
 
 	function transformEnd() {
@@ -57,9 +73,11 @@
 </script>
 
 <Group
-	config={{ x: sc.x, y: sc.y, draggable: $selected === sc.id }}
-	bind:this={group}
+	config={{ x: sc.x, y: sc.y, draggable: true }}
+	bind:handle={group}
+	on:mousedown={selectThis}
 	on:click={selectThis}
+	on:dragstart={dragStart}
 	on:dragend={dragEnd}
 	on:transformend={transformEnd}
 >
@@ -89,7 +107,7 @@
 			<TextAsset {a} />
 		{/if}
 	{/each}
-	{#if $selected === sc.id}
+	{#if $selected === sc.id && !$dragging}
 		<Transformer config={{ nodes: [group], rotateEnabled: false, ignoreStroke: true }} />
 	{/if}
 </Group>
