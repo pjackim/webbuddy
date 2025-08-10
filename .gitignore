@@ -8,5 +8,5 @@ backend\web_buddy_backend.egg-info
 
 .ruff_cache
 
-frontend\src\lib\components\ui\*
-!frontend\src\lib\components\ui\.gitkeep
+frontend\src\lib\components\ui\**
+# !frontend\src\lib\components\ui\.gitkeep
