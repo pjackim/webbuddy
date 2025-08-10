@@ -1,0 +1,14 @@
+{
+    "$schema": "https://unpkg.com/jsrepo@2.4.5/schemas/project-config.json",
+    "repos": [],
+    "includeTests": true,
+    "includeDocs": true,
+    "watermark": true,
+    "formatter": "prettier",
+    "configFiles": {},
+    "paths": {
+        "*": "./src/blocks",
+        "components": "$lib/components",
+        "hooks": "$lib/hooks"
+    }
+}
