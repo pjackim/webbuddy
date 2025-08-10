@@ -22,10 +22,33 @@
 			</div>
 			<div class="dropdown-content z-20 w-80 max-w-[90vw] p-4 bg-base-200 rounded-box shadow">
 				<div class="flex flex-col gap-3">
-					<label class="label cursor-pointer gap-2">
-						<span class="label-text">Offline Mode</span>
-						<input aria-label="Offline Mode" type="checkbox" class="toggle" bind:checked={$online} />
-					</label>
+					<div class="form-control">
+						<div class="label">
+							<span class="label-text">Mode</span>
+						</div>
+						<div class="join">
+							<label class="join-item label cursor-pointer gap-2 px-3">
+								<span class="label-text">Online</span>
+								<input
+									type="radio"
+									name="mode-mobile"
+									class="radio radio-success"
+									checked={$online}
+									on:change={() => online.set(true)}
+								/>
+							</label>
+							<label class="join-item label cursor-pointer gap-2 px-3">
+								<span class="label-text">Offline</span>
+								<input
+									type="radio"
+									name="mode-mobile"
+									class="radio radio-error"
+									checked={!$online}
+									on:change={() => online.set(false)}
+								/>
+							</label>
+						</div>
+					</div>
 					<div class="form-control w-full">
 						<input class="input input-bordered w-full" placeholder="Name" bind:value={name} />
 					</div>
@@ -40,11 +63,34 @@
 	</div>
 
 	<!-- Inline controls (large screens) -->
-	<div class="flex-none hidden lg:flex items-center gap-2 px-2">
-		<label class="label cursor-pointer gap-2">
-			<span class="label-text">Offline Mode</span>
-			<input aria-label="Offline Mode" type="checkbox" class="toggle" bind:checked={$online} />
-		</label>
+	<div class="flex-none hidden lg:flex items-center gap-4 px-2">
+		<div class="form-control">
+			<div class="label">
+				<span class="label-text">Mode</span>
+			</div>
+			<div class="join">
+				<label class="join-item label cursor-pointer gap-2 px-3">
+					<span class="label-text">Online</span>
+					<input
+						type="radio"
+						name="mode-desktop"
+						class="radio radio-success"
+						checked={$online}
+						on:change={() => online.set(true)}
+					/>
+				</label>
+				<label class="join-item label cursor-pointer gap-2 px-3">
+					<span class="label-text">Offline</span>
+					<input
+						type="radio"
+						name="mode-desktop"
+						class="radio radio-error"
+						checked={!$online}
+						on:change={() => online.set(false)}
+					/>
+				</label>
+			</div>
+		</div>
 		<div class="divider divider-horizontal"></div>
 		<div class="form-control">
 			<div class="flex items-center gap-2">
