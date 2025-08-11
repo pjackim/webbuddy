@@ -1,79 +1,100 @@
+/**
+ * @import "tailwindcss";
+ * @import "tw-animate-css";
+ * @custom-variant dark (&:is(.dark *));
+ *
+ * @plugin "@tail"
+ */
 
-@import "tailwindcss";
-@import "tw-animate-css";
-@plugin  "daisyui";
+/* Use DaisyUI without inline JSON config (which breaks the CSS parser) */
+@plugin "daisyui";
 
-@custom-variant dark (&:is(.dark *));
-
+/*
+ * =================================================================
+ * ROOT THEME VARIABLES (LIGHT & DARK MODE)
+ * =================================================================
+ */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.13 0.028 261.692);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.13 0.028 261.692);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.13 0.028 261.692);
-  --primary: oklch(0.21 0.034 264.665);
-  --primary-foreground: oklch(0.985 0.002 247.839);
-  --secondary: oklch(0.967 0.003 264.542);
-  --secondary-foreground: oklch(0.21 0.034 264.665);
-  --muted: oklch(0.967 0.003 264.542);
-  --muted-foreground: oklch(0.551 0.027 264.364);
-  --accent: oklch(0.967 0.003 264.542);
-  --accent-foreground: oklch(0.21 0.034 264.665);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.928 0.006 264.531);
-  --input: oklch(0.928 0.006 264.531);
-  --ring: oklch(0.707 0.022 261.325);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.002 247.839);
-  --sidebar-foreground: oklch(0.13 0.028 261.692);
-  --sidebar-primary: oklch(0.21 0.034 264.665);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.967 0.003 264.542);
-  --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
-  --sidebar-border: oklch(0.928 0.006 264.531);
-  --sidebar-ring: oklch(0.707 0.022 261.325);
+  --radius: 0.75rem; /* Increased radius for a more modern look */
+
+  /* OKLCH values for light theme */
+  --background-oklch: 0.98 0.01 261;
+  --foreground-oklch: 0.13 0.028 261.692;
+  --card-oklch: 1 0 0;
+  --card-foreground-oklch: 0.13 0.028 261.692;
+  --popover-oklch: 1 0 0;
+  --popover-foreground-oklch: 0.13 0.028 261.692;
+  --primary-oklch: 0.48 0.24 264;
+  --primary-foreground-oklch: 0.985 0.002 247.839;
+  --secondary-oklch: 0.96 0.003 264;
+  --secondary-foreground-oklch: 0.21 0.034 264.665;
+  --muted-oklch: 0.96 0.003 264;
+  --muted-foreground-oklch: 0.55 0.027 264;
+  --accent-oklch: 0.96 0.003 264;
+  --accent-foreground-oklch: 0.21 0.034 264.665;
+  --destructive-oklch: 0.57 0.24 27;
+  --border-oklch: 0.92 0.006 264;
+  --input-oklch: 0.92 0.006 264;
+  --ring-oklch: 0.48 0.24 264;
+
+  /* DaisyUI variable mapping to our OKLCH tokens */
+  --p: oklch(var(--primary-oklch));
+  --pc: oklch(var(--primary-foreground-oklch));
+  --s: oklch(var(--secondary-oklch));
+  --a: oklch(var(--accent-oklch));
+  --n: oklch(0.278 0.033 256.848);
+  --b1: oklch(var(--background-oklch));
+  --b2: oklch(var(--card-oklch));
+  --b3: oklch(0.278 0.033 256.848);
+  --bc: oklch(var(--foreground-oklch));
+  --in: oklch(0.6 0.118 184.704);
+  --su: oklch(0.828 0.189 84.429);
+  --wa: oklch(0.769 0.188 70.08);
+  --er: oklch(0.704 0.191 22.216);
+
+  /* DaisyUI radius/animation tokens */
+  --rounded-box: var(--radius);
+  --rounded-btn: calc(var(--radius) - 2px);
+  --rounded-badge: var(--radius);
+  --animation-btn: 0.25s;
+  --animation-input: 0.2s;
+  --btn-focus-scale: 0.97;
+  --border-btn: 1px;
+  --tab-border: 1px;
+  --tab-radius: 0.5rem;
 }
 
+/* .dark values remain unchanged; they flow through via the OKLCH tokens */
 .dark {
-  --background: oklch(0.13 0.028 261.692);
-  --foreground: oklch(0.985 0.002 247.839);
-  --card: oklch(0.21 0.034 264.665);
-  --card-foreground: oklch(0.985 0.002 247.839);
-  --popover: oklch(0.21 0.034 264.665);
-  --popover-foreground: oklch(0.985 0.002 247.839);
-  --primary: oklch(0.928 0.006 264.531);
-  --primary-foreground: oklch(0.21 0.034 264.665);
-  --secondary: oklch(0.278 0.033 256.848);
-  --secondary-foreground: oklch(0.985 0.002 247.839);
-  --muted: oklch(0.278 0.033 256.848);
-  --muted-foreground: oklch(0.707 0.022 261.325);
-  --accent: oklch(0.278 0.033 256.848);
-  --accent-foreground: oklch(0.985 0.002 247.839);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.21 0.034 264.665);
-  --sidebar-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.278 0.033 256.848);
-  --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* OKLCH values for dark theme, inspired by Syntax UI */
+  --background-oklch: 0.10 0.02 262;
+  --foreground-oklch: 0.85 0.01 260;
+  --card-oklch: 0.12 0.02 262;
+  --card-foreground-oklch: 0.90 0.01 260;
+  --popover-oklch: 0.07 0.02 262;
+  --popover-foreground-oklch: 0.985 0.002 247.839;
+  --primary-oklch: 0.62 0.18 280; /* Vibrant purple/blue */
+  --primary-foreground-oklch: 0.98 0.01 260;
+  --secondary-oklch: 0.20 0.03 260;
+  --secondary-foreground-oklch: 0.98 0.01 260;
+  --muted-oklch: 0.20 0.03 260;
+  --muted-foreground-oklch: 0.65 0.02 260;
+  --accent-oklch: 0.25 0.03 260;
+  --accent-foreground-oklch: 0.98 0.01 260;
+  --destructive-oklch: 0.7 0.19 22;
+  --border-oklch: 1 0 0; /* Set to white for use with alpha, e.g., oklch(var(--border-oklch) / 0.1) */
+  --input-oklch: 1 0 0;
+  --ring-oklch: 0.65 0.20 285; /* Bright ring for focus */
 }
 
+/*
+ * =================================================================
+ * THEME & TOKENS
+ *
+ * This section maps our OKLCH variables to shadcn/ui-like variable names
+ * and defines radius tokens.
+ * =================================================================
+ */
 @theme {
   --color-zinc-50: #fafafa;
   --color-zinc-100: #f4f4f5;
@@ -93,44 +114,119 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-background: oklch(var(--background-oklch));
+  --color-foreground: oklch(var(--foreground-oklch));
+  --color-card: oklch(var(--card-oklch));
+  --color-card-foreground: oklch(var(--card-foreground-oklch));
+  --color-popover: oklch(var(--popover-oklch));
+  --color-popover-foreground: oklch(var(--popover-foreground-oklch));
+  --color-primary: oklch(var(--primary-oklch));
+  --color-primary-foreground: oklch(var(--primary-foreground-oklch));
+  --color-secondary: oklch(var(--secondary-oklch));
+  --color-secondary-foreground: oklch(var(--secondary-foreground-oklch));
+  --color-muted: oklch(var(--muted-oklch));
+  --color-muted-foreground: oklch(var(--muted-foreground-oklch));
+  --color-accent: oklch(var(--accent-oklch));
+  --color-accent-foreground: oklch(var(--accent-foreground-oklch));
+  --color-destructive: oklch(var(--destructive-oklch));
+  --color-border: oklch(var(--border-oklch) / 0.1); /* Default subtle border */
+  --color-input: oklch(var(--input-oklch) / 0.15);
+  --color-ring: oklch(var(--ring-oklch));
 }
 
+/*
+ * =================================================================
+ * BASE & COMPONENT STYLES
+ *
+ * This is where the magic happens. We define the base styles,
+ * background glow, and the shiny/glowing border effects.
+ * =================================================================
+ */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-screen;
+    /* Add a subtle glow to the top of the page background */
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(var(--border-oklch) / 0.05), oklch(var(--background-oklch) / 0));
   }
+}
+
+@layer components {
+  /*
+   * -----------------------------------------------------------------
+   * The "Shiny Border" Effect
+   *
+   * This utility applies a pseudo-element to create a glowing,
+   * animated, conic-gradient border around an element.
+   * -----------------------------------------------------------------
+   */
+  .shiny-border {
+    @apply relative overflow-hidden;
+  }
+  .shiny-border::before {
+    content: "";
+    @apply absolute;
+    /* Replaced unsupported negative utilities to avoid Tailwind error */
+    z-index: -1;
+    top: -1px;
+    left: -1px;
+    width: calc(100% + 2px);
+    height: calc(100% + 2px);
+    @apply animate-spin-slow;
+    background-image: conic-gradient(
+      from 180deg at 50% 50%,
+      oklch(var(--primary-oklch) / 0.8) 0deg,
+      oklch(var(--ring-oklch) / 0.5) 100deg,
+      oklch(var(--secondary-oklch) / 0) 180deg,
+      oklch(var(--ring-oklch) / 0.5) 260deg,
+      oklch(var(--primary-oklch) / 0.8) 360deg
+    );
+    border-radius: inherit;
+  }
+
+  /*
+   * -----------------------------------------------------------------
+   * Component-specific styles
+   * -----------------------------------------------------------------
+   */
+
+  /* Style for Cards to give them a subtle border and background */
+  .card {
+    @apply border bg-card/50 backdrop-blur-sm;
+  }
+
+  /* Style for Buttons */
+  .btn {
+    @apply transition-all duration-200;
+  }
+  .btn.btn-primary {
+    @apply shadow-[0_0_20px_oklch(var(--primary-oklch)/0.3)];
+  }
+  .btn:hover {
+    @apply brightness-110;
+  }
+
+  /* Style for Inputs, Textareas, etc. */
+  .input, .textarea, .select {
+    @apply bg-transparent transition-colors duration-300;
+  }
+  :is(.input, .textarea, .select):focus {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    border-color: oklch(var(--ring-oklch) / 0.5) !important;
+  }
+}
+
+/* Replace invalid @theme animation object with a real utility */
+@layer utilities {
+.animate-spin-slow { animation: spin 3s linear infinite; }
+}
+
+
+.ease-in-out {
+    --tw-ease: var(--ease-in-out, cubic-bezier(.4,0,.2,1));
+    transition-timing-function: var(--ease-in-out, cubic-bezier(.4,0,.2,1));
+    transition-duration: .15s;
 }

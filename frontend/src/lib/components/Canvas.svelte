@@ -3,7 +3,7 @@
 	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
-	import { Grid } from './ui/grid/index.js';
+	import KonvaGrid from './KonvaGrid.svelte';
 	import { screens, setScreens } from '$lib/stores.svelte.ts';
 	import type { Screen as StoreScreen } from '$lib/stores.svelte.ts';
 	import { api } from '../api';
@@ -121,37 +121,35 @@
 	on:mouseup={onMouseUp}
 />
 
-<section class="relative w-full h-[calc(100vh-64px)]" bind:this={container} aria-label="Canvas area">
-	{#if gridEnabled}
-		<div class="absolute inset-0">
-			<Grid 
-				pattern="grid"
-				gridSize={40}
-				patternColor="hsl(var(--muted-foreground) / 0.15)"
-				majorLineColor="hsl(var(--muted-foreground) / 0.25)"
-				backgroundColor="hsl(var(--background))"
-				class="w-full h-full"
-			/>
-		</div>
-	{/if}
-	<div class="relative z-10">
-		<Stage
-			config={{
-				width: viewport.width,
-				height: Math.max(0, viewport.height - 64),
-				scaleX: scale,
-				scaleY: scale,
-				x: offset.x,
-				y: offset.y
-			}}
-		>
+<section class="relative w-full h-[calc(100vh-64px)] bg-slate-950" bind:this={container} aria-label="Canvas area">
+	<Stage
+		config={{
+			width: viewport.width,
+			height: Math.max(0, viewport.height - 64),
+			scaleX: scale,
+			scaleY: scale,
+			x: offset.x,
+			y: offset.y
+		}}
+	>
+		<!-- Grid layer (behind everything) -->
+		{#if gridEnabled}
 			<Layer>
-				{#each screens() as sc}
-					<ScreenFrame {sc} />
-				{/each}
+				<KonvaGrid 
+					{scale} 
+					{offset} 
+					viewport={{ width: viewport.width, height: Math.max(0, viewport.height - 64) }}
+				/>
 			</Layer>
-		</Stage>
-	</div>
+		{/if}
+		
+		<!-- Main content layer -->
+		<Layer>
+			{#each screens() as sc}
+				<ScreenFrame {sc} />
+			{/each}
+		</Layer>
+	</Stage>
 	
 	<div class="absolute bottom-4 left-4 flex gap-2 z-20">
 		<button
