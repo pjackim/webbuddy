@@ -237,7 +237,7 @@
 	></canvas>
 </div>
 
-<style>
+<style lang="postcss">
 	.grid-container {
 		width: 100%;
 		height: 100%;

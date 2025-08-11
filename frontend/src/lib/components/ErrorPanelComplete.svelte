@@ -199,28 +199,28 @@
 	});
 </script>
 
-<div class={cn('flex flex-col items-center justify-center min-h-[400px] p-8 border rounded-lg', severityClasses, className)}>
+<div class={cn('flex flex-col h-full min-h-[400px] p-6 border rounded-lg', severityClasses, className)}>
 	<!-- Error Code Display -->
-	<div class="text-center mb-8">
-		<h1 class="text-8xl font-bold text-foreground mb-2">
+	<div class="text-center mb-6 flex-shrink-0">
+		<h1 class="text-6xl lg:text-8xl font-bold text-foreground mb-2">
 			{errorCode}
 		</h1>
-		<h2 class="text-2xl font-medium text-muted-foreground">
+		<h2 class="text-xl lg:text-2xl font-medium text-muted-foreground">
 			{displayTitle}
 		</h2>
 	</div>
 
 	<!-- Error Logs/Message Display -->
-	<div class="w-full max-w-4xl">
+	<div class="flex-1 w-full min-h-0">
 		<Code.Overflow collapsed={startCollapsed}>
 			<Code.Root
 				code={combinedErrorContent}
 				lang={language}
 				variant="default"
-				class="relative max-h-[600px]"
+				class="relative h-full min-h-[200px]"
 			>
 				{#if showCopyButton}
-					<div class="absolute right-2 top-2">
+					<div class="absolute right-2 top-2 z-10">
 						<Code.CopyButton variant="ghost" size="icon" />
 					</div>
 				{/if}

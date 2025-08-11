@@ -2,11 +2,13 @@ import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
-const config = {
+export default {
 	// Consult https://svelte.dev/docs/kit/integrations
 	// for more information about preprocessors
-	preprocess: vitePreprocess(),
+	preprocess: sveltePreprocess({
+        postcss: {
+            configFilePath: join(__dirname, 'postcss.config.cjs')
+        }
+    }),
 	kit: { adapter: adapter() }
 };
-
-export default config;

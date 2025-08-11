@@ -1,8 +1,8 @@
-<script>
+<script lang="ts">
   // No JS needed unless you want props for size/color later
 </script>
 
-<style>
+<style lang="postcss">
   .hashed {
     width: 100%;
     max-width: 760px;

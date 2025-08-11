@@ -48,14 +48,16 @@
 </script>
 
 <div
-	class="flex flex-col h-screen"
+	class="layout-container"
 	role="group"
 	ondragover={onDragOver}
 	ondragleave={() => (hover = false)}
 	ondrop={onDrop}
 >
-	<Toolbar />
-	<div class="relative flex-1">
+	<div class="layout-header">
+		<Toolbar />
+	</div>
+	<div class="layout-main">
 		{#if hover}
 			<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
 				<Card.Root class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse">

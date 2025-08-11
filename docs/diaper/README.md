@@ -223,7 +223,7 @@ You can pass css classes to style the sheet using the container method:
 	<Bottomsheet bind:open class="sheet">...</Bottomsheet>
 </div>
 
-<style>
+<style lang="postcss">
 	.container :global(.sheet) {
 		padding: 1rem;
 		padding-top: 0;

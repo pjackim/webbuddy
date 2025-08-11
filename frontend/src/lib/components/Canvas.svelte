@@ -122,14 +122,14 @@
 />
 
 <section
-	class="relative w-full h-[calc(100vh-64px)] glassmorphism"
+	class="relative w-full h-full glassmorphism canvas-container"
 	bind:this={container}
 	aria-label="Canvas area"
 >
 	<Stage
 		config={{
 			width: viewport.width,
-			height: Math.max(0, viewport.height - 64),
+			height: viewport.height,
 			scaleX: scale,
 			scaleY: scale,
 			x: offset.x,
@@ -142,7 +142,7 @@
 				<KonvaGrid
 					{scale}
 					{offset}
-					viewport={{ width: viewport.width, height: Math.max(0, viewport.height - 64) }}
+					{viewport}
 				/>
 			</Layer>
 		{/if}

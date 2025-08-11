@@ -80,25 +80,6 @@ Available routes:
 			message: generateTestError(),
 			details: 'This is a real JavaScript error with an actual stack trace generated at runtime.',
 			language: 'javascript' as const
-		},
-		{
-			code: 'VALIDATION',
-			message: `ValidationError: Invalid form data
-
-Errors found:
-{
-  "email": "Invalid email format",
-  "password": "Password must be at least 8 characters",
-  "confirmPassword": "Passwords do not match"
-}`,
-			details: 'Form validation failed on client-side before submission',
-			language: 'json' as const
-		},
-		{
-			code: 'CONN',
-			message: generateTestError('network'),
-			details: 'Network connectivity issue - check your internet connection',
-			language: 'javascript' as const
 		}
 	];
 
@@ -149,7 +130,7 @@ Errors found:
 	// Reset examples to original set
 	function resetExamples() {
 		// Remove dynamically added examples
-		while (examples.length > 6 && examples[examples.length - 1].code.startsWith('LIVE')) {
+		while (examples.length > 4 && examples[examples.length - 1].code.startsWith('LIVE')) {
 			examples.pop();
 		}
 		currentExample = 0;
@@ -161,152 +142,179 @@ Errors found:
 	<title>Error Panel Demo</title>
 </svelte:head>
 
-<div class="container mx-auto p-8 space-y-8">
-	<div class="text-center">
-		<h1 class="text-4xl font-bold mb-4">ErrorPanel Component Demo</h1>
-		<p class="text-lg text-muted-foreground mb-6">
+<div class="demo-layout">
+	<!-- Header Section -->
+	<div class="text-center space-y-4">
+		<h1 class="text-4xl font-bold">ErrorPanel Component Demo</h1>
+		<p class="text-lg text-muted-foreground max-w-3xl mx-auto">
 			Comprehensive error handling and display system with syntax highlighting, copy functionality, and robust error processing.
 		</p>
-		<div class="flex justify-center gap-4">
+		<div class="flex justify-center gap-4 flex-wrap">
 			<Badge variant="outline">Svelte 5</Badge>
 			<Badge variant="outline">TypeScript</Badge>
 			<Badge variant="outline">Tailwind CSS</Badge>
 			<Badge variant="outline">Syntax Highlighting</Badge>
 		</div>
 	</div>
-	
-	<!-- Example Selector -->
-	<Card.Root>
-		<Card.Header>
+
+	<!-- Controls Section -->
+	<Card.Root class="responsive-card">
+		<Card.Header class="flex-shrink-0">
 			<Card.Title>Error Examples & Live Generation</Card.Title>
 			<Card.Description>
 				Select from predefined examples or generate live errors for testing
 			</Card.Description>
 		</Card.Header>
-		<Card.Content>
-			<div class="space-y-4">
-				<!-- Predefined Examples -->
+		<Card.Content class="space-y-4">
+			<!-- Predefined Examples -->
+			<div>
+				<h3 class="text-sm font-medium mb-2">Predefined Examples:</h3>
+				<div class="flex gap-2 flex-wrap">
+					{#each examples.slice(0, 4) as example, i}
+						<Button
+							variant={i === currentExample ? 'default' : 'outline'}
+							size="sm"
+							onclick={() => currentExample = i}
+						>
+							{example.code}
+						</Button>
+					{/each}
+				</div>
+			</div>
+			
+			<!-- Live Error Generation -->
+			<div>
+				<h3 class="text-sm font-medium mb-2">Generate Live Errors:</h3>
+				<div class="flex gap-2 flex-wrap">
+					<Button
+						variant="destructive"
+						size="sm"
+						onclick={() => triggerError('network')}
+						disabled={isGeneratingError}
+					>
+						Network Error
+					</Button>
+					<Button
+						variant="destructive"
+						size="sm"
+						onclick={() => triggerError('permission')}
+						disabled={isGeneratingError}
+					>
+						Permission Error
+					</Button>
+					<Button
+						variant="destructive"
+						size="sm"
+						onclick={() => triggerError('validation')}
+						disabled={isGeneratingError}
+					>
+						Validation Error
+					</Button>
+					<Button
+						variant="destructive"
+						size="sm"
+						onclick={() => triggerError('timeout')}
+						disabled={isGeneratingError}
+					>
+						Timeout Error
+					</Button>
+				</div>
+			</div>
+			
+			<!-- Dynamic Examples -->
+			{#if examples.length > 4}
 				<div>
-					<h3 class="text-sm font-medium mb-2">Predefined Examples:</h3>
+					<h3 class="text-sm font-medium mb-2">Generated Examples:</h3>
 					<div class="flex gap-2 flex-wrap">
-						{#each examples.slice(0, 6) as example, i}
+						{#each examples.slice(4) as example, i}
 							<Button
-								variant={i === currentExample ? 'default' : 'outline'}
+								variant={i + 4 === currentExample ? 'default' : 'secondary'}
 								size="sm"
-								onclick={() => currentExample = i}
+								onclick={() => currentExample = i + 4}
 							>
 								{example.code}
 							</Button>
 						{/each}
-					</div>
-				</div>
-				
-				<!-- Live Error Generation -->
-				<div>
-					<h3 class="text-sm font-medium mb-2">Generate Live Errors:</h3>
-					<div class="flex gap-2 flex-wrap">
 						<Button
-							variant="destructive"
+							variant="ghost"
 							size="sm"
-							onclick={() => triggerError('network')}
-							disabled={isGeneratingError}
+							onclick={resetExamples}
 						>
-							Network Error
-						</Button>
-						<Button
-							variant="destructive"
-							size="sm"
-							onclick={() => triggerError('permission')}
-							disabled={isGeneratingError}
-						>
-							Permission Error
-						</Button>
-						<Button
-							variant="destructive"
-							size="sm"
-							onclick={() => triggerError('validation')}
-							disabled={isGeneratingError}
-						>
-							Validation Error
-						</Button>
-						<Button
-							variant="destructive"
-							size="sm"
-							onclick={() => triggerError('timeout')}
-							disabled={isGeneratingError}
-						>
-							Timeout Error
+							Reset
 						</Button>
 					</div>
 				</div>
-				
-				<!-- Dynamic Examples -->
-				{#if examples.length > 6}
-					<div>
-						<h3 class="text-sm font-medium mb-2">Generated Examples:</h3>
-						<div class="flex gap-2 flex-wrap">
-							{#each examples.slice(6) as example, i}
-								<Button
-									variant={i + 6 === currentExample ? 'default' : 'secondary'}
-									size="sm"
-									onclick={() => currentExample = i + 6}
-								>
-									{example.code}
-								</Button>
-							{/each}
-							<Button
-								variant="outline"
-								size="sm"
-								onclick={resetExamples}
-							>
-								Reset
-							</Button>
+			{/if}
+		</Card.Content>
+	</Card.Root>
+
+	<!-- Error Display Section -->
+	<Card.Root class="responsive-card flex-1 min-h-0">
+		<Card.Header class="flex-shrink-0">
+			<div class="flex items-center justify-between">
+				<Card.Title>Error Display</Card.Title>
+				<Badge variant="secondary">
+					{examples[currentExample]?.language || 'typescript'}
+				</Badge>
+			</div>
+			<Card.Description>
+				Showing: {examples[currentExample]?.code} - 
+				{typeof examples[currentExample]?.message === 'object' 
+					? examples[currentExample]?.message?.name || 'Error'
+					: 'Custom Error'
+				}
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="responsive-card-content">
+			<div class="h-full">
+				{#key currentExample}
+					{#if examples[currentExample]}
+						<ErrorPanel
+							errorCode={examples[currentExample].code}
+							errorMessage={examples[currentExample].message}
+							errorDetails={examples[currentExample].details}
+							language={examples[currentExample].language}
+							class="h-full border-0 p-0"
+						/>
+					{:else}
+						<div class="flex items-center justify-center h-full">
+							<p class="text-muted-foreground">No error selected</p>
 						</div>
-					</div>
-				{/if}
+					{/if}
+				{/key}
 			</div>
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Current Example Display -->
-	{#key currentExample}
-		<ErrorPanel
-			errorCode={examples[currentExample].code}
-			errorMessage={examples[currentExample].message}
-			errorDetails={examples[currentExample].details}
-			language={examples[currentExample].language}
-		/>
-	{/key}
-
-	<!-- Usage Documentation -->
-	<div class="mt-16 prose dark:prose-invert max-w-none">
-		<h2>Usage</h2>
-		<p>The ErrorPanel component is flexible and reusable. Here are the available props:</p>
-		
-		<h3>Props</h3>
-		<ul>
-			<li><code>errorCode</code> (required): The error code (e.g., 500, 404, 403)</li>
-			<li><code>errorMessage</code> (required): The error message or logs to display</li>
-			<li><code>errorDetails</code> (optional): Additional error details or stack trace</li>
-			<li><code>language</code> (optional): Language for syntax highlighting (default: 'typescript')</li>
-			<li><code>showCopyButton</code> (optional): Whether to show the copy button (default: true)</li>
-			<li><code>startCollapsed</code> (optional): Whether to start collapsed (default: true)</li>
-			<li><code>title</code> (optional): Custom title instead of auto-generated title</li>
-			<li><code>class</code> (optional): Additional CSS classes</li>
-		</ul>
-
-		<h3>Example Usage</h3>
-		<pre><code>{`<script>
-	import ErrorPanel from '$lib/components/ErrorPanelComplete.svelte';
-</script>
-
-<ErrorPanel
-	errorCode={500}
-	errorMessage={\`Database connection failed
-
-Details:
-Connection timeout after 30 seconds...\`}
-	language="typescript"
-/>`}</code></pre>
-	</div>
+	<!-- History Section -->
+	{#if errorHistory.length > 0}
+		<Card.Root class="responsive-card max-h-48">
+			<Card.Header class="flex-shrink-0">
+				<div class="flex items-center justify-between">
+					<Card.Title>Error History</Card.Title>
+					<Button variant="outline" size="sm" onclick={clearHistory}>
+						Clear History
+					</Button>
+				</div>
+				<Card.Description>
+					Track of dynamically generated errors for testing and debugging
+				</Card.Description>
+			</Card.Header>
+			<Card.Content class="responsive-card-content">
+				<div class="scrollable-content space-y-2">
+					{#each errorHistory as historyItem}
+						<div class="flex items-center gap-3 p-2 bg-muted/50 rounded text-sm">
+							<Badge variant="destructive" class="text-xs">{historyItem.type}</Badge>
+							<span class="font-mono text-muted-foreground">
+								{historyItem.timestamp.toLocaleTimeString()}
+							</span>
+							<span class="truncate flex-1">
+								{historyItem.error?.message || 'Unknown error'}
+							</span>
+						</div>
+					{/each}
+				</div>
+			</Card.Content>
+		</Card.Root>
+	{/if}
 </div>

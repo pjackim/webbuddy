@@ -94,7 +94,7 @@
 	{/each}
 </Group>
 
-<style>
+<style lang="postcss">
     @include glassmorphism;
 	:global(.hashed-background) {
 		-webkit-tap-highlight-color: transparent;

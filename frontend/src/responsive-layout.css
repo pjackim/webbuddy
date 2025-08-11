@@ -1,0 +1,158 @@
+/*
+ * RESPONSIVE LAYOUT FRAMEWORK - NO SCROLL DESIGN
+ * This file contains the responsive layout utilities
+ */
+
+/* Ensure no scrolling on html/body */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+}
+
+/* Root app container */
+#app, #svelte {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Main layout containers */
+.layout-container {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-header {
+  flex-shrink: 0;
+  z-index: 40;
+}
+
+.layout-main {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Scrollable content areas */
+.scrollable-content {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.scrollable-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb {
+  background: oklch(var(--border-oklch) / 0.4);
+  border-radius: 3px;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--border-oklch) / 0.6);
+}
+
+/* Responsive viewport utilities */
+.viewport-full {
+  height: 100vh;
+  width: 100vw;
+}
+
+.viewport-minus-header {
+  height: calc(100vh - 4rem);
+}
+
+.viewport-minus-toolbar {
+  height: calc(100vh - 4rem);
+}
+
+/* Responsive grid system for desktop */
+@media (min-width: 1024px) {
+  .desktop-grid {
+    display: grid;
+    gap: 1rem;
+    height: 100%;
+  }
+
+  .desktop-grid-sidebar {
+    grid-template-columns: 300px 1fr;
+  }
+
+  .desktop-grid-three-col {
+    grid-template-columns: 250px 1fr 300px;
+  }
+}
+
+/* Card and panel responsiveness */
+.responsive-card {
+  max-height: calc(100vh - 8rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(6px);
+  background: oklch(var(--card-oklch) / 0.85);
+  border: 1px solid oklch(var(--border-oklch) / 0.15);
+  border-radius: var(--radius);
+  box-shadow: 
+    0 4px 16px oklch(var(--background-oklch) / 0.08),
+    inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+.dark .responsive-card {
+  background: oklch(var(--card-oklch) / 0.7);
+  border-color: oklch(var(--border-oklch) / 0.06);
+  box-shadow: 
+    0 4px 16px oklch(0 0 0 / 0.15),
+    inset 0 1px 0 oklch(var(--border-oklch) / 0.04);
+}
+
+.responsive-card-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Demo page specific styles */
+.demo-layout {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.demo-content {
+  height: 100%;
+  max-height: calc(100vh - 8rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animation performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  .canvas-container {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
