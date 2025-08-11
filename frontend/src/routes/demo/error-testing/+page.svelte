@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
+	import { Button } from '$lib/components/ui/button';
+	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { handleError, createErrorInfo } from '$lib/error-store.svelte.js';
 	import { api } from '$lib/api.js';
 	
@@ -154,16 +154,16 @@
 				<CardDescription>Test different HTTP status codes</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="destructive" on:click={test404RandomEndpoint}>
+				<Button class="w-full" variant="destructive" onclick={test404RandomEndpoint}>
 					Test 404 - Random Endpoint
 				</Button>
-				<Button class="w-full" variant="destructive" on:click={test404TypicalEndpoints}>
+				<Button class="w-full" variant="destructive" onclick={test404TypicalEndpoints}>
 					Test 404 - Typical API Call
 				</Button>
-				<Button class="w-full" variant="destructive" on:click={test404DeepNestedPath}>
+				<Button class="w-full" variant="destructive" onclick={test404DeepNestedPath}>
 					Test 404 - Deep Nested Path
 				</Button>
-				<Button class="w-full" variant="destructive" on:click={test500Error}>
+				<Button class="w-full" variant="destructive" onclick={test500Error}>
 					Test 500 - Internal Server Error
 				</Button>
 				
@@ -177,7 +177,7 @@
 							placeholder="/any/endpoint/you/want"
 							bind:value={customEndpoint}
 						/>
-						<Button variant="destructive" size="sm" on:click={testCustomEndpoint}>
+						<Button variant="destructive" size="sm" onclick={testCustomEndpoint}>
 							Test
 						</Button>
 					</div>
@@ -193,13 +193,13 @@
 				<CardDescription>Test runtime JavaScript errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="destructive" on:click={testJavaScriptError}>
+				<Button class="w-full" variant="destructive" onclick={testJavaScriptError}>
 					Test JavaScript Error
 				</Button>
-				<Button class="w-full" variant="destructive" on:click={testThrowError}>
+				<Button class="w-full" variant="destructive" onclick={testThrowError}>
 					Test Uncaught Error
 				</Button>
-				<Button class="w-full" variant="destructive" on:click={testPromiseRejection}>
+				<Button class="w-full" variant="destructive" onclick={testPromiseRejection}>
 					Test Promise Rejection
 				</Button>
 			</CardContent>
@@ -212,7 +212,7 @@
 				<CardDescription>Test connection and network-related errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="outline" on:click={testMinorNetworkError}>
+				<Button class="w-full" variant="outline" onclick={testMinorNetworkError}>
 					Test Network Toast
 				</Button>
 				<p class="text-xs text-muted-foreground">Shows toast notification</p>
@@ -226,7 +226,7 @@
 				<CardDescription>Test custom application errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="destructive" on:click={testCustomError}>
+				<Button class="w-full" variant="destructive" onclick={testCustomError}>
 					Test Custom Error
 				</Button>
 			</CardContent>

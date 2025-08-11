@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: list[str] = [
         "http://localhost:5173",  # SvelteKit dev server
+        "http://localhost:3000",  # Frontend in Docker
         "http://localhost:8000",  # The backend itself (for docs, etc.)
     ]
 
