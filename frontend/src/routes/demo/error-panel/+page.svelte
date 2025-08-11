@@ -90,18 +90,18 @@ Available routes:
 	// Enhanced error simulation with different types
 	function triggerError(type: string = 'network') {
 		if (isGeneratingError) return;
-		
+
 		isGeneratingError = true;
 		try {
 			const error = generateTestError(type);
-			
+
 			// Add to error history
 			errorHistory.unshift({
 				timestamp: new Date(),
 				type,
 				error
 			});
-			
+
 			// Add this error as a new example
 			const newExample = {
 				code: `LIVE-${type.toUpperCase()}`,
@@ -111,7 +111,7 @@ Available routes:
 			};
 			examples.push(newExample);
 			currentExample = examples.length - 1;
-			
+
 			toast.error(`Generated ${type} error for testing`);
 		} catch (err) {
 			toast.error('Failed to generate test error');
@@ -120,13 +120,13 @@ Available routes:
 			isGeneratingError = false;
 		}
 	}
-	
+
 	// Clear error history
 	function clearHistory() {
 		errorHistory = [];
 		toast.success('Error history cleared');
 	}
-	
+
 	// Reset examples to original set
 	function resetExamples() {
 		// Remove dynamically added examples
@@ -142,13 +142,13 @@ Available routes:
 	<title>Error Panel Demo</title>
 </svelte:head>
 
-
 <div class="demo-layout">
 	<!-- Header Section -->
 	<div class="text-center space-y-4">
 		<h1 class="text-4xl font-bold">ErrorPanel Component Demo</h1>
 		<p class="text-lg text-muted-foreground max-w-3xl mx-auto">
-			Comprehensive error handling and display system with syntax highlighting, copy functionality, and robust error processing.
+			Comprehensive error handling and display system with syntax highlighting, copy functionality,
+			and robust error processing.
 		</p>
 		<div class="flex justify-center gap-4 flex-wrap">
 			<Badge variant="outline">Svelte 5</Badge>
@@ -175,14 +175,14 @@ Available routes:
 						<Button
 							variant={i === currentExample ? 'default' : 'outline'}
 							size="sm"
-							onclick={() => currentExample = i}
+							onclick={() => (currentExample = i)}
 						>
 							{example.code}
 						</Button>
 					{/each}
 				</div>
 			</div>
-			
+
 			<!-- Live Error Generation -->
 			<div>
 				<h3 class="text-sm font-medium mb-2">Generate Live Errors:</h3>
@@ -221,7 +221,7 @@ Available routes:
 					</Button>
 				</div>
 			</div>
-			
+
 			<!-- Dynamic Examples -->
 			{#if examples.length > 4}
 				<div>
@@ -231,18 +231,12 @@ Available routes:
 							<Button
 								variant={i + 4 === currentExample ? 'default' : 'secondary'}
 								size="sm"
-								onclick={() => currentExample = i + 4}
+								onclick={() => (currentExample = i + 4)}
 							>
 								{example.code}
 							</Button>
 						{/each}
-						<Button
-							variant="ghost"
-							size="sm"
-							onclick={resetExamples}
-						>
-							Reset
-						</Button>
+						<Button variant="ghost" size="sm" onclick={resetExamples}>Reset</Button>
 					</div>
 				</div>
 			{/if}
@@ -259,11 +253,10 @@ Available routes:
 				</Badge>
 			</div>
 			<Card.Description>
-				Showing: {examples[currentExample]?.code} - 
-				{typeof examples[currentExample]?.message === 'object' 
+				Showing: {examples[currentExample]?.code} -
+				{typeof examples[currentExample]?.message === 'object'
 					? examples[currentExample]?.message?.name || 'Error'
-					: 'Custom Error'
-				}
+					: 'Custom Error'}
 			</Card.Description>
 		</Card.Header>
 		<Card.Content class="responsive-card-content">
@@ -293,9 +286,7 @@ Available routes:
 			<Card.Header class="flex-shrink-0">
 				<div class="flex items-center justify-between">
 					<Card.Title>Error History</Card.Title>
-					<Button variant="outline" size="sm" onclick={clearHistory}>
-						Clear History
-					</Button>
+					<Button variant="outline" size="sm" onclick={clearHistory}>Clear History</Button>
 				</div>
 				<Card.Description>
 					Track of dynamically generated errors for testing and debugging

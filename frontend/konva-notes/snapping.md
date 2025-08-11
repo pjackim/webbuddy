@@ -30,7 +30,7 @@ Svelte (svelte-konva) pattern:
 - bind handle to access node: <Rect bind:handle={rectNode} />
 - set rectNode.dragBoundFunc(...) in onMount or after tick()
 
-## Snap-to-nearest-on-dragend (alternative)
+## Snap-to-nearest-on-dragend (alternative)  
 If you prefer not to constrain during drag, snap at the end:
 
 - Listen to dragend

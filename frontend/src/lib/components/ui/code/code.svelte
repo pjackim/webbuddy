@@ -35,7 +35,6 @@
 </div>
 
 <style lang="postcss">
-	@reference '../../../../app.css';
 
 	:global(.dark) {
 		:global(.shiki, .shiki span) {

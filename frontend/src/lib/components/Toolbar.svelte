@@ -40,20 +40,22 @@
 			<NavigationMenu.Root>
 				<NavigationMenu.List class="flex items-center gap-4">
 					<NavigationMenu.Item>
-						<NavigationMenu.Trigger>Screens</NavigationMenu.Trigger>
-						<NavigationMenu.Content>
+						<NavigationMenu.Trigger class="glassmorphism">Screens</NavigationMenu.Trigger>
+						<NavigationMenu.Content class="glassmorphism">
 							<div class="p-4 w-64">
 								<p class="text-sm text-muted-foreground mb-4">
 									Manage your screens or add a new one.
 								</p>
-								<Button class="w-full glass" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
+								<Button class="w-full glass" onclick={() => (addScreenOpen = true)}
+									>Add New Screen</Button
+								>
 							</div>
 						</NavigationMenu.Content>
 					</NavigationMenu.Item>
 
 					<NavigationMenu.Item>
-						<NavigationMenu.Trigger>Settings</NavigationMenu.Trigger>
-						<NavigationMenu.Content>
+						<NavigationMenu.Trigger class="glassmorphism">Settings</NavigationMenu.Trigger>
+						<NavigationMenu.Content class="glassmorphism">
 							<div class="p-4 w-64">
 								<h3 class="text-lg font-medium mb-4">Settings</h3>
 								<div class="flex items-center justify-between">
@@ -67,15 +69,15 @@
 						</NavigationMenu.Content>
 					</NavigationMenu.Item>
 
-					<NavigationMenu.Item>
-						<NavigationMenu.Trigger>Demos</NavigationMenu.Trigger>
-						<NavigationMenu.Content>
-							<div class="p-4 w-64 space-y-2">
-								<a href="/demo/error-panel" class="block p-2 hover:bg-muted rounded-lg">
+					<NavigationMenu.Item class="bg-transparent">
+						<NavigationMenu.Trigger class="glassmorphism">Demos</NavigationMenu.Trigger>
+						<NavigationMenu.Content class="glassmorphism">
+							<div class="p-4 w-64 space-y-2 bg-transparent">
+								<a href="/demo/error-panel" class="block p-2 rounded-lg glassmorphism">
 									<div class="font-medium">Error Panel</div>
 									<div class="text-sm text-muted-foreground">View error panel component</div>
 								</a>
-								<a href="/demo/error-testing" class="block p-2 hover:bg-muted rounded-lg">
+								<a href="/demo/error-testing" class="block p-2 rounded-lg glassmorphism">
 									<div class="font-medium">Error Testing</div>
 									<div class="text-sm text-muted-foreground">Test error handling</div>
 								</a>
@@ -84,7 +86,7 @@
 					</NavigationMenu.Item>
 
 					<NavigationMenu.Item>
-						<NavigationMenu.Link href="/about">About</NavigationMenu.Link>
+						<NavigationMenu.Link href="/about" class="glassmorphism">About</NavigationMenu.Link>
 					</NavigationMenu.Item>
 				</NavigationMenu.List>
 			</NavigationMenu.Root>
@@ -96,12 +98,10 @@
 
 	<!-- Dialog lives at root to avoid layout interference -->
 	<Dialog.Root bind:open={addScreenOpen}>
-		<Dialog.Content>
+		<Dialog.Content class="bg-transparent glassmorphism">
 			<Dialog.Header>
 				<Dialog.Title>Add New Screen</Dialog.Title>
-				<Dialog.Description>
-					Configure the details for your new screen.
-				</Dialog.Description>
+				<Dialog.Description>Configure the details for your new screen.</Dialog.Description>
 			</Dialog.Header>
 			<div class="grid gap-4 py-4">
 				<div class="grid gap-2">
