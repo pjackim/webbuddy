@@ -31,13 +31,14 @@
 		const { evt } = e.detail;
 		const dx = evt.clientX - start.x;
 		const dy = evt.clientY - start.y;
-		sc.x = orig.x + dx;
-		sc.y = orig.y + dy;
+		const newX = orig.x + dx;
+		const newY = orig.y + dy;
+		const updatedScreen = { ...sc, x: newX, y: newY };
+		upsertScreen(updatedScreen);
 	}
 	function onScreenUp(_e: KonvaMouseEvent) {
 		dragging = false;
-		if (online.current) {
-			upsertScreen(sc);
+		if (online.current && (sc.x !== orig.x || sc.y !== orig.y)) {
 			api(`/screens/${sc.id}`, { method: 'PUT', body: JSON.stringify({ x: sc.x, y: sc.y }) });
 		}
 	}

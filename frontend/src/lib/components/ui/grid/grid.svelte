@@ -172,20 +172,23 @@
 	}
 
 	onMount(() => {
-		if (!canvasElement) return;
+		// capture a stable reference for use in closures
+		const el = canvasElement;
+		if (!el) return;
 
 		const resizeObserver = new ResizeObserver((entries) => {
-			if (!entries[0]) return;
-			const { width, height } = entries[0].contentRect;
-			canvasElement.width = width;
-			canvasElement.height = height;
+			const entry = entries[0];
+			if (!entry) return;
+			const { width, height } = entry.contentRect;
+			el.width = width;
+			el.height = height;
 			dimensions = { width, height };
 		});
-		resizeObserver.observe(canvasElement);
+		resizeObserver.observe(el);
 
-		const rect = canvasElement.getBoundingClientRect();
-		canvasElement.width = rect.width;
-		canvasElement.height = rect.height;
+		const rect = el.getBoundingClientRect();
+		el.width = rect.width;
+		el.height = rect.height;
 		dimensions = { width: rect.width, height: rect.height };
 
 		const initialPan = { x: rect.width / 2, y: rect.height / 2 };
