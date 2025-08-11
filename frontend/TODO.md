@@ -1,5 +1,7 @@
 # AGENTS Frontend Refactor
 
+VERY IMPORTANT: [READ **ALL** DOCUMENTATION]("../docs/")
+
 Try not to change the resulting behavior (Or Style!) of the app, just the structure and organization of the project.
 
 ## Notes:
