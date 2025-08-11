@@ -4,7 +4,7 @@
 /* Optional: Tailwind plugins via CSS (v4 style) */
 @import "tw-animate-css";
 @plugin "daisyui" {
-    themes: synthwave --default;
+    /* themes: synthwave --default; */
 }
 
 /* Custom dark variant helper (kept for compatibility with existing selectors) */

@@ -191,10 +191,10 @@
 	// Get appropriate color classes based on severity
 	const severityClasses = $derived.by(() => {
 		switch (errorSeverity) {
-			case 'critical': return 'text-red-500 border-red-200';
-			case 'warning': return 'text-yellow-600 border-yellow-200';
-			case 'info': return 'text-blue-600 border-blue-200';
-			default: return 'text-foreground border-border';
+			case 'critical': return 'text-red-500';
+			case 'warning': return 'text-yellow-600';
+			case 'info': return 'text-blue-600';
+			default: return 'text-foreground';
 		}
 	});
 </script>

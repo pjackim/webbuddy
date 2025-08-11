@@ -122,7 +122,7 @@
 />
 
 <section
-	class="relative w-full h-[calc(100vh-64px)] bg-gray-950"
+	class="relative w-full h-[calc(100vh-64px)] glassmorphism"
 	bind:this={container}
 	aria-label="Canvas area"
 >

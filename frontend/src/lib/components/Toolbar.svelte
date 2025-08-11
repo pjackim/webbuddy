@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ButtonVariant } from './ui/button/button.svelte.d.ts';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -30,10 +31,10 @@
 	}
 </script>
 
-<div class="relative z-20 border-b glassmorphism">
+<div class="relative z-20 border-b glass">
 	<div class="flex h-14 items-center justify-between px-4">
 		<!-- Left: Brand -->
-		<a href="/" class="font-bold text-lg text-glow hover:text-primary transition-colors">WebBuddy</a>
+		<a href="/" class="font-bold text-lg hover:text-primary transition-colors">WebBuddy</a>
 
 		<!-- Center: Navigation -->
 		<div class="flex-1 flex justify-center">
@@ -46,7 +47,7 @@
 								<p class="text-sm text-muted-foreground mb-4">
 									Manage your screens or add a new one.
 								</p>
-								<Button class="w-full" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
+								<Button ButtonVariant="outline" class="w-full glass" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
 							</div>
 						</NavigationMenu.Content>
 					</NavigationMenu.Item>
