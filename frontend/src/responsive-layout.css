@@ -3,6 +3,16 @@
  * This file contains the responsive layout utilities
  */
 
+ @import "tailwindcss";
+
+/* Optional: Tailwind plugins via CSS (v4 style) */
+@import "tw-animate-css";
+@plugin "daisyui" {
+    /* themes: synthwave --default; */
+}
+
+
+
 /* Ensure no scrolling on html/body */
 html, body {
   height: 100%;
@@ -40,26 +50,38 @@ html, body {
   position: relative;
 }
 
-/* Scrollable content areas */
-.scrollable-content {
-  height: 100%;
+/* --- SCROLLABLE CONTENT (v4 utility) --- */
+@utility scrollable-content {
+  block-size: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+
+  /* smoother nested scroll areas + better mobile behavior */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* optional: keeps layout from shifting when scrollbar appears */
+  scrollbar-gutter: stable both-edges;
 }
 
+/* Cross-browser scrollbar cosmetics (kept from your original) */
+.scrollable-content {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--border-oklch) / 0.4) transparent;
+}
+
+/* WebKit */
 .scrollable-content::-webkit-scrollbar {
   width: 6px;
 }
-
 .scrollable-content::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .scrollable-content::-webkit-scrollbar-thumb {
   background: oklch(var(--border-oklch) / 0.4);
   border-radius: 3px;
 }
-
 .scrollable-content::-webkit-scrollbar-thumb:hover {
   background: oklch(var(--border-oklch) / 0.6);
 }

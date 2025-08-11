@@ -1,6 +1,7 @@
 /* Tailwind v4 entry: import Tailwind so utilities (e.g., py-4) are available for @apply */
 @import "tailwindcss";
 
+
 /* Optional: Tailwind plugins via CSS (v4 style) */
 @import "tw-animate-css";
 @plugin "daisyui" {
@@ -351,48 +352,6 @@
 
 
 
-
-@plugin "daisyui/theme" {
-  name: "synthwave";
-  default: false;
-  prefersdark: false;
-  color-scheme: "dark";
-  --color-base-100: oklch(15% 0.09 281.288);
-  --color-base-200: oklch(20% 0.09 281.288);
-  --color-base-300: oklch(25% 0.09 281.288);
-  --color-base-content: oklch(78% 0.115 274.713);
-  --color-primary: oklch(71% 0.202 349.761);
-  --color-primary-content: oklch(28% 0.109 3.907);
-  --color-secondary: oklch(82% 0.111 230.318);
-  --color-secondary-content: oklch(29% 0.066 243.157);
-  --color-accent: oklch(75% 0.183 55.934);
-  --color-accent-content: oklch(26% 0.079 36.259);
-  --color-neutral: oklch(45% 0.24 277.023);
-  --color-neutral-content: oklch(87% 0.065 274.039);
-  --color-info: oklch(74% 0.16 232.661);
-  --color-info-content: oklch(29% 0.066 243.157);
-  --color-success: oklch(77% 0.152 181.912);
-  --color-success-content: oklch(27% 0.046 192.524);
-  --color-warning: oklch(90% 0.182 98.111);
-  --color-warning-content: oklch(42% 0.095 57.708);
-  --color-error: oklch(73.7% 0.121 32.639);
-  --color-error-content: oklch(23.501% 0.096 290.329);
-  --radius-selector: 1rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
-  --size-selector: 0.25rem;
-  --size-field: 0.25rem;
-  --border: 1px;
-  --depth: 0;
-  --noise: 0;
-  --glass-opacity: 0.15;
-  --glass-border-opacity: 0.1;
-  --glass-reflex-degree: 100;
-  --glass-reflex-opacity: 0.05;
-  --glass-blur: 20px;
-  --glass-text-shadow-opacity: 0;
-}
-
 /*
  * =================================================================
  * RESPONSIVE LAYOUT FRAMEWORK - NO SCROLL DESIGN
@@ -437,26 +396,38 @@
   position: relative;
 }
 
-/* Scrollable content areas */
-.scrollable-content {
-  height: 100%;
+/* --- SCROLLABLE CONTENT (v4 utility) --- */
+@utility scrollable-content {
+  block-size: 100%;
   overflow-y: auto;
   overflow-x: hidden;
+
+  /* smoother nested scroll areas + better mobile behavior */
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  /* optional: keeps layout from shifting when scrollbar appears */
+  scrollbar-gutter: stable both-edges;
 }
 
+/* Cross-browser scrollbar cosmetics (kept from your original) */
+.scrollable-content {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--border-oklch) / 0.4) transparent;
+}
+
+/* WebKit */
 .scrollable-content::-webkit-scrollbar {
   width: 6px;
 }
-
 .scrollable-content::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .scrollable-content::-webkit-scrollbar-thumb {
   background: oklch(var(--border-oklch) / 0.4);
   border-radius: 3px;
 }
-
 .scrollable-content::-webkit-scrollbar-thumb:hover {
   background: oklch(var(--border-oklch) / 0.6);
 }
