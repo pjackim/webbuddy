@@ -8,6 +8,11 @@
 
 	let hover = $state(false);
 
+	function onDragOver(e: DragEvent) {
+		e.preventDefault();
+		hover = true;
+	}
+
 	async function onDrop(e: DragEvent) {
 		e.preventDefault();
 		hover = false;
@@ -45,7 +50,7 @@
 <div
 	class="flex flex-col h-screen"
 	role="group"
-	ondragover|preventDefault={() => (hover = true)}
+	ondragover={onDragOver}
 	ondragleave={() => (hover = false)}
 	ondrop={onDrop}
 >
