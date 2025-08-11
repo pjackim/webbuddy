@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { ButtonVariant } from './ui/button/button.svelte.d.ts';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -47,7 +46,7 @@
 								<p class="text-sm text-muted-foreground mb-4">
 									Manage your screens or add a new one.
 								</p>
-								<Button ButtonVariant="outline" class="w-full glass" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
+								<Button class="w-full glass" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
 							</div>
 						</NavigationMenu.Content>
 					</NavigationMenu.Item>
