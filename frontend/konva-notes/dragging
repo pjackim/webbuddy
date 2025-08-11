@@ -1,0 +1,172 @@
+# Konva Dragging — Patterns and Utilities (Svelte 5 + Konva)
+
+What you get: rock-solid dragging with grid/bounds constraints, axis locks, inertia, multi-drag, and keyboard-modifier toggles. Pair with snapping.md and transforms.md.
+
+## 1) Enable drag with axis constraints
+
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
+
+  let rX: any, rY: any, rBoth: any;
+
+  onMount(async () => {
+    await tick();
+    rX.draggable(true);
+    rX.dragBoundFunc((pos) => ({ x: pos.x, y: rX.y() }));
+
+    rY.draggable(true);
+    rY.dragBoundFunc((pos) => ({ x: rY.x(), y: pos.y }));
+
+    rBoth.draggable(true);
+  });
+</script>
+
+<Stage config={{ width: 800, height: 600 }}>
+  <Layer>
+    <Rect bind:handle={rX}   config={{ x: 80,  y: 80,  width: 120, height: 80,  fill: '#60a5fa' }} />
+    <Rect bind:handle={rY}   config={{ x: 260, y: 80,  width: 120, height: 80,  fill: '#22c55e' }} />
+    <Rect bind:handle={rBoth} config={{ x: 440, y: 80,  width: 120, height: 80,  fill: '#f97316' }} />
+  </Layer>
+</Stage>
+```
+
+## 2) Bounds within a rect (artboard constraints)
+
+```ts
+export function makeBoundsDragFunc(bounds: { x: number; y: number; width: number; height: number }, pad = 0) {
+  return function bound(this: any, pos: { x: number; y: number }) {
+    const minX = bounds.x + pad;
+    const minY = bounds.y + pad;
+    const maxX = bounds.x + bounds.width - pad - (this.width?.() ?? 0);
+    const maxY = bounds.y + bounds.height - pad - (this.height?.() ?? 0);
+    return {
+      x: Math.max(minX, Math.min(pos.x, maxX)),
+      y: Math.max(minY, Math.min(pos.y, maxY)),
+    };
+  };
+}
+```
+
+Apply: `node.dragBoundFunc(makeBoundsDragFunc({ x:0, y:0, width:1000, height:700 }, 8))`.
+
+## 3) Grid snap via dragBoundFunc (live)
+
+```ts
+export function gridDrag(grid = 10) {
+  return (pos: { x: number; y: number }) => ({
+    x: Math.round(pos.x / grid) * grid,
+    y: Math.round(pos.y / grid) * grid,
+  });
+}
+```
+
+Apply: `node.dragBoundFunc(gridDrag(20))`.
+
+## 4) Toggle snapping with keyboard modifier (e.g., hold Alt to disable)
+
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
+
+  let stage: any; let rect: any; let snapEnabled = true;
+  const grid = 20;
+
+  function gridDrag(g = 10) {
+    return (pos: { x: number; y: number }) => ({
+      x: Math.round(pos.x / g) * g,
+      y: Math.round(pos.y / g) * g,
+    });
+  }
+
+  function updateBound() {
+    rect.dragBoundFunc(snapEnabled ? gridDrag(grid) : ((p: any) => p));
+  }
+
+  function onKey(e: KeyboardEvent, down: boolean) {
+    if (e.altKey) { snapEnabled = !down; updateBound(); }
+  }
+
+  onMount(async () => {
+    await tick();
+    rect.draggable(true); updateBound();
+    window.addEventListener('keydown', (e) => onKey(e, true));
+    window.addEventListener('keyup',   (e) => onKey(e, false));
+  });
+</script>
+
+<Stage bind:handle={stage} config={{ width: 800, height: 600 }}>
+  <Layer>
+    <Rect bind:handle={rect} config={{ x: 120, y: 120, width: 140, height: 100, fill: '#a78bfa' }} />
+  </Layer>
+</Stage>
+```
+
+## 5) Multi-drag (drag one, move selected peers)
+
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
+
+  let a: any, b: any, c: any;
+  let selected = new Set<any>();
+
+  function wire(node: any) {
+    node.draggable(true);
+    let startPos = { x: 0, y: 0 };
+    node.on('dragstart', () => { startPos = { x: node.x(), y: node.y() }; });
+    node.on('dragmove', () => {
+      const dx = node.x() - startPos.x;
+      const dy = node.y() - startPos.y;
+      for (const peer of selected) {
+        if (peer === node) continue;
+        peer.position({ x: peer.x() + dx, y: peer.y() + dy });
+      }
+      startPos = { x: node.x(), y: node.y() };
+      node.getLayer()?.batchDraw();
+    });
+  }
+
+  onMount(async () => {
+    await tick();
+    [a, b, c].forEach(wire);
+    selected = new Set([a, b, c]); // example: all selected
+  });
+</script>
+
+<Stage config={{ width: 900, height: 600 }}>
+  <Layer>
+    <Rect bind:handle={a} config={{ x: 100, y: 120, width: 120, height: 90, fill: '#ef4444' }} />
+    <Rect bind:handle={b} config={{ x: 260, y: 220, width: 160, height: 110, fill: '#10b981' }} />
+    <Rect bind:handle={c} config={{ x: 460, y: 180, width: 140, height: 100, fill: '#3b82f6' }} />
+  </Layer>
+</Stage>
+```
+
+## 6) Inertia (post-drag fling) — simple physics
+
+```ts
+export function applyInertia(node: any, options = { friction: 0.92, minSpeed: 5 }) {
+  let last = { x: 0, y: 0 }; let vel = { x: 0, y: 0 };
+  node.on('dragstart', () => { last = { x: node.x(), y: node.y() }; vel = { x: 0, y: 0 }; });
+  node.on('dragmove', () => {
+    const nx = node.x(), ny = node.y();
+    vel = { x: nx - last.x, y: ny - last.y }; last = { x: nx, y: ny };
+  });
+  node.on('dragend', async () => {
+    const Konva = (await import('konva')).default;
+    const layer = node.getLayer();
+    const anim = new Konva.Animation(() => {
+      node.position({ x: node.x() + vel.x, y: node.y() + vel.y });
+      vel.x *= options.friction; vel.y *= options.friction;
+      if (Math.hypot(vel.x, vel.y) < options.minSpeed) anim.stop();
+    }, layer);
+    anim.start();
+  });
+}
+```
+
+Use: `applyInertia(node)` after mounting. Combine with bounds by clamping position each frame.

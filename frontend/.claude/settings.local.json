@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       ".*",
-      "*"
+      "*",
+      "Bash(rm:*)"
     ],
     "additionalDirectories": [
       "/mnt/z/Coding/webbuddy/webbuddy/docs/"

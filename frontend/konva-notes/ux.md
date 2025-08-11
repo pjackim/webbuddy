@@ -1,145 +1,215 @@
-# Konva UX — Practical Patterns and Notes (Svelte + Konva)
+# Konva UX — Plug-and-Play Patterns (Svelte 5 + Konva)
 
-Sources:
-- Local wrapper overview: docs/svelte-konva-docs.md
-- Konva official docs via MCP: Stage Preview (clone or image), Editable Text, Overview
+Focus: panning/zooming, marquee selection, selection/transformer wiring, tooltips/hover, mini-map preview, and performance.
 
-Conventions:
-- Use svelte-konva components and bind:handle to access underlying nodes.
-- Prefer Konva.Animation for frame loops tied to layers; batchDraw when updating frequently.
-- Use listening: false for preview/overlay shapes that shouldn't capture events.
+Conventions
+- Use `bind:handle` to access Konva nodes.
+- Prefer pointer events (`pointerdown/move/up/wheel`).
+- Use separate layers: content, overlays (hover/guides), controls (transformer/marquees).
 
-Stage Preview
+## 1) Wheel zoom into cursor + spacebar pan
 
-Two proven strategies to show a mini-map/preview of a large stage:
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
 
-1) Clone Layer or Stage (live, structural)
-- Create a second Stage at reduced scale (e.g., 0.25).
-- Clone the main Layer: const previewLayer = layer.clone({ listening: false }).
-- Ensure all shapes have stable name or id so you can sync by selector.
-- On dragmove/dragend/new shape, update cloned nodes' positions from originals.
-- Strip heavy styles (strokes, shadows, text) on the preview to keep it fast.
+  let stage: any;
+  let isPanning = false;
+  const scaleBy = 1.05; // zoom speed
 
-2) Image Snapshot (fastest for static updates)
-- Use stage.toDataURL({ pixelRatio: scale }) to render a downscaled preview.
-- Update on dragend or after debounced edits to avoid heavy re-renders per frame.
+  function onWheel(e: any) {
+    e.evt.preventDefault();
+    const oldScale = stage.scaleX();
+    const pointer = stage.getPointerPosition();
+    const mousePointTo = {
+      x: (pointer.x - stage.x()) / oldScale,
+      y: (pointer.y - stage.y()) / oldScale,
+    };
 
-Tips
-- Keep preview listening disabled to avoid duplicate hit graphs.
-- For very large scenes, generate preview directly from app state instead of cloning runtime nodes.
+    const direction = e.evt.deltaY > 0 ? 1 : -1;
+    const newScale = direction > 0 ? oldScale / scaleBy : oldScale * scaleBy;
 
-UI Animations
+    stage.scale({ x: newScale, y: newScale });
+    const newPos = {
+      x: pointer.x - mousePointTo.x * newScale,
+      y: pointer.y - mousePointTo.y * newScale,
+    };
+    stage.position(newPos);
+    stage.batchDraw();
+  }
 
-Options
-- Konva.Animation: attach to a Layer for continuous redraws; ideal for video/image sources or custom animations.
-- Konva.Tween: interpolate node attributes over time for micro-interactions.
-- CSS/DOM overlays: for tooltips or HUDs, animate with CSS outside the canvas.
+  function onKeyDown(e: KeyboardEvent) {
+    if (e.code === 'Space' && !isPanning) {
+      isPanning = true;
+      stage.draggable(true);
+      document.body.style.cursor = 'grab';
+    }
+  }
+  function onKeyUp(e: KeyboardEvent) {
+    if (e.code === 'Space' && isPanning) {
+      isPanning = false;
+      stage.draggable(false);
+      document.body.style.cursor = 'default';
+    }
+  }
 
-Practices
-- Start/stop animation loops when visible; avoid running when tab hidden.
-- Cache static nodes (node.cache()) to speed up animated transforms/filters.
-- Use layer.batchDraw() inside dragmove/transform for smoother updates.
+  onMount(async () => {
+    await tick();
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+  });
+</script>
 
-Canvas Navigation (Panning, Zooming, Selection, Gestures)
+<Stage bind:handle={stage} on:wheel={onWheel} config={{ width: 1000, height: 700 }}>
+  <Layer>
+    <Rect config={{ x: 100, y: 100, width: 200, height: 140, fill: '#60a5fa' }} />
+  </Layer>
+</Stage>
+```
 
-Panning
-- Toggle stage.draggable(true) when in "hand" mode.
-- Alternative: implement spacebar-to-pan by temporarily enabling stage dragging.
+## 2) Marquee selection (rubber-band) + attach Transformer
 
-Zooming (wheel to zoom into cursor)
-- Handle 'wheel' on Stage, preventDefault.
-- Compute pointer focal point; adjust stage scale and position so pointer stays fixed.
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect, Transformer } from 'svelte-konva';
 
-Pinch Zoom (touch)
-- Track two touch points; compute distance delta to set scale.
-- Use stage.getPointerPosition() and stage.position() math similar to wheel zoom.
+  let stage: any; let content: any; let overlay: any; let tr: any;
+  let selectionRect: any; let selection = new Set<any>();
+  let startPos = { x: 0, y: 0 };
+  let selecting = false;
 
-Selection Rectangle (marquee)
-- On mousedown, start a translucent Rect on an overlay layer; on mousemove, resize; on mouseup, select intersecting nodes via stage.find with getClientRect overlap.
-- Deselect on empty-area click.
+  function beginSelection(pos: {x:number;y:number}) {
+    selecting = true; startPos = pos;
+    selectionRect.visible(true);
+    selectionRect.width(0); selectionRect.height(0);
+  }
+  function updateSelection(pos: {x:number;y:number}) {
+    if (!selecting) return;
+    const x = Math.min(pos.x, startPos.x);
+    const y = Math.min(pos.y, startPos.y);
+    const w = Math.abs(pos.x - startPos.x);
+    const h = Math.abs(pos.y - startPos.y);
+    selectionRect.setAttrs({ x, y, width: w, height: h });
+    overlay.batchDraw();
+  }
+  function endSelection() {
+    if (!selecting) return; selecting = false;
+    const box = selectionRect.getClientRect({ skipStroke: false });
+    selectionRect.visible(false); overlay.draw();
+    selection.clear();
+    content.find('.selectable').each((node: any) => {
+      if (haveIntersection(box, node.getClientRect())) selection.add(node);
+    });
+    tr.nodes(Array.from(selection));
+  }
+  function haveIntersection(r1: any, r2: any) {
+    return !(r2.x > r1.x + r1.width || r2.x + r2.width < r1.x || r2.y > r1.y + r1.height || r2.y + r2.height < r1.y);
+  }
 
-Single Selection + Transformer
-- Click a node to select; attach Transformer to selected node(s).
-- Click on empty stage to clear selection.
-- Keep selection/transformer on a dedicated UI layer above content.
+  onMount(async () => {
+    await tick();
+    selectionRect = new (await import('konva')).default.Rect({
+      fill: 'rgba(14, 165, 233, 0.15)',
+      stroke: '#0ea5e9',
+      dash: [4, 4],
+      visible: false,
+      listening: false,
+    });
+    overlay.add(selectionRect);
 
-Gestures and Drag Constraints
-- Use dragBoundFunc for snap-to-grid or bounds.
-- For multi-select drag, group nodes temporarily or move them together on drag events.
+    stage.on('mousedown touchstart', (e: any) => {
+      if (e.target === stage) beginSelection(stage.getPointerPosition());
+    });
+    stage.on('mousemove touchmove', () => updateSelection(stage.getPointerPosition()));
+    stage.on('mouseup touchend', endSelection);
+  });
+</script>
 
-Accessibility and UX Aids
+<Stage bind:handle={stage} config={{ width: 1000, height: 700 }}>
+  <Layer bind:handle={content}>
+    <Rect name="selectable" config={{ x: 120, y: 100, width: 140, height: 120, fill: '#f59e0b', draggable: true }} />
+    <Rect name="selectable" config={{ x: 360, y: 240, width: 180, height: 100, fill: '#a78bfa', draggable: true }} />
+  </Layer>
+  <Layer bind:handle={overlay}>
+    <Transformer bind:handle={tr} />
+  </Layer>
+</Stage>
+```
 
-Tooltips
-- Use DOM overlays positioned at node.absolutePosition() for screen-reader-friendly tooltips.
-- Alternatively use Konva.Label + Tag + Text for canvas-only hints.
+## 3) Hover highlights + DOM tooltip
 
-Highlighting Canvas Elements
-- On pointerover/out, adjust stroke or shadow for hover; cache nodes for performance.
-- Keep a "hover" layer for guide/hover visuals and clear it frequently.
+```svelte
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
 
-Context Menus for Assets
-- Listen for 'contextmenu' (right-click) on Stage or node; preventDefault and show a DOM menu at client coordinates.
-- Menu actions mutate node properties via bound handles.
+  let stage: any; let layer: any; let hover: any; let tooltip: HTMLDivElement;
 
-Scale Image to Fit / Responsive Canvas
-- Compute fit ratio: ratio = Math.min(containerW / contentW, containerH / contentH).
-- Apply Stage scale to fit into container; set Stage size to container dimensions.
-- On resize, recompute and reapply; keep a consistent "virtual" coordinate system for content.
+  onMount(async () => {
+    await tick();
+    hover = new (await import('konva')).default.Rect({ listening: false, stroke: '#0ea5e9', strokeWidth: 1, dash: [4, 4], visible: false });
+    layer.add(hover); layer.draw();
 
-Modify Line Points with Anchors
-- For Konva.Line with points, draw draggable Circle anchors at each point; on anchor drag, update line.points([...]).
-- Use Transformer only for overall line transform; anchors handle per-vertex edits.
+    stage.on('pointermove', (e: any) => {
+      const t = e.target;
+      if (t && t !== stage && t.hasName?.('selectable')) {
+        const box = t.getClientRect();
+        hover.setAttrs({ x: box.x, y: box.y, width: box.width, height: box.height, visible: true });
+        tooltip.style.transform = `translate(${e.evt.clientX + 8}px, ${e.evt.clientY + 8}px)`;
+        tooltip.textContent = `w:${Math.round(box.width)} h:${Math.round(box.height)}`;
+      } else {
+        hover.visible(false);
+      }
+      layer.batchDraw();
+    });
+  });
+</script>
 
-Rich HTML on Canvas
-- Prefer DOM overlays for rich content (forms, long text). Sync their position to nodes.
-- If rasterization is required, render HTML/SVG to an offscreen canvas (e.g., canvg) and use as Konva.Image source.
+<div bind:this={tooltip} style="position:fixed; pointer-events:none; background:#111827; color:#fff; padding:2px 6px; border-radius:4px; font:12px/1.4 system-ui;" />
 
-SVG Images on Canvas
-- For simple SVGs, Konva.Image.fromURL works; for complex SVG, rasterize with canvg then set the resulting canvas to an Image node.
+<Stage bind:handle={stage} config={{ width: 800, height: 600 }}>
+  <Layer bind:handle={layer}>
+    <Rect name="selectable" config={{ x: 100, y: 120, width: 160, height: 120, fill: '#22c55e' }} />
+  </Layer>
+</Stage>
+```
 
-Transparency and Blending
-- Use node.opacity and fillAlpha/strokeAlpha.
-- For special effects, use globalCompositeOperation modes on nodes or layers.
+## 4) Mini-map preview (snapshot)
 
-Data, Events, Selectors, Performance
+```svelte
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { Stage, Layer, Rect } from 'svelte-konva';
 
-Selectors
-- Assign name or id to nodes; use stage.find('.class') or stage.findOne('#id') to query.
-- Organize layers by concern: content, guides/hover, transformer/controls.
+  let main: any; let previewUrl = '';
+  const scale = 0.25; // preview scale factor
 
-Events
-- svelte-konva maps Konva events to Svelte on:event; all Konva events are supported.
-- Prefer pointer events (pointerdown/enter/leave) for unified mouse/touch.
-- Stop propagation when handling UI overlays to avoid unwanted selection.
+  async function updatePreview() {
+    const url = main.toDataURL({ pixelRatio: scale });
+    previewUrl = url;
+  }
+  onMount(() => {
+    // call updatePreview() on debounced edits, dragend, transformend, etc.
+  });
+</script>
 
-Performance
-- Disable hit graph where not needed: layer.listening(false) or node.listening(false).
-- For massive scenes, turn off perfectDrawEnabled on shapes where anti-aliased edges aren’t critical.
-- Batch updates and use layer.batchDraw(). Debounce expensive computations during drag.
-- Cache complex shapes (node.cache()); remember to invalidate cache on attribute changes.
-- Keep preview and HUD layers thin and static; avoid filters during live interaction.
+<div style="display:flex; gap:12px;">
+  <Stage bind:handle={main} config={{ width: 1000, height: 700 }}>
+    <Layer>
+      <Rect config={{ x: 200, y: 200, width: 240, height: 180, fill: '#ef4444', draggable: true }} on:dragend={updatePreview} />
+    </Layer>
+  </Stage>
+  <div>
+    <img alt="preview" src={previewUrl} style="width:250px; height:auto; border:1px solid #e5e7eb; background:#fff;" />
+  </div>
+</div>
+```
 
-svelte-konva-specific Notes
-- Bind handles to access underlying Konva nodes; use onMount + tick to ensure handle is defined.
-- Binding config enables auto-sync after dragend/transformend; pass staticConfig to turn off sync if you manage state yourself.
-- For SSR/SvelteKit, import canvas features only on client: dynamic import stage or use vite-plugin-iso-import ?client.
-
-Cross-references in this repo
-- Snapping patterns: frontend/konva-notes/snapping.md
-- Transformer patterns: frontend/konva-notes/transforms.md
-- Asset patterns (Image/SVG/Video/GIF/Sprite/Text): frontend/konva-notes/assets.md
-
-Checklists
-
-Selection UX
-- Click selects; empty click deselects; marquee selects multiple.
-- Transformer attaches to selection; provide rotation snaps and ratio locks.
-- Hover outlines and tooltips for discoverability.
-
-Navigation UX
-- Spacebar pans; wheel zooms into pointer; pinch zoom on touch.
-- Show current zoom level and reset-to-fit control.
-
-Accessibility UX
-- DOM-based tooltips/menus; sufficient contrast on hover highlights.
-- Keyboard shortcuts for pan/zoom reset and selection toggle.
+## 5) Performance checklist
+- Use `layer.batchDraw()` for frequent updates.
+- Disable hit graph where possible: `node.listening(false)` / `layer.listening(false)`.
+- Cache complex shapes: `node.cache()`; invalidate on attribute changes.
+- Keep guides/hover on a thin overlay layer; clear its children instead of redrawing everything.
+- For massive scenes, set `perfectDrawEnabled: false` on shapes where AA quality isn’t critical.

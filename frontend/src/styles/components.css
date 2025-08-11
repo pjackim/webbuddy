@@ -1,5 +1,4 @@
-@import 'tailwindcss';
-@plugin "daisyui";
+/* Tailwind and DaisyUI imports moved to app.css for better organization */
 @plugin "daisyui/theme" {
 	/* Custom Theme Configuration */
 	name: 'CustomTheme';
@@ -7,9 +6,9 @@
 	prefersdark: true; /* set as default dark mode (prefers-color-scheme:dark) */
 	color-scheme: dark; /* color of browser-provided UI */
 
-	include:;
-	exclude:;
-	prefix:;
+	/* include:; */
+	/* exclude:; */
+	/* prefix:; */
 	logs: true;
 
 
@@ -52,7 +51,8 @@
 
 
 
-    .bg-{COLOR_NAME} 
+    /* Template classes - comment out to avoid CSS parsing errors */
+    /* .bg-{COLOR_NAME} 
     .text-{COLOR_NAME} 
     .border-{COLOR_NAME} 
     .from-{COLOR_NAME} 
@@ -68,7 +68,7 @@
     .caret-{COLOR_NAME}
     .decoration-{COLOR_NAME}
     .placeholder-{COLOR_NAME}
-    .ring-offset-{COLOR_NAME}
+    .ring-offset-{COLOR_NAME} */
 
 
 
@@ -227,9 +227,10 @@
     --radius-field   : inherit;  /* For medium sized components like button, input, select, tab, etc.        */
     --radius-selector: inherit;  /* For small sized components like checkbox, toggle, badge, etc.        */
 
-    .rounded-box;
+    /* Template classes - comment out to avoid CSS parsing errors */
+    /* .rounded-box;
     .rounded-field;
-    .rounded-selector;
+    .rounded-selector; */
 
 
 /****************************************************/
@@ -239,23 +240,24 @@
 /*  \___\___/_\___/_|    \___/ \__|_|_|_|\__|\_, |  */
 /*                                           |__/   */
 /****************************************************/
-    .bg-primary          ;  /* Sets the background color to the primary color */
-    .to-primary          ;  /* Sets the ending color for a gradient to the primary color */
-    .via-primary         ;  /* Sets the middle color for a gradient to the primary color */
-    .from-primary        ;  /* Sets the starting color for a gradient to the primary color */
-    .text-primary        ;  /* Sets the text color to the primary color */
-    .ring-primary        ;  /* Sets the ring color to the primary color */
-    .fill-primary        ;  /* Sets the fill color for SVG elements to the primary color */
-    .caret-primary       ;  /* Sets the caret color to the primary color */
-    .stroke-primary      ;  /* Sets the stroke color for SVG elements to the primary color */
-    .border-primary      ;  /* Sets the border color to the primary color */
-    .divide-primary      ;  /* Sets the color for dividing borders to the primary color */
-    .accent-primary      ;  /* Sets the accent color to the primary color */
-    .shadow-primary      ;  /* Sets the shadow color to the primary color */
-    .outline-primary     ;  /* Sets the outline color to the primary color */
-    .decoration-primary  ;  /* Sets the text decoration color to the primary color */
-    .placeholder-primary ;  /* Sets the placeholder text color to the primary color */
-    .ring-offset-primary ;  /*  Sets the ring offset color to the primary color */
+    /* Template classes - comment out to avoid CSS parsing errors */
+    /* .bg-primary          ;  Sets the background color to the primary color
+    .to-primary          ;  Sets the ending color for a gradient to the primary color
+    .via-primary         ;  Sets the middle color for a gradient to the primary color
+    .from-primary        ;  Sets the starting color for a gradient to the primary color
+    .text-primary        ;  Sets the text color to the primary color
+    .ring-primary        ;  Sets the ring color to the primary color
+    .fill-primary        ;  Sets the fill color for SVG elements to the primary color
+    .caret-primary       ;  Sets the caret color to the primary color
+    .stroke-primary      ;  Sets the stroke color for SVG elements to the primary color
+    .border-primary      ;  Sets the border color to the primary color
+    .divide-primary      ;  Sets the color for dividing borders to the primary color
+    .accent-primary      ;  Sets the accent color to the primary color
+    .shadow-primary      ;  Sets the shadow color to the primary color
+    .outline-primary     ;  Sets the outline color to the primary color
+    .decoration-primary  ;  Sets the text decoration color to the primary color
+    .placeholder-primary ;  Sets the placeholder text color to the primary color
+    .ring-offset-primary ;  Sets the ring offset color to the primary color */
 
 }
 
