@@ -1,4 +1,5 @@
-import { writable, derived, get } from 'svelte/store';
+import { PersistedState } from 'runed';
+import type { Writable } from 'svelte/store';
 
 export type Screen = {
 	id: string;
@@ -35,15 +36,15 @@ export type TextAsset = BaseAsset & {
 };
 export type Asset = ImageAsset | TextAsset;
 
-export const screens = writable<Screen[]>([]);
-export const assets = writable<Asset[]>([]);
-export const online = writable<boolean>(true); // Offline Mode toggle
-export const selected = writable<string | null>(null);
+export const screens = $state<Screen[]>([]);
+export const assets = $state<Asset[]>([]);
+export const online = new PersistedState('online', true);
+export const selected = $state<string | null>(null);
 
-export const screensById = derived(screens, ($s) => new Map($s.map((sc) => [sc.id, sc])));
-export const assetsByScreen = derived(assets, ($a) => {
+export const screensById = $derived(new Map(screens.map((sc) => [sc.id, sc])));
+export const assetsByScreen = $derived.by(() => {
 	const map = new Map<string, Asset[]>();
-	for (const a of $a) {
+	for (const a of assets) {
 		const arr = map.get(a.screen_id) || [];
 		arr.push(a);
 		map.set(a.screen_id, arr);
@@ -53,27 +54,23 @@ export const assetsByScreen = derived(assets, ($a) => {
 });
 
 export function upsertAsset(a: Asset) {
-	assets.update((all) => {
-		const idx = all.findIndex((x) => x.id === a.id);
-		if (idx >= 0) all[idx] = a;
-		else all.push(a);
-		return [...all];
-	});
+	const idx = assets.findIndex((x) => x.id === a.id);
+	if (idx >= 0) assets[idx] = a;
+	else assets.push(a);
 }
 
 export function removeAsset(id: string) {
-	assets.update((all) => all.filter((a) => a.id !== id));
+	const idx = assets.findIndex((a) => a.id === id);
+	if (idx >= 0) assets.splice(idx, 1);
 }
 
 export function upsertScreen(s: Screen) {
-	screens.update((all) => {
-		const idx = all.findIndex((x) => x.id === s.id);
-		if (idx >= 0) all[idx] = s;
-		else all.push(s);
-		return [...all];
-	});
+	const idx = screens.findIndex((x) => x.id === s.id);
+	if (idx >= 0) screens[idx] = s;
+	else screens.push(s);
 }
 
 export function removeScreen(id: string) {
-	screens.update((all) => all.filter((s) => s.id !== id));
+	const idx = screens.findIndex((s) => s.id === id);
+	if (idx >= 0) screens.splice(idx, 1);
 }

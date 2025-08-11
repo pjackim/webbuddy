@@ -3,27 +3,41 @@
 	import Canvas from '../lib/components/Canvas.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { api, uploadFile } from '../lib/api';
-	import { online, upsertAsset, screens, type Asset } from '../lib/stores';
+	import { online, upsertAsset, screens, type Asset } from '$lib/stores.svelte.ts';
+	import { toast } from 'svelte-sonner';
 
-	let hover = false;
+	let hover = $state(false);
 
 	async function onDrop(e: DragEvent) {
 		e.preventDefault();
 		hover = false;
-		if (!$online) return; // keep local only? For now, require online to upload
+		if (!online.current) {
+			toast.error('You must be online to upload files.');
+			return;
+		}
 		const files = e.dataTransfer?.files;
 		if (!files) return;
+
 		for (const file of Array.from(files)) {
-			// Upload to backend to get a URL
-			const { url } = await uploadFile(file);
-			// Place on the first screen by default at (50,50)
-			const sc = $screens[0];
-			if (!sc) continue;
-			const asset = await api<Asset>('/assets', {
-				method: 'POST',
-				body: JSON.stringify({ type: 'image', screen_id: sc.id, x: 50, y: 50, src: url })
-			});
-			upsertAsset(asset);
+			const toastId = toast.loading(`Uploading ${file.name}...`);
+			try {
+				// Upload to backend to get a URL
+				const { url } = await uploadFile(file);
+				// Place on the first screen by default at (50,50)
+				const sc = screens[0];
+				if (!sc) {
+					toast.error('No screen available to place the asset.', { id: toastId });
+					continue;
+				}
+				const asset = await api<Asset>('/assets', {
+					method: 'POST',
+					body: JSON.stringify({ type: 'image', screen_id: sc.id, x: 50, y: 50, src: url })
+				});
+				upsertAsset(asset);
+				toast.success(`Successfully uploaded ${file.name}!`, { id: toastId });
+			} catch (error) {
+				toast.error(`Failed to upload ${file.name}.`, { id: toastId });
+			}
 		}
 	}
 </script>

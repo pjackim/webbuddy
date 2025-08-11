@@ -3,24 +3,22 @@
 	import { browser } from '$app/environment';
 	import { Stage, Layer } from 'svelte-konva';
 	import ScreenFrame from './ScreenFrame.svelte';
-	import { screens, assetsByScreen, online } from '../stores';
-	import type { Screen as StoreScreen } from '../stores';
+	import { screens, setScreens } from '$lib/stores.svelte.ts';
+	import type { Screen as StoreScreen } from '$lib/stores.svelte.ts';
 	import { api } from '../api';
 	import { connectWS } from '../ws';
 
-
-
-	let scale = 0.25; // stage zoom
-	let offset = { x: 0, y: 0 };
-	let panning = false;
+	let scale = $state(0.25); // stage zoom
+	let offset = $state({ x: 0, y: 0 });
+	let panning = $state(false);
 	let last = { x: 0, y: 0 };
 	// add a ref to the canvas container
 	let container: HTMLElement;
-	let viewport = { width: 0, height: 0 };
+	let viewport = $state({ width: 0, height: 0 });
 
 	async function load() {
-			const sc = await api('/screens');
-			screens.set(sc as StoreScreen[]);
+		const sc = await api('/screens');
+		setScreens(sc as StoreScreen[]);
 		const all = await api('/assets');
 		// assets store filled indirectly in ScreenFrame via events or do it here if preferred
 		// We'll broadcast on initial GET too for simplicity: update locally
@@ -76,25 +74,21 @@
 	on:mouseup={onMouseUp}
 />
 
-<section
-	class="w-full h-[calc(100vh-64px)]"
-	bind:this={container}
-	aria-label="Canvas area"
->
-			<Stage
-				config={{
+<section class="w-full h-[calc(100vh-64px)]" bind:this={container} aria-label="Canvas area">
+	<Stage
+		config={{
 			width: viewport.width,
 			height: Math.max(0, viewport.height - 64),
-					scaleX: scale,
-					scaleY: scale,
-					x: offset.x,
-					y: offset.y
-				}}
-			>
-				<Layer>
-			{#each $screens as sc}
-						<ScreenFrame {sc} />
-					{/each}
-				</Layer>
-			</Stage>
+			scaleX: scale,
+			scaleY: scale,
+			x: offset.x,
+			y: offset.y
+		}}
+	>
+		<Layer>
+			{#each screens as sc}
+				<ScreenFrame {sc} />
+			{/each}
+		</Layer>
+	</Stage>
 </section>
