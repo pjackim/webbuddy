@@ -333,13 +333,13 @@
   
   .glassmorphism {
     backdrop-filter: blur(16px);
-    background: oklch(var(--card-oklch) / 0.7);
-    border: 1px solid oklch(var(--border-oklch) / 0.2);
+    background: oklch(var(--card-oklch) / 0.3);
+    border: 1px solid oklch(var(--border-oklch) / 0.15);
   }
   
   .dark .glassmorphism {
-    background: oklch(var(--card-oklch) / 0.4);
-    border: 1px solid oklch(var(--border-oklch) / 0.1);
+    background: oklch(var(--card-oklch) / 0.15);
+    border: 1px solid oklch(var(--border-oklch) / 0.08);
   }
 }
 
@@ -506,6 +506,3 @@
     }
   }
 }
-
-
-
