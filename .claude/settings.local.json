@@ -15,7 +15,9 @@
       "**",
       "mcp__browsermcp__browser_navigate",
       "mcp__kapture__list_tabs",
-      "mcp__kapture__new_tab"
+      "mcp__kapture__new_tab",
+      "Bash(rm:*)",
+      "Bash(bun remove:*)"
     ],
     "deny": []
   }

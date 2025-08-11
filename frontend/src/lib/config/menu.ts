@@ -13,7 +13,7 @@ import {
 	Mailbox,
 	Phone,
 	Puzzle
-} from '@lucide/svelte';
+} from 'lucide-svelte';
 
 // Import desired Lucide icons
 

@@ -74,6 +74,3 @@
 	</div>
 </div>
 
-<style lang="postcss">
-	/* Tailwind handles layout; kept for future extension. */
-</style>

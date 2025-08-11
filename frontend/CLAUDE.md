@@ -196,3 +196,5 @@ Before claiming any task is complete, you MUST:
   - `Svelte-5-Documentation.md` - Svelte 5 patterns
   - `svelte-konva-docs.md` - Canvas integration guide
   - `runed/` - Svelte utility library docs
+
+- No, you will never need to run `bun run dev`. Just continue on to testing with your Browser MCP servers

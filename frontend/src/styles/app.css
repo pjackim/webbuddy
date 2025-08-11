@@ -1,4 +1,11 @@
 @import 'tailwindcss';
+
+/* Tailwind v4 plugins */
+@import 'tw-animate-css';
+@plugin "daisyui" {
+	/* themes: synthwave --default; */
+}
+
 @import './theme.css';
 @import './base.css';
 @import './components.css';

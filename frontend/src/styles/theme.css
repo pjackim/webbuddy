@@ -1,16 +1,5 @@
-/* Tailwind v4 entry: import Tailwind so utilities (e.g., py-4) are available for @apply */
-@import 'tailwindcss';
-
-/* Optional: Tailwind plugins via CSS (v4 style) */
-@import 'tw-animate-css';
-@plugin "daisyui" {
-	/* themes: synthwave --default; */
-}
-
 /* Custom dark variant helper (kept for compatibility with existing selectors) */
 @custom-variant dark (&:is(.dark *));
-
-/* Use DaisyUI without inline JSON config (which breaks the CSS parser) */
 
 /*
  * =================================================================
