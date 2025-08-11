@@ -32,72 +32,174 @@
 		class: className
 	}: Props = $props();
 
-	// Extract and format error content for display
+	// Enhanced error content processing with better formatting
 	const combinedErrorContent = $derived.by(() => {
-		let messageText = '';
-		let stackText = '';
-		
-		// Handle Error objects
-		if (errorMessage instanceof Error) {
-			messageText = `${errorMessage.name}: ${errorMessage.message}`;
-			stackText = errorMessage.stack || '';
+		try {
+			let messageText = '';
+			let stackText = '';
+			let additionalInfo = [];
 			
-			// Clean up the stack trace by removing the redundant error message line
-			if (stackText.startsWith(messageText)) {
-				stackText = stackText.substring(messageText.length + 1); // +1 for the newline
+			// Handle Error objects with enhanced processing
+			if (errorMessage instanceof Error) {
+				messageText = `${errorMessage.name}: ${errorMessage.message}`;
+				stackText = errorMessage.stack || '';
+				
+				// Add error properties if available
+				const errorProps = Object.getOwnPropertyNames(errorMessage).filter(
+					prop => !['name', 'message', 'stack'].includes(prop)
+				);
+				
+				for (const prop of errorProps) {
+					const value = (errorMessage as any)[prop];
+					if (value !== undefined && value !== null) {
+						additionalInfo.push(`${prop}: ${JSON.stringify(value)}`);
+					}
+				}
+				
+				// Clean up stack trace
+				if (stackText.startsWith(messageText)) {
+					stackText = stackText.substring(messageText.length + 1);
+				}
+				
+				// Remove duplicate error lines from stack
+				stackText = stackText.split('\n')
+					.filter(line => line.trim() && !line.includes('at Error '))
+					.join('\n');
+				
+			} else if (typeof errorMessage === 'object' && errorMessage !== null) {
+				// Handle API responses and other objects
+				try {
+					// Check if it looks like an API error response
+					const obj = errorMessage as any;
+					if (obj.error || obj.message || obj.status) {
+						messageText = obj.error || obj.message || 'Unknown error';
+						if (obj.status) additionalInfo.push(`Status: ${obj.status}`);
+						if (obj.code) additionalInfo.push(`Code: ${obj.code}`);
+						if (obj.timestamp) additionalInfo.push(`Time: ${obj.timestamp}`);
+						if (obj.path) additionalInfo.push(`Path: ${obj.path}`);
+					} else {
+						messageText = JSON.stringify(errorMessage, null, 2);
+					}
+				} catch (jsonError) {
+					messageText = String(errorMessage);
+					additionalInfo.push(`JSON Parse Error: ${jsonError}`);
+				}
+			} else {
+				messageText = String(errorMessage || 'Unknown error occurred');
 			}
-		} else if (typeof errorMessage === 'object' && errorMessage !== null) {
-			// Handle other object types (like API error responses)
-			try {
-				messageText = JSON.stringify(errorMessage, null, 2);
-			} catch {
-				messageText = String(errorMessage);
+			
+			// Process additional details
+			if (errorDetails) {
+				// Try to parse as JSON if it looks like structured data
+				try {
+					if (errorDetails.startsWith('{') || errorDetails.startsWith('[')) {
+						const parsed = JSON.parse(errorDetails);
+						stackText = JSON.stringify(parsed, null, 2);
+					} else {
+						stackText = stackText ? `${stackText}\n\n${errorDetails}` : errorDetails;
+					}
+				} catch {
+					stackText = stackText ? `${stackText}\n\n${errorDetails}` : errorDetails;
+				}
 			}
-		} else {
-			messageText = String(errorMessage);
+			
+			// Combine all parts with proper formatting
+			const parts = [messageText];
+			
+			if (additionalInfo.length > 0) {
+				parts.push('\n--- Error Properties ---');
+				parts.push(additionalInfo.join('\n'));
+			}
+			
+			if (stackText && stackText.trim()) {
+				parts.push('\n--- Stack Trace ---');
+				parts.push(stackText.trim());
+			}
+			
+			return parts.join('\n');
+			
+		} catch (processingError) {
+			// Fallback in case of processing errors
+			console.error('Error processing error content:', processingError);
+			return `Error processing failed: ${String(errorMessage)}\n\nProcessing Error: ${processingError}`;
 		}
-		
-		// Add additional details if provided
-		if (errorDetails) {
-			stackText = stackText ? `${stackText}\n\n--- Additional Details ---\n${errorDetails}` : errorDetails;
-		}
-		
-		// Combine message and stack/details
-		if (stackText) {
-			return `${messageText}\n\n--- Stack Trace ---\n${stackText}`;
-		}
-		
-		return messageText;
 	});
 
-	// Determine the title based on error code or custom title
+	// Enhanced title generation with more HTTP codes and custom handling
 	const displayTitle = $derived.by(() => {
 		if (title) return title;
-		if (typeof errorCode === 'number') {
-			switch (errorCode) {
-				case 400:
-					return 'Bad Request';
-				case 401:
-					return 'Unauthorized';
-				case 403:
-					return 'Forbidden';
-				case 404:
-					return 'Not Found';
-				case 500:
-					return 'Internal Error';
-				case 502:
-					return 'Bad Gateway';
-				case 503:
-					return 'Service Unavailable';
+		
+		const code = String(errorCode).toUpperCase();
+		
+		// Handle HTTP status codes
+		if (typeof errorCode === 'number' || /^\d+$/.test(code)) {
+			const numericCode = Number(errorCode);
+			switch (numericCode) {
+				// 4xx Client Errors
+				case 400: return 'Bad Request';
+				case 401: return 'Unauthorized';
+				case 402: return 'Payment Required';
+				case 403: return 'Forbidden';
+				case 404: return 'Not Found';
+				case 405: return 'Method Not Allowed';
+				case 408: return 'Request Timeout';
+				case 409: return 'Conflict';
+				case 410: return 'Gone';
+				case 422: return 'Unprocessable Entity';
+				case 429: return 'Too Many Requests';
+				
+				// 5xx Server Errors
+				case 500: return 'Internal Server Error';
+				case 501: return 'Not Implemented';
+				case 502: return 'Bad Gateway';
+				case 503: return 'Service Unavailable';
+				case 504: return 'Gateway Timeout';
+				case 505: return 'HTTP Version Not Supported';
+				
+				// Generic ranges
 				default:
+					if (numericCode >= 400 && numericCode < 500) return 'Client Error';
+					if (numericCode >= 500 && numericCode < 600) return 'Server Error';
 					return 'Error';
 			}
 		}
-		return 'Error';
+		
+		// Handle custom error codes
+		switch (code) {
+			case 'JS': return 'JavaScript Error';
+			case 'VALIDATION': return 'Validation Error';
+			case 'NETWORK': case 'CONN': return 'Network Error';
+			case 'TIMEOUT': return 'Timeout Error';
+			case 'PERMISSION': return 'Permission Error';
+			default:
+				if (code.startsWith('LIVE-')) {
+					return `Live ${code.substring(5)} Error`;
+				}
+				return 'Application Error';
+		}
+	});
+	
+	// Determine appropriate styling based on error type
+	const errorSeverity = $derived.by(() => {
+		const code = Number(errorCode);
+		if (code >= 500) return 'critical';
+		if (code >= 400) return 'warning';
+		if (String(errorCode).includes('JS') || String(errorCode).includes('LIVE')) return 'info';
+		return 'default';
+	});
+	
+	// Get appropriate color classes based on severity
+	const severityClasses = $derived.by(() => {
+		switch (errorSeverity) {
+			case 'critical': return 'text-red-500 border-red-200';
+			case 'warning': return 'text-yellow-600 border-yellow-200';
+			case 'info': return 'text-blue-600 border-blue-200';
+			default: return 'text-foreground border-border';
+		}
 	});
 </script>
 
-<div class={cn('flex flex-col items-center justify-center min-h-[400px] p-8', className)}>
+<div class={cn('flex flex-col items-center justify-center min-h-[400px] p-8 border rounded-lg', severityClasses, className)}>
 	<!-- Error Code Display -->
 	<div class="text-center mb-8">
 		<h1 class="text-8xl font-bold text-foreground mb-2">

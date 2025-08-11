@@ -96,7 +96,7 @@
 	}
 
 	:global(pre .line) {
-		@apply inline-block min-h-4 w-full px-4 py-0.5;
+		@apply inline-block min-h-4 w-full px-4 py-1;
 	}
 
 	:global(pre.line-numbers .line) {

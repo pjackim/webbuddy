@@ -1,13 +1,16 @@
-/**
- * @import "tailwindcss";
- * @import "tw-animate-css";
- * @custom-variant dark (&:is(.dark *));
- *
- * @plugin "@tail"
- */
+/* Tailwind v4 entry: import Tailwind so utilities (e.g., py-4) are available for @apply */
+@import "tailwindcss";
+
+/* Optional: Tailwind plugins via CSS (v4 style) */
+@import "tw-animate-css";
+@plugin "daisyui" {
+    themes: synthwave --default;
+}
+
+/* Custom dark variant helper (kept for compatibility with existing selectors) */
+@custom-variant dark (&:is(.dark *));
 
 /* Use DaisyUI without inline JSON config (which breaks the CSS parser) */
-@plugin "daisyui";
 
 /*
  * =================================================================
@@ -15,27 +18,27 @@
  * =================================================================
  */
 :root {
-  --radius: 0.75rem; /* Increased radius for a more modern look */
+  --radius: 0.5rem; /* Slightly reduced for cleaner look */
 
-  /* OKLCH values for light theme */
-  --background-oklch: 0.98 0.01 261;
-  --foreground-oklch: 0.13 0.028 261.692;
-  --card-oklch: 1 0 0;
-  --card-foreground-oklch: 0.13 0.028 261.692;
-  --popover-oklch: 1 0 0;
-  --popover-foreground-oklch: 0.13 0.028 261.692;
-  --primary-oklch: 0.48 0.24 264;
-  --primary-foreground-oklch: 0.985 0.002 247.839;
-  --secondary-oklch: 0.96 0.003 264;
-  --secondary-foreground-oklch: 0.21 0.034 264.665;
-  --muted-oklch: 0.96 0.003 264;
-  --muted-foreground-oklch: 0.55 0.027 264;
-  --accent-oklch: 0.96 0.003 264;
-  --accent-foreground-oklch: 0.21 0.034 264.665;
-  --destructive-oklch: 0.57 0.24 27;
-  --border-oklch: 0.92 0.006 264;
-  --input-oklch: 0.92 0.006 264;
-  --ring-oklch: 0.48 0.24 264;
+  /* OKLCH values for light theme - updated to complement dark theme */
+  --background-oklch: 0.97 0.005 220;
+  --foreground-oklch: 0.15 0.02 220;
+  --card-oklch: 0.99 0.002 220;
+  --card-foreground-oklch: 0.15 0.02 220;
+  --popover-oklch: 0.99 0.002 220;
+  --popover-foreground-oklch: 0.15 0.02 220;
+  --primary-oklch: 0.55 0.22 195; /* Cyan/teal primary */
+  --primary-foreground-oklch: 0.95 0.01 220;
+  --secondary-oklch: 0.92 0.01 220;
+  --secondary-foreground-oklch: 0.25 0.02 220;
+  --muted-oklch: 0.94 0.008 220;
+  --muted-foreground-oklch: 0.55 0.015 220;
+  --accent-oklch: 0.65 0.18 195; /* Bright cyan accent */
+  --accent-foreground-oklch: 0.95 0.01 220;
+  --destructive-oklch: 0.55 0.2 25;
+  --border-oklch: 0.88 0.01 220;
+  --input-oklch: 0.92 0.008 220;
+  --ring-oklch: 0.55 0.22 195;
 
   /* DaisyUI variable mapping to our OKLCH tokens */
   --p: oklch(var(--primary-oklch));
@@ -64,27 +67,27 @@
   --tab-radius: 0.5rem;
 }
 
-/* .dark values remain unchanged; they flow through via the OKLCH tokens */
+/* Dark theme inspired by the reference UI - deep navy with cyan accents */
 .dark {
-  /* OKLCH values for dark theme, inspired by Syntax UI */
-  --background-oklch: 0.10 0.02 262;
-  --foreground-oklch: 0.85 0.01 260;
-  --card-oklch: 0.12 0.02 262;
-  --card-foreground-oklch: 0.90 0.01 260;
-  --popover-oklch: 0.07 0.02 262;
-  --popover-foreground-oklch: 0.985 0.002 247.839;
-  --primary-oklch: 0.62 0.18 280; /* Vibrant purple/blue */
-  --primary-foreground-oklch: 0.98 0.01 260;
-  --secondary-oklch: 0.20 0.03 260;
-  --secondary-foreground-oklch: 0.98 0.01 260;
-  --muted-oklch: 0.20 0.03 260;
-  --muted-foreground-oklch: 0.65 0.02 260;
-  --accent-oklch: 0.25 0.03 260;
-  --accent-foreground-oklch: 0.98 0.01 260;
-  --destructive-oklch: 0.7 0.19 22;
-  --border-oklch: 1 0 0; /* Set to white for use with alpha, e.g., oklch(var(--border-oklch) / 0.1) */
+  /* OKLCH values for dark theme - matching reference UI aesthetic */
+  --background-oklch: 0.08 0.015 230; /* Deep navy background */
+  --foreground-oklch: 0.9 0.005 200; /* Light cyan-tinted text */
+  --card-oklch: 0.12 0.02 225; /* Slightly lighter navy for cards */
+  --card-foreground-oklch: 0.92 0.008 200;
+  --popover-oklch: 0.10 0.018 225; /* Darker navy for popovers */
+  --popover-foreground-oklch: 0.95 0.005 200;
+  --primary-oklch: 0.70 0.25 190; /* Vibrant cyan primary */
+  --primary-foreground-oklch: 0.05 0.01 230;
+  --secondary-oklch: 0.18 0.025 225;
+  --secondary-foreground-oklch: 0.85 0.008 200;
+  --muted-oklch: 0.15 0.02 225;
+  --muted-foreground-oklch: 0.65 0.015 200;
+  --accent-oklch: 0.75 0.22 185; /* Bright teal accent */
+  --accent-foreground-oklch: 0.05 0.01 230;
+  --destructive-oklch: 0.65 0.22 25;
+  --border-oklch: 1 0 0; /* Set to white for use with alpha */
   --input-oklch: 1 0 0;
-  --ring-oklch: 0.65 0.20 285; /* Bright ring for focus */
+  --ring-oklch: 0.70 0.25 190; /* Bright cyan ring for focus */
 }
 
 /*
@@ -148,10 +151,33 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground min-h-screen;
-    /* Add a subtle glow to the top of the page background */
-    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(var(--border-oklch) / 0.05), oklch(var(--background-oklch) / 0));
+    @apply bg-background text-foreground min-h-screen relative;
+    /* Grid pattern background with glowing effect */
+    background-image: 
+      linear-gradient(90deg, oklch(var(--border-oklch) / 0.08) 1px, transparent 1px),
+      linear-gradient(180deg, oklch(var(--border-oklch) / 0.08) 1px, transparent 1px),
+      radial-gradient(ellipse 100% 80% at 50% -20%, oklch(var(--primary-oklch) / 0.08), transparent 50%),
+      radial-gradient(ellipse 120% 60% at 20% 100%, oklch(var(--accent-oklch) / 0.06), transparent 50%);
+    background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+    background-position: 0 0, 0 0, 0 0, 0 0;
   }
+  
+  /* Enhanced grid pattern for dark mode */
+  .dark body {
+    background-image: 
+      linear-gradient(90deg, oklch(var(--border-oklch) / 0.04) 1px, transparent 1px),
+      linear-gradient(180deg, oklch(var(--border-oklch) / 0.04) 1px, transparent 1px),
+      radial-gradient(ellipse 100% 80% at 50% -10%, oklch(var(--primary-oklch) / 0.12), transparent 60%),
+      radial-gradient(ellipse 120% 70% at 80% 120%, oklch(var(--accent-oklch) / 0.08), transparent 50%),
+      radial-gradient(ellipse 80% 50% at 20% -20%, oklch(var(--ring-oklch) / 0.06), transparent 40%);
+    background-size: 50px 50px, 50px 50px, 100% 100%, 100% 100%, 100% 100%;
+  }
+}
+
+.test {
+    background-color: red !important;
+    width: 200px !important;
+    height: 200px !important;
 }
 
 @layer components {
@@ -175,7 +201,7 @@
     left: -1px;
     width: calc(100% + 2px);
     height: calc(100% + 2px);
-    @apply animate-spin-slow;
+    animation: spin-slow 3s linear infinite;
     background-image: conic-gradient(
       from 180deg at 50% 50%,
       oklch(var(--primary-oklch) / 0.8) 0deg,
@@ -193,35 +219,127 @@
    * -----------------------------------------------------------------
    */
 
-  /* Style for Cards to give them a subtle border and background */
+  /* Glassmorphic Cards matching reference UI */
   .card {
-    @apply border bg-card/50 backdrop-blur-sm;
+    @apply border;
+    backdrop-filter: blur(12px);
+    background: oklch(var(--card-oklch) / 0.7);
+    border-color: oklch(var(--border-oklch) / 0.2);
+    box-shadow: 
+      0 8px 32px oklch(var(--background-oklch) / 0.1),
+      inset 0 1px 0 oklch(var(--border-oklch) / 0.1);
+  }
+  
+  .dark .card {
+    background: oklch(var(--card-oklch) / 0.5);
+    border-color: oklch(var(--border-oklch) / 0.08);
+    box-shadow: 
+      0 8px 32px oklch(0 0 0 / 0.2),
+      inset 0 1px 0 oklch(var(--border-oklch) / 0.05);
   }
 
-  /* Style for Buttons */
+  /* Enhanced Buttons with glow effects */
   .btn {
-    @apply transition-all duration-200;
+    @apply transition-all duration-300;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px oklch(var(--background-oklch) / 0.1);
   }
   .btn.btn-primary {
-    @apply shadow-[0_0_20px_oklch(var(--primary-oklch)/0.3)];
+    background: oklch(var(--primary-oklch) / 0.9);
+    box-shadow: 
+      0 4px 16px oklch(var(--primary-oklch) / 0.3),
+      inset 0 1px 0 oklch(var(--primary-oklch) / 0.2);
+  }
+  .dark .btn.btn-primary {
+    box-shadow: 
+      0 4px 20px oklch(var(--primary-oklch) / 0.4),
+      0 0 40px oklch(var(--primary-oklch) / 0.1),
+      inset 0 1px 0 oklch(var(--primary-oklch) / 0.2);
   }
   .btn:hover {
-    @apply brightness-110;
+    transform: translateY(-0.125rem);
+    box-shadow: 
+      0 6px 20px oklch(var(--background-oklch) / 0.15),
+      0 2px 8px oklch(var(--background-oklch) / 0.1);
+  }
+  .btn.btn-primary:hover {
+    box-shadow: 
+      0 6px 24px oklch(var(--primary-oklch) / 0.4),
+      0 0 50px oklch(var(--primary-oklch) / 0.15),
+      inset 0 1px 0 oklch(var(--primary-oklch) / 0.3);
   }
 
-  /* Style for Inputs, Textareas, etc. */
+  /* Enhanced Inputs with glassmorphic design */
   .input, .textarea, .select {
-    @apply bg-transparent transition-colors duration-300;
+    @apply transition-all duration-300;
+    backdrop-filter: blur(12px);
+    background: oklch(var(--input-oklch) / 0.5);
+    border-color: oklch(var(--border-oklch) / 0.2);
+  }
+  .dark .input, .dark .textarea, .dark .select {
+    background: oklch(var(--input-oklch) / 0.05);
+    border-color: oklch(var(--border-oklch) / 0.08);
   }
   :is(.input, .textarea, .select):focus {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
-    border-color: oklch(var(--ring-oklch) / 0.5) !important;
+    @apply outline-none;
+    border-color: oklch(var(--ring-oklch) / 0.6) !important;
+    box-shadow: 
+      0 0 0 2px oklch(var(--ring-oklch) / 0.2),
+      0 4px 12px oklch(var(--ring-oklch) / 0.1);
+  }
+  .dark :is(.input, .textarea, .select):focus {
+    box-shadow: 
+      0 0 0 2px oklch(var(--ring-oklch) / 0.3),
+      0 4px 16px oklch(var(--ring-oklch) / 0.15),
+      0 0 30px oklch(var(--ring-oklch) / 0.08);
   }
 }
 
-/* Replace invalid @theme animation object with a real utility */
+/* Define animation at root level for compatibility */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Enhanced utilities for the new design */
 @layer utilities {
-.animate-spin-slow { animation: spin 3s linear infinite; }
+  .animate-spin-slow { 
+    animation: spin-slow 3s linear infinite; 
+  }
+  
+  .glow-cyan {
+    box-shadow: 
+      0 0 20px oklch(var(--primary-oklch) / 0.3),
+      0 0 40px oklch(var(--primary-oklch) / 0.1);
+  }
+  
+  .glow-accent {
+    box-shadow: 
+      0 0 20px oklch(var(--accent-oklch) / 0.3),
+      0 0 40px oklch(var(--accent-oklch) / 0.1);
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 10px oklch(var(--primary-oklch) / 0.5);
+  }
+  
+  .bg-grid {
+    background-image: 
+      linear-gradient(90deg, oklch(var(--border-oklch) / 0.1) 1px, transparent 1px),
+      linear-gradient(180deg, oklch(var(--border-oklch) / 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .glassmorphism {
+    backdrop-filter: blur(16px);
+    background: oklch(var(--card-oklch) / 0.7);
+    border: 1px solid oklch(var(--border-oklch) / 0.2);
+  }
+  
+  .dark .glassmorphism {
+    background: oklch(var(--card-oklch) / 0.4);
+    border: 1px solid oklch(var(--border-oklch) / 0.1);
+  }
 }
 
 
@@ -229,4 +347,42 @@
     --tw-ease: var(--ease-in-out, cubic-bezier(.4,0,.2,1));
     transition-timing-function: var(--ease-in-out, cubic-bezier(.4,0,.2,1));
     transition-duration: .15s;
+}
+
+
+
+
+@plugin "daisyui/theme" {
+  name: "synthwave";
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(15% 0.09 281.288);
+  --color-base-200: oklch(20% 0.09 281.288);
+  --color-base-300: oklch(25% 0.09 281.288);
+  --color-base-content: oklch(78% 0.115 274.713);
+  --color-primary: oklch(71% 0.202 349.761);
+  --color-primary-content: oklch(28% 0.109 3.907);
+  --color-secondary: oklch(82% 0.111 230.318);
+  --color-secondary-content: oklch(29% 0.066 243.157);
+  --color-accent: oklch(75% 0.183 55.934);
+  --color-accent-content: oklch(26% 0.079 36.259);
+  --color-neutral: oklch(45% 0.24 277.023);
+  --color-neutral-content: oklch(87% 0.065 274.039);
+  --color-info: oklch(74% 0.16 232.661);
+  --color-info-content: oklch(29% 0.066 243.157);
+  --color-success: oklch(77% 0.152 181.912);
+  --color-success-content: oklch(27% 0.046 192.524);
+  --color-warning: oklch(90% 0.182 98.111);
+  --color-warning-content: oklch(42% 0.095 57.708);
+  --color-error: oklch(73.7% 0.121 32.639);
+  --color-error-content: oklch(23.501% 0.096 290.329);
+  --radius-selector: 1rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
 }

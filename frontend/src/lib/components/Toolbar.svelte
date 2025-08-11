@@ -30,10 +30,10 @@
 	}
 </script>
 
-<div class="relative z-20 border-b bg-background">
+<div class="relative z-20 border-b glassmorphism">
 	<div class="flex h-14 items-center justify-between px-4">
 		<!-- Left: Brand -->
-		<a href="/" class="font-bold text-lg">Web Buddy</a>
+		<a href="/" class="font-bold text-lg text-glow hover:text-primary transition-colors">WebBuddy</a>
 
 		<!-- Center: Navigation -->
 		<div class="flex-1 flex justify-center">

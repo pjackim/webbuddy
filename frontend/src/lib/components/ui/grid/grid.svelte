@@ -222,15 +222,17 @@
 
 <div
 	class="grid-container {additionalClasses}"
-	on:mousedown={handleMouseDown}
-	on:mouseup={handleMouseUp}
-	on:mouseleave={handleMouseUp}
-	on:mousemove={handleMouseMove}
-	on:dblclick={handleDoubleClick}
+	role="img"
+	aria-label="Interactive grid background"
+	onmousedown={handleMouseDown}
+	onmouseup={handleMouseUp}
+	onmouseleave={handleMouseUp}
+	onmousemove={handleMouseMove}
+	ondblclick={handleDoubleClick}
 >
 	<canvas
 		bind:this={canvasElement}
-		on:wheel={handleWheel}
+		onwheel={handleWheel}
 		class:panning={isPanning}
 	></canvas>
 </div>

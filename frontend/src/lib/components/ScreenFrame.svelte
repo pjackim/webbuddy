@@ -3,6 +3,7 @@
 	import { Group, Rect, Text as KText } from 'svelte-konva';
 	import ImageAsset from './assets/ImageAsset.svelte';
 	import TextAsset from './assets/TextAsset.svelte';
+	import HashedBackground from './HashedBackground.svelte';
 	import { assetsByScreen, online, upsertAsset, upsertScreen } from '$lib/stores.svelte.ts';
 	import { api } from '../api';
 	import { onMount } from 'svelte';
@@ -52,30 +53,33 @@
 	on:mouseup={onScreenUp}
 	on:mousemove={onScreenMove}
 >
-	<Rect
-		config={{
-			width: sc.width,
-			height: sc.height,
-			fill: '#222',
-			stroke: '#555',
-			strokeWidth: 2,
-			cornerRadius: 8
-		}}
-	/>
-	<KText
-		config={{
-			text: `${sc.name} (${sc.width}×${sc.height})`,
-			fill: '#aaa',
-			fontSize: 16,
-			x: 8,
-			y: 8
-		}}
-	/>
-	{#each myAssets as a (a.id)}
-		{#if a.type === 'image'}
-			<ImageAsset {a} />
-		{:else}
-			<TextAsset {a} />
-		{/if}
-	{/each}
+	<div class="glass">
+		<!-- Hashed background pattern -->
+		<HashedBackground
+			width={sc.width}
+			height={sc.height}
+			fill="#22222200"
+			strokeColor="oklch(70.7% .022 261.325)"
+			strokeWidth={2}
+			cornerRadius={8}
+			lineSpacing={40}
+		/>
+		<KText
+			config={{
+				text: `${sc.name} (${sc.width}×${sc.height})`,
+				fill: '#e2e8f0',
+				fontSize: 14,
+				fontWeight: '500',
+				x: 12,
+				y: 12
+			}}
+		/>
+		{#each myAssets as a (a.id)}
+			{#if a.type === 'image'}
+				<ImageAsset {a} />
+			{:else}
+				<TextAsset {a} />
+			{/if}
+		{/each}
+	</div>
 </Group>

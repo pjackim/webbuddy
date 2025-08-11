@@ -141,16 +141,16 @@
 </svelte:head>
 
 <div class="container mx-auto p-8 max-w-4xl">
-	<h1 class="text-3xl font-bold mb-8">Error Testing Dashboard</h1>
+	<h1 class="text-3xl font-bold mb-8 text-glow">Error Testing Dashboard</h1>
 	<p class="text-muted-foreground mb-8">
 		Test various error scenarios to see the error panel in action. Each button simulates different types of errors.
 	</p>
 	
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 		<!-- HTTP Errors -->
-		<Card>
+		<Card class="glassmorphism">
 			<CardHeader>
-				<CardTitle>HTTP Errors</CardTitle>
+				<CardTitle class="text-primary">HTTP Errors</CardTitle>
 				<CardDescription>Test different HTTP status codes</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
@@ -187,9 +187,9 @@
 		</Card>
 		
 		<!-- JavaScript Errors -->
-		<Card>
+		<Card class="glassmorphism">
 			<CardHeader>
-				<CardTitle>JavaScript Errors</CardTitle>
+				<CardTitle class="text-primary">JavaScript Errors</CardTitle>
 				<CardDescription>Test runtime JavaScript errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
@@ -206,9 +206,9 @@
 		</Card>
 		
 		<!-- Network Errors -->
-		<Card>
+		<Card class="glassmorphism">
 			<CardHeader>
-				<CardTitle>Network Errors</CardTitle>
+				<CardTitle class="text-primary">Network Errors</CardTitle>
 				<CardDescription>Test connection and network-related errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
@@ -220,9 +220,9 @@
 		</Card>
 		
 		<!-- Custom Errors -->
-		<Card>
+		<Card class="glassmorphism">
 			<CardHeader>
-				<CardTitle>Custom Errors</CardTitle>
+				<CardTitle class="text-primary">Custom Errors</CardTitle>
 				<CardDescription>Test custom application errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
@@ -234,9 +234,9 @@
 	</div>
 	
 	<!-- Instructions -->
-	<Card class="mt-8">
+	<Card class="mt-8 glassmorphism">
 		<CardHeader>
-			<CardTitle>How It Works</CardTitle>
+			<CardTitle class="text-accent">How It Works</CardTitle>
 		</CardHeader>
 		<CardContent>
 			<ul class="space-y-2 text-sm text-muted-foreground">

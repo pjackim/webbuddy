@@ -58,9 +58,10 @@
 	<div class="relative flex-1">
 		{#if hover}
 			<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-				<Card.Root class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center">
+				<Card.Root class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse">
 					<Card.Content class="text-center">
-						<h2 class="text-2xl font-bold">Drop files to upload</h2>
+						<h2 class="text-2xl font-bold text-glow">Drop files to upload</h2>
+						<p class="text-muted-foreground mt-2">Drag and drop your images here</p>
 					</Card.Content>
 				</Card.Root>
 			</div>

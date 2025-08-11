@@ -29,28 +29,28 @@
 	function onWheel(e: WheelEvent) {
 		if (!container || !(e.target instanceof Node) || !container.contains(e.target)) return;
 		e.preventDefault();
-		
+
 		const rect = container.getBoundingClientRect();
 		const pointer = {
 			x: e.clientX - rect.left,
 			y: e.clientY - rect.top
 		};
-		
+
 		const factor = 1.1;
 		const direction = e.deltaY > 0 ? -1 : 1;
 		const oldScale = scale;
 		const newScale = Math.max(0.1, Math.min(3, scale * (direction > 0 ? factor : 1 / factor)));
-		
+
 		const mousePointTo = {
 			x: (pointer.x - offset.x) / oldScale,
 			y: (pointer.y - offset.y) / oldScale
 		};
-		
+
 		const newPos = {
 			x: pointer.x - mousePointTo.x * newScale,
 			y: pointer.y - mousePointTo.y * newScale
 		};
-		
+
 		scale = newScale;
 		offset = newPos;
 	}
@@ -75,12 +75,12 @@
 
 	function resetView() {
 		scale = 0.5;
-		offset = { 
-			x: viewport.width / 2, 
-			y: (viewport.height - 64) / 2 
+		offset = {
+			x: viewport.width / 2,
+			y: (viewport.height - 64) / 2
 		};
 	}
-	
+
 	function toggleGrid() {
 		gridEnabled = !gridEnabled;
 	}
@@ -121,7 +121,11 @@
 	on:mouseup={onMouseUp}
 />
 
-<section class="relative w-full h-[calc(100vh-64px)] bg-slate-950" bind:this={container} aria-label="Canvas area">
+<section
+	class="relative w-full h-[calc(100vh-64px)] bg-gray-950"
+	bind:this={container}
+	aria-label="Canvas area"
+>
 	<Stage
 		config={{
 			width: viewport.width,
@@ -135,36 +139,41 @@
 		<!-- Grid layer (behind everything) -->
 		{#if gridEnabled}
 			<Layer>
-				<KonvaGrid 
-					{scale} 
-					{offset} 
+				<KonvaGrid
+					{scale}
+					{offset}
 					viewport={{ width: viewport.width, height: Math.max(0, viewport.height - 64) }}
 				/>
 			</Layer>
 		{/if}
-		
+
 		<!-- Main content layer -->
 		<Layer>
 			{#each screens() as sc}
-				<ScreenFrame {sc} />
+				<ScreenFrame {sc}  />
 			{/each}
 		</Layer>
 	</Stage>
-	
+
 	<div class="absolute bottom-4 left-4 flex gap-2 z-20">
 		<button
-			class="px-3 py-1 bg-background/80 backdrop-blur-sm border rounded text-sm hover:bg-muted"
+			class="px-3 py-1 bg-background/80 border rounded text-sm hover:bg-muted"
+			style="backdrop-filter: blur(8px);"
 			onclick={toggleGrid}
 		>
 			{gridEnabled ? 'Hide Grid' : 'Show Grid'} (G)
 		</button>
 		<button
-			class="px-3 py-1 bg-background/80 backdrop-blur-sm border rounded text-sm hover:bg-muted"
+			class="px-3 py-1 bg-background/80 border rounded text-sm hover:bg-muted"
+			style="backdrop-filter: blur(8px);"
 			onclick={resetView}
 		>
 			Reset View (R)
 		</button>
-		<div class="px-3 py-1 bg-background/80 backdrop-blur-sm border rounded text-sm">
+		<div
+			class="px-3 py-1 bg-background/80 border rounded text-sm"
+			style="backdrop-filter: blur(8px);"
+		>
 			Zoom: {Math.round(scale * 100)}%
 		</div>
 	</div>

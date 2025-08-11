@@ -17,12 +17,12 @@
 		scale,
 		offset,
 		viewport,
-		gridSize = 40,
-		majorLineInterval = 5,
-		lineColor = '#334155',
-		majorLineColor = '#475569',
-		lineOpacity = 0.8,
-		majorLineOpacity = 1.0
+		gridSize = 20,
+		majorLineInterval = 10,
+		lineColor = '#1e293b',
+		majorLineColor = '#334155',
+		lineOpacity = 0.3,
+		majorLineOpacity = 0.5
 	}: GridProps = $props();
 
 	let gridLines = $derived.by(() => {
@@ -73,12 +73,12 @@
 		return { minor: minorLines, major: majorLines };
 	});
 
-	// Adjust line thickness based on scale for better visibility
-	let strokeWidth = $derived(Math.max(0.8, 1.2 / scale));
-	let majorStrokeWidth = $derived(Math.max(1.5, 2 / scale));
+	// Keep lines very thin and subtle like the reference
+	let strokeWidth = $derived(Math.max(0.3, 0.5 / scale));
+	let majorStrokeWidth = $derived(Math.max(0.5, 0.8 / scale));
 	
-	// Fade out grid when zoomed out too far
-	let dynamicOpacity = $derived(Math.min(1, Math.max(0.2, scale * 2)));
+	// Subtle fade behavior - less dramatic than before
+	let dynamicOpacity = $derived(Math.min(1, Math.max(0.4, scale * 1.5)));
 	let finalLineOpacity = $derived(lineOpacity * dynamicOpacity);
 	let finalMajorOpacity = $derived(majorLineOpacity * dynamicOpacity);
 </script>
