@@ -1,5 +1,6 @@
 import { toast } from 'svelte-sonner';
 import { goto } from '$app/navigation';
+import { writable, type Writable } from 'svelte/store';
 
 export type ErrorInfo = {
 	code: number | string;
@@ -16,10 +17,15 @@ export type ErrorState = {
 };
 
 // Global error state
-export const errorStore = $state<ErrorState>({
-	currentError: null,
-	errorHistory: []
-});
+const _errorStore: Writable<ErrorState> = writable({ currentError: null, errorHistory: [] });
+let _snapshot: ErrorState = { currentError: null, errorHistory: [] };
+_errorStore.subscribe((v) => (_snapshot = v));
+export const errorStore = {
+	get currentError() { return _snapshot.currentError; },
+	set currentError(val: ErrorInfo | null) { _errorStore.update((s) => ({ ...s, currentError: val })); },
+	get errorHistory() { return _snapshot.errorHistory; },
+	set errorHistory(val: ErrorInfo[]) { _errorStore.update((s) => ({ ...s, errorHistory: val })); }
+};
 
 // Error handling functions
 export function handleError(error: ErrorInfo) {
@@ -144,8 +150,8 @@ function extractEndpoint(url: string): string {
 
 // API error handler
 export function handleApiError(error: any, url?: string) {
-	let code = 500;
-	let message = 'Unknown API error';
+	let code: number | string = 500;
+	let message: string = 'Unknown API error';
 	let details: string | undefined;
 
 	if (error instanceof Response) {
@@ -165,7 +171,7 @@ export function handleApiError(error: any, url?: string) {
 			message = 'Network connection failed';
 			details = 'Unable to connect to the server. Please check your internet connection.';
 		} else {
-			message = error;
+			message = error.message;
 			details = error.stack;
 		}
 	} else if (typeof error === 'string') {
@@ -188,7 +194,7 @@ export async function safeFetch(url: string, options?: RequestInit): Promise<Res
 		if (!response.ok) {
 			// Create a more detailed error response for API errors
 			const errorResponse = response.clone();
-			errorResponse.url = url; // Ensure URL is properly set
+			// Response.url is read-only; pass url via param instead
 			handleApiError(errorResponse, url);
 			throw errorResponse;
 		}

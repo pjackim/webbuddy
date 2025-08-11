@@ -2,9 +2,7 @@
 
 /* Tailwind v4 plugins */
 @import 'tw-animate-css';
-@plugin "daisyui" {
-	/* themes: synthwave --default; */
-}
+/* DaisyUI plugin disabled for now (caused Unexpected `@plugin` option build errors) */
 
 @import './theme.css';
 @import './base.css';

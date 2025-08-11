@@ -1,4 +1,5 @@
 import { PersistedState } from 'runed';
+import { writable, derived, type Writable } from 'svelte/store';
 
 export type Screen = {
 	id: string;
@@ -35,60 +36,81 @@ export type TextAsset = BaseAsset & {
 };
 export type Asset = ImageAsset | TextAsset;
 
-export const store = $state({ screens: [] as Screen[], assets: [] as Asset[] });
+// Root mutable state backed by Svelte stores (avoid $state in .ts file to fix SSR build error)
+interface RootState { screens: Screen[]; assets: Asset[] }
+const rootState: Writable<RootState> = writable({ screens: [], assets: [] });
 export const online = new PersistedState('online', true);
-export const selected = $state<string | null>(null);
+export const selected: Writable<string | null> = writable(null);
+
+// Helper subscribe-free snapshot access (functions that capture latest value when called)
+let _snapshot: RootState = { screens: [], assets: [] };
+rootState.subscribe((v) => (_snapshot = v));
+export const store = () => _snapshot; // backward compatibility accessor
 
 // Convenient accessors for the arrays
-export const screens = () => store.screens;
-export const assets = () => store.assets;
+export const screens = () => _snapshot.screens;
+export const assets = () => _snapshot.assets;
 
-const _screensById = $derived(new Map(store.screens.map((sc) => [sc.id, sc])));
-export const screensById = () => _screensById;
-const _assetsByScreen = $derived.by(() => {
+const screensStore = derived(rootState, ($s) => new Map($s.screens.map((sc) => [sc.id, sc])));
+let _screensByIdSnapshot = new Map<string, Screen>();
+screensStore.subscribe((m) => (_screensByIdSnapshot = m));
+export const screensById = () => _screensByIdSnapshot;
+
+const assetsByScreenStore = derived(rootState, ($s) => {
 	const map = new Map<string, Asset[]>();
-	for (const a of store.assets) {
+	for (const a of $s.assets) {
 		const arr = map.get(a.screen_id) || [];
 		arr.push(a);
 		map.set(a.screen_id, arr);
 	}
-	for (const [k, arr] of map) arr.sort((a, b) => a.z_index - b.z_index);
+	for (const [, arr] of map) arr.sort((a, b) => a.z_index - b.z_index);
 	return map;
 });
-export const assetsByScreen = () => _assetsByScreen;
+let _assetsByScreenSnapshot = new Map<string, Asset[]>();
+assetsByScreenStore.subscribe((m) => (_assetsByScreenSnapshot = m));
+export const assetsByScreen = () => _assetsByScreenSnapshot;
 
 export function upsertAsset(a: Asset) {
-	const idx = store.assets.findIndex((x) => x.id === a.id);
-	if (idx >= 0) store.assets[idx] = a;
-	else store.assets.push(a);
+	rootState.update((s) => {
+		const idx = s.assets.findIndex((x) => x.id === a.id);
+		if (idx >= 0) s.assets[idx] = a; else s.assets.push(a);
+		return s;
+	});
 }
 
 export function removeAsset(id: string) {
-	const idx = store.assets.findIndex((a) => a.id === id);
-	if (idx >= 0) store.assets.splice(idx, 1);
+	rootState.update((s) => {
+		const idx = s.assets.findIndex((a) => a.id === id);
+		if (idx >= 0) s.assets.splice(idx, 1);
+		return s;
+	});
 }
 
 // Convenience setter for cross-module updates
 export function setScreens(list: Screen[]) {
-	store.screens.length = 0;
-	store.screens.push(...list);
+	rootState.update((s) => { s.screens = [...list]; return s; });
 }
 
 export function upsertScreen(s: Screen) {
-	const idx = store.screens.findIndex((x) => x.id === s.id);
-	if (idx >= 0) store.screens[idx] = s;
-	else store.screens.push(s);
+	rootState.update((st) => {
+		const idx = st.screens.findIndex((x) => x.id === s.id);
+		if (idx >= 0) st.screens[idx] = s; else st.screens.push(s);
+		return st;
+	});
 }
 
 export function removeScreen(id: string) {
-	const idx = store.screens.findIndex((s) => s.id === id);
-	if (idx >= 0) store.screens.splice(idx, 1);
+	rootState.update((st) => {
+		const idx = st.screens.findIndex((s) => s.id === id);
+		if (idx >= 0) st.screens.splice(idx, 1);
+		return st;
+	});
 }
 
 export function getScreen(id: string) {
-	return store.screens.find((s) => s.id === id);
+	return _snapshot.screens.find((s) => s.id === id);
 }
 
 export function getAsset(id: string) {
-	return store.assets.find((a) => a.id === id);
+	return _snapshot.assets.find((a) => a.id === id);
 }
