@@ -14,5 +14,10 @@ export default {
 			configFilePath: join(__dirname, 'postcss.config.cjs')
 		}
 	}),
-	kit: { adapter: adapter() }
+	kit: {
+		adapter: adapter(),
+		alias: {
+			$styles: 'src/styles'
+		}
+	}
 };

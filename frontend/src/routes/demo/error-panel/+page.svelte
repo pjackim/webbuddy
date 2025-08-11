@@ -1,8 +1,8 @@
 <script lang="ts">
-	import ErrorPanel from '$lib/components/ErrorPanelComplete.svelte';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import { Button } from '$lib/components/ui/button/index.js';
-	import { Badge } from '$lib/components/ui/badge/index.js';
+	import { ErrorPanelComplete as ErrorPanel } from '$lib/features/error-panel';
+	import * as Card from '$lib/ui/card';
+	import { Button } from '$lib/ui/button';
+	import { Badge } from '$lib/ui/badge';
 	import { toast } from 'svelte-sonner';
 
 	// Enhanced error generation with realistic scenarios

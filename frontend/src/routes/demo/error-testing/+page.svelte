@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { handleError, createErrorInfo } from '$lib/error-store.svelte.js';
-	import { api } from '$lib/api.js';
-	
+	import { Button } from '$lib/ui/button';
+	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/ui/card';
+	import { handleError, createErrorInfo } from '$lib/stores/error';
+	import { api } from '$lib/api';
+
 	// Test functions for different error scenarios
 	// Generate random endpoint for testing
 	function generateRandomEndpoint(): string {
@@ -24,9 +24,15 @@
 			console.log('Random 404 error handled:', error);
 		}
 	}
-	
+
 	async function test404TypicalEndpoints() {
-		const commonEndpoints = ['/users', '/posts/123', '/admin/dashboard', '/api/v2/data', '/files/upload'];
+		const commonEndpoints = [
+			'/users',
+			'/posts/123',
+			'/admin/dashboard',
+			'/api/v2/data',
+			'/files/upload'
+		];
 		const endpoint = commonEndpoints[Math.floor(Math.random() * commonEndpoints.length)];
 		try {
 			await api(endpoint);
@@ -35,7 +41,7 @@
 			console.log('Typical 404 error handled:', error);
 		}
 	}
-	
+
 	async function test404DeepNestedPath() {
 		const deepPath = '/api/v1/organizations/123/projects/456/tasks/789/comments/edit';
 		try {
@@ -45,7 +51,7 @@
 			console.log('Deep nested 404 error handled:', error);
 		}
 	}
-	
+
 	async function test500Error() {
 		try {
 			// Simulate a 500 error by calling an endpoint that should return 500
@@ -61,18 +67,23 @@
 			handleError(errorInfo);
 		}
 	}
-	
+
 	function testJavaScriptError() {
 		// Create a real JavaScript error with stack trace
 		try {
 			// @ts-ignore - intentionally cause an error
 			nonexistentFunction();
 		} catch (error) {
-			const errorInfo = createErrorInfo('JS', error, 'This error was intentionally triggered for testing', window.location.href);
+			const errorInfo = createErrorInfo(
+				'JS',
+				error,
+				'This error was intentionally triggered for testing',
+				window.location.href
+			);
 			handleError(errorInfo);
 		}
 	}
-	
+
 	function testNetworkError() {
 		const errorInfo = createErrorInfo(
 			'NETWORK',
@@ -82,7 +93,7 @@
 		);
 		handleError(errorInfo);
 	}
-	
+
 	function testMinorNetworkError() {
 		// This will show as a toast instead of redirecting to error page
 		const errorInfo = createErrorInfo(
@@ -93,14 +104,14 @@
 		);
 		handleError(errorInfo);
 	}
-	
+
 	function testCustomError() {
 		const error = new Error('Custom application error');
 		error.stack = `Error: Custom application error
     at testCustomError (/demo/error-testing:45:18)
     at HTMLButtonElement.onclick (/demo/error-testing:89:25)
     at EventListener.handleEvent (dom.ts:12:3)`;
-		
+
 		const errorInfo = createErrorInfo(
 			'CUSTOM',
 			error,
@@ -109,20 +120,20 @@
 		);
 		handleError(errorInfo);
 	}
-	
+
 	function testThrowError() {
 		// This will be caught by the global error handler
 		throw new Error('Uncaught error for global handler testing');
 	}
-	
+
 	async function testPromiseRejection() {
 		// This will be caught by the unhandledrejection handler
 		Promise.reject(new Error('Unhandled promise rejection test'));
 	}
-	
+
 	// Custom endpoint testing
 	let customEndpoint = $state('/users/123');
-	
+
 	async function testCustomEndpoint() {
 		if (!customEndpoint.trim()) {
 			customEndpoint = '/example/endpoint';
@@ -143,9 +154,10 @@
 <div class="container mx-auto p-8 max-w-4xl">
 	<h1 class="text-3xl font-bold mb-8 text-glow">Error Testing Dashboard</h1>
 	<p class="text-muted-foreground mb-8">
-		Test various error scenarios to see the error panel in action. Each button simulates different types of errors.
+		Test various error scenarios to see the error panel in action. Each button simulates different
+		types of errors.
 	</p>
-	
+
 	<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 		<!-- HTTP Errors -->
 		<Card class="glassmorphism">
@@ -166,26 +178,26 @@
 				<Button class="w-full" variant="destructive" onclick={test500Error}>
 					Test 500 - Internal Server Error
 				</Button>
-				
+
 				<div class="pt-4 border-t">
 					<label class="text-xs font-medium" for="custom-endpoint">Test Custom Endpoint:</label>
 					<div class="flex gap-2 mt-2">
-						<input 
+						<input
 							id="custom-endpoint"
-							type="text" 
-							class="flex-1 px-3 py-2 text-sm border rounded-md" 
+							type="text"
+							class="flex-1 px-3 py-2 text-sm border rounded-md"
 							placeholder="/any/endpoint/you/want"
 							bind:value={customEndpoint}
 						/>
-						<Button variant="destructive" size="sm" onclick={testCustomEndpoint}>
-							Test
-						</Button>
+						<Button variant="destructive" size="sm" onclick={testCustomEndpoint}>Test</Button>
 					</div>
-					<p class="text-xs text-muted-foreground mt-1">Try any endpoint like /users/123, /admin, /api/v2/data, etc.</p>
+					<p class="text-xs text-muted-foreground mt-1">
+						Try any endpoint like /users/123, /admin, /api/v2/data, etc.
+					</p>
 				</div>
 			</CardContent>
 		</Card>
-		
+
 		<!-- JavaScript Errors -->
 		<Card class="glassmorphism">
 			<CardHeader>
@@ -204,7 +216,7 @@
 				</Button>
 			</CardContent>
 		</Card>
-		
+
 		<!-- Network Errors -->
 		<Card class="glassmorphism">
 			<CardHeader>
@@ -218,7 +230,7 @@
 				<p class="text-xs text-muted-foreground">Shows toast notification</p>
 			</CardContent>
 		</Card>
-		
+
 		<!-- Custom Errors -->
 		<Card class="glassmorphism">
 			<CardHeader>
@@ -232,7 +244,7 @@
 			</CardContent>
 		</Card>
 	</div>
-	
+
 	<!-- Instructions -->
 	<Card class="mt-8 glassmorphism">
 		<CardHeader>
@@ -240,12 +252,19 @@
 		</CardHeader>
 		<CardContent>
 			<ul class="space-y-2 text-sm text-muted-foreground">
-				<li>• <strong>HTTP 404 Errors:</strong> Show attempted endpoint and list of available API routes</li>
+				<li>
+					• <strong>HTTP 404 Errors:</strong> Show attempted endpoint and list of available API routes
+				</li>
 				<li>• <strong>HTTP 500 Errors:</strong> Redirect to full-page error displays</li>
-				<li>• <strong>JavaScript Errors:</strong> Redirect to dedicated error pages with full stack traces</li>
+				<li>
+					• <strong>JavaScript Errors:</strong> Redirect to dedicated error pages with full stack traces
+				</li>
 				<li>• <strong>Network Errors:</strong> Show toast notifications (not full pages)</li>
 				<li>• <strong>Global Handlers:</strong> Uncaught errors redirect to error pages</li>
-				<li>• <strong>404 Pages:</strong> Try visiting a non-existent URL like <code>/nonexistent-page</code></li>
+				<li>
+					• <strong>404 Pages:</strong> Try visiting a non-existent URL like
+					<code>/nonexistent-page</code>
+				</li>
 			</ul>
 		</CardContent>
 	</Card>

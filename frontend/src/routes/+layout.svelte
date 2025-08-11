@@ -1,14 +1,14 @@
 <script lang="ts">
-	import '../app.css';
+	import '$styles/app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import { ModeWatcher } from 'mode-watcher';
-	import { Toaster } from '$lib/components/ui/sonner/index.js';
-	import { handleError, createErrorInfo } from '$lib/error-store.svelte.js';
+	import { Toaster } from '$lib/ui/sonner';
+	import { handleError, createErrorInfo } from '$lib/stores/error';
 	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
-	import { Grid } from '$lib/components/ui/grid';
+	import { Grid } from '$lib/features/grid';
 	import { gridVisibility } from '$lib/stores/grid';
-	import { Button } from '$lib/components/ui/button';
+	import { Button } from '$lib/ui/button';
 	import { Cog } from 'lucide-svelte';
 
 	let { children } = $props();
@@ -40,12 +40,7 @@
 				details = JSON.stringify(event.reason, null, 2);
 			}
 
-			const error = createErrorInfo(
-				'JS',
-				new Error(errorMessage),
-				details,
-				window.location.href
-			);
+			const error = createErrorInfo('JS', new Error(errorMessage), details, window.location.href);
 			handleError(error);
 		});
 	});

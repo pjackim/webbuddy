@@ -7,3 +7,5 @@ bun.lockb
 
 # Miscellaneous
 /static/
+src/lib/vendor/
+src/styles/components.css
