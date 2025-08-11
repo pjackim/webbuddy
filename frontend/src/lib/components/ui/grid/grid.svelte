@@ -1,85 +1,71 @@
 <!--
   File: src/lib/components/ui/grid/grid.svelte
-  Description: A Svelte 5 component for an infinitely zoomable and pannable background grid or dot pattern.
+  Description: A Svelte 5 component for a modern, infinitely zoomable and pannable background grid or dot pattern with smooth animations.
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	/**
-	 * Props for the Grid component, using Svelte 5's $props rune.
-	 * This allows for type-safe and reactive properties.
-	 */
 	type GridProps = {
-		/** The type of pattern to display. */
 		pattern?: 'dots' | 'grid';
-		/** The spacing between pattern elements, in pixels at 1x zoom. */
 		gridSize?: number;
-		/** The radius of the dots, in pixels. */
 		dotRadius?: number;
-		/** The thickness of the grid lines, in pixels. */
 		lineThickness?: number;
-		/** The minimum allowed zoom level. */
+		majorDotRadius?: number;
+		majorLineThickness?: number;
+		majorLineInterval?: number;
 		minZoom?: number;
-		/** The maximum allowed zoom level. */
 		maxZoom?: number;
-		/** The sensitivity of the zoom action. */
 		zoomSensitivity?: number;
-		/** The color of the pattern, defaults to a subtle foreground color. */
+		dampingFactor?: number;
 		patternColor?: string;
-		/** The background color, defaults to the theme's background. */
+		majorLineColor?: string;
 		backgroundColor?: string;
-		/** Additional CSS classes to apply to the container. */
 		class?: string;
 	};
 
 	const {
-		pattern = 'dots',
-		gridSize = 50,
-		dotRadius = 1,
-		lineThickness = 1,
-		minZoom = 0.1,
-		maxZoom = 10,
-		zoomSensitivity = 0.001,
+		pattern = 'grid',
+		gridSize = 40,
+		dotRadius = 0.7,
+		lineThickness = 0.5,
+		majorDotRadius = 1.2,
+		majorLineThickness = 1,
+		majorLineInterval = 5,
+		minZoom = 0.2,
+		maxZoom = 8,
+		zoomSensitivity = 0.0012,
+		dampingFactor = 0.1,
 		patternColor = 'hsl(var(--foreground) / 0.1)',
+		majorLineColor,
 		backgroundColor = 'hsl(var(--background))',
 		class: additionalClasses = '',
 	}: GridProps = $props();
 
-	// Svelte 5 Runes for reactive state
+	const finalMajorLineColor =
+		majorLineColor ?? patternColor.replace(/[\d.]+\)$/, '0.2)');
+
 	let canvasElement: HTMLCanvasElement | undefined = $state();
 	let pan = $state({ x: 0, y: 0 });
 	let zoom = $state(1);
+	let panTarget = $state({ x: 0, y: 0 });
+	let zoomTarget = $state(1);
 	let isPanning = $state(false);
 	let lastMousePosition = $state({ x: 0, y: 0 });
 	let dimensions = $state({ width: 0, height: 0 });
 
-	/**
-	 * Main drawing logic. This $effect hook re-runs whenever any of its
-	 * dependencies (pan, zoom, dimensions, props) change.
-	 */
 	$effect(() => {
 		if (!canvasElement) return;
-
 		const ctx = canvasElement.getContext('2d');
 		if (!ctx) return;
 
 		const { width, height } = dimensions;
-
-		// Clear the canvas for redrawing
 		ctx.fillStyle = backgroundColor;
 		ctx.fillRect(0, 0, width, height);
 
-		// Save the default context state
 		ctx.save();
-
-		// Apply pan and zoom transformations
 		ctx.translate(pan.x, pan.y);
 		ctx.scale(zoom, zoom);
 
-		ctx.fillStyle = patternColor;
-		ctx.strokeStyle = patternColor;
-
-		// Calculate the visible area to avoid drawing off-screen
 		const view = {
 			x1: -pan.x / zoom,
 			y1: -pan.y / zoom,
@@ -87,126 +73,146 @@
 			y2: (height - pan.y) / zoom
 		};
 
-		// Calculate the starting points, aligned to the grid
-		const startX = Math.floor(view.x1 / gridSize) * gridSize;
-		const startY = Math.floor(view.y1 / gridSize) * gridSize;
+		const startIndexX = Math.floor(view.x1 / gridSize);
+		const startIndexY = Math.floor(view.y1 / gridSize);
+		const endIndexX = Math.ceil(view.x2 / gridSize);
+		const endIndexY = Math.ceil(view.y2 / gridSize);
 
 		if (pattern === 'dots') {
-			// Ensure dots appear the same size regardless of zoom
 			const scaledRadius = dotRadius / zoom;
-			ctx.beginPath();
-			for (let x = startX; x < view.x2; x += gridSize) {
-				for (let y = startY; y < view.y2; y += gridSize) {
-					ctx.moveTo(x, y);
-					ctx.arc(x, y, scaledRadius, 0, 2 * Math.PI);
+			const scaledMajorRadius = majorDotRadius / zoom;
+			const minorDots = new Path2D();
+			const majorDots = new Path2D();
+
+			for (let i = startIndexX; i <= endIndexX; i++) {
+				for (let j = startIndexY; j <= endIndexY; j++) {
+					const x = i * gridSize;
+					const y = j * gridSize;
+					const isMajor = i % majorLineInterval === 0 && j % majorLineInterval === 0;
+					if (isMajor) {
+						majorDots.moveTo(x, y);
+						majorDots.arc(x, y, scaledMajorRadius, 0, 2 * Math.PI);
+					} else {
+						minorDots.moveTo(x, y);
+						minorDots.arc(x, y, scaledRadius, 0, 2 * Math.PI);
+					}
 				}
 			}
-			ctx.fill();
+			ctx.fillStyle = patternColor;
+			ctx.fill(minorDots);
+			ctx.fillStyle = finalMajorLineColor;
+			ctx.fill(majorDots);
 		} else if (pattern === 'grid') {
-			// Ensure lines appear the same thickness regardless of zoom
+			const minorLines = new Path2D();
+			const majorLines = new Path2D();
+
+			for (let i = startIndexX; i <= endIndexX; i++) {
+				const x = i * gridSize;
+				const isMajor = i % majorLineInterval === 0;
+				const path = isMajor ? majorLines : minorLines;
+				path.moveTo(x, view.y1);
+				path.lineTo(x, view.y2);
+			}
+			for (let j = startIndexY; j <= endIndexY; j++) {
+				const y = j * gridSize;
+				const isMajor = j % majorLineInterval === 0;
+				const path = isMajor ? majorLines : minorLines;
+				path.moveTo(view.x1, y);
+				path.lineTo(view.x2, y);
+			}
+			ctx.strokeStyle = patternColor;
 			ctx.lineWidth = lineThickness / zoom;
-			ctx.beginPath();
-			// Draw vertical lines
-			for (let x = startX; x < view.x2; x += gridSize) {
-				ctx.moveTo(x, view.y1);
-				ctx.lineTo(x, view.y2);
-			}
-			// Draw horizontal lines
-			for (let y = startY; y < view.y2; y += gridSize) {
-				ctx.moveTo(view.x1, y);
-				ctx.lineTo(view.x2, y);
-			}
-			ctx.stroke();
+			ctx.stroke(minorLines);
+			ctx.strokeStyle = finalMajorLineColor;
+			ctx.lineWidth = majorLineThickness / zoom;
+			ctx.stroke(majorLines);
 		}
 
-		// Restore the context to its original state
 		ctx.restore();
 	});
 
-	/**
-	 * Handles the wheel event for zooming.
-	 */
 	function handleWheel(event: WheelEvent) {
 		event.preventDefault();
-
 		if (!canvasElement) return;
 		const rect = canvasElement.getBoundingClientRect();
-
-		// Mouse position relative to the canvas
 		const mouseX = event.clientX - rect.left;
 		const mouseY = event.clientY - rect.top;
-
-		// Calculate the world coordinates before zooming
 		const worldX = (mouseX - pan.x) / zoom;
 		const worldY = (mouseY - pan.y) / zoom;
-
-		// Calculate the new zoom level
 		const zoomDelta = event.deltaY * zoomSensitivity;
-		const newZoom = Math.max(minZoom, Math.min(maxZoom, zoom - zoomDelta));
-
-		// Adjust pan to keep the point under the mouse stationary
-		pan.x = mouseX - worldX * newZoom;
-		pan.y = mouseY - worldY * newZoom;
-		zoom = newZoom;
+		const newZoom = Math.max(minZoom, Math.min(maxZoom, zoomTarget - zoomDelta));
+		panTarget.x = mouseX - worldX * newZoom;
+		panTarget.y = mouseY - worldY * newZoom;
+		zoomTarget = newZoom;
 	}
 
-	/**
-	 * Initiates panning on mouse down.
-	 */
 	function handleMouseDown(event: MouseEvent) {
 		isPanning = true;
 		lastMousePosition = { x: event.clientX, y: event.clientY };
 	}
 
-	/**
-	 * Ends panning on mouse up.
-	 */
 	function handleMouseUp() {
 		isPanning = false;
 	}
 
-	/**
-	 * Updates the pan state on mouse move if panning is active.
-	 */
 	function handleMouseMove(event: MouseEvent) {
 		if (!isPanning) return;
 		const dx = event.clientX - lastMousePosition.x;
 		const dy = event.clientY - lastMousePosition.y;
-		pan.x += dx;
-		pan.y += dy;
+		panTarget.x += dx;
+		panTarget.y += dy;
 		lastMousePosition = { x: event.clientX, y: event.clientY };
 	}
 
-	/**
-	 * Sets up a ResizeObserver to make the canvas responsive.
-	 * This runs once when the component is mounted.
-	 */
+	function handleDoubleClick() {
+		if (!canvasElement) return;
+		const { width, height } = dimensions;
+		panTarget = { x: width / 2, y: height / 2 };
+		zoomTarget = 1;
+	}
+
 	onMount(() => {
 		if (!canvasElement) return;
 
 		const resizeObserver = new ResizeObserver((entries) => {
-			if (!canvasElement) return;
-			for (const entry of entries) {
-				const { width, height } = entry.contentRect;
-				// Update canvas drawing surface size
-				canvasElement.width = width;
-				canvasElement.height = height;
-				// Update reactive state
-				dimensions = { width, height };
-			}
+			if (!entries[0]) return;
+			const { width, height } = entries[0].contentRect;
+			canvasElement.width = width;
+			canvasElement.height = height;
+			dimensions = { width, height };
 		});
-
 		resizeObserver.observe(canvasElement);
 
-		// Initial size setting
 		const rect = canvasElement.getBoundingClientRect();
 		canvasElement.width = rect.width;
 		canvasElement.height = rect.height;
 		dimensions = { width: rect.width, height: rect.height };
 
+		const initialPan = { x: rect.width / 2, y: rect.height / 2 };
+		pan = { ...initialPan };
+		panTarget = { ...initialPan };
+
+		let frameId: number;
+		const animate = () => {
+			const panDistance = Math.hypot(panTarget.x - pan.x, panTarget.y - pan.y);
+			const zoomDistance = Math.abs(zoomTarget - zoom);
+
+			if (panDistance > 0.01 || zoomDistance > 0.01) {
+				pan.x += (panTarget.x - pan.x) * dampingFactor;
+				pan.y += (panTarget.y - pan.y) * dampingFactor;
+				zoom += (zoomTarget - zoom) * dampingFactor;
+			} else {
+				pan.x = panTarget.x;
+				pan.y = panTarget.y;
+				zoom = zoomTarget;
+			}
+			frameId = requestAnimationFrame(animate);
+		};
+		animate();
 
 		return () => {
 			resizeObserver.disconnect();
+			cancelAnimationFrame(frameId);
 		};
 	});
 </script>
@@ -217,6 +223,7 @@
 	on:mouseup={handleMouseUp}
 	on:mouseleave={handleMouseUp}
 	on:mousemove={handleMouseMove}
+	on:dblclick={handleDoubleClick}
 >
 	<canvas
 		bind:this={canvasElement}
@@ -232,6 +239,13 @@
 		overflow: hidden;
 		position: relative;
 		cursor: grab;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		touch-action: none;
 	}
 
 	canvas {

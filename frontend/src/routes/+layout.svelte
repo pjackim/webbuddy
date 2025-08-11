@@ -3,9 +3,13 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import { ModeWatcher } from 'mode-watcher';
 	import { Toaster } from '$lib/components/ui/sonner/index.js';
-	import ErrorModal from '$lib/components/ErrorModal.svelte';
 	import { handleError, createErrorInfo } from '$lib/error-store.svelte.js';
+	import { toast } from 'svelte-sonner';
 	import { onMount } from 'svelte';
+	import { Grid } from '$lib/components/ui/grid';
+	import { gridVisibility } from '$lib/stores/grid';
+	import { Button } from '$lib/components/ui/button';
+	import { Cog } from 'lucide-svelte';
 
 	let { children } = $props();
 
@@ -26,7 +30,7 @@
 		window.addEventListener('unhandledrejection', (event) => {
 			let errorMessage = 'Unhandled promise rejection';
 			let details = '';
-			
+
 			if (event.reason instanceof Error) {
 				errorMessage = event.reason.message;
 				details = event.reason.stack || '';
@@ -45,12 +49,29 @@
 			handleError(error);
 		});
 	});
+
+	function toggleGrid() {
+		gridVisibility.current = !gridVisibility.current;
+	}
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+{#if gridVisibility.current}
+	<div class="fixed inset-0 -z-10">
+		<Grid />
+	</div>
+{/if}
+
+<div class="fixed bottom-4 right-4 z-50">
+	<Button on:click={toggleGrid} variant="outline" size="icon">
+		<Cog class="h-4 w-4" />
+		<span class="sr-only">Toggle Grid</span>
+	</Button>
+</div>
+
 <ModeWatcher />
 <Toaster />
-<ErrorModal />
 {@render children?.()}

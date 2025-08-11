@@ -1,4 +1,5 @@
-import type { PersistedState } from 'runed';
+import { toast } from 'svelte-sonner';
+import { goto } from '$app/navigation';
 
 export type ErrorInfo = {
 	code: number | string;
@@ -12,14 +13,12 @@ export type ErrorInfo = {
 export type ErrorState = {
 	currentError: ErrorInfo | null;
 	errorHistory: ErrorInfo[];
-	isErrorModalOpen: boolean;
 };
 
 // Global error state
 export const errorStore = $state<ErrorState>({
 	currentError: null,
-	errorHistory: [],
-	isErrorModalOpen: false
+	errorHistory: []
 });
 
 // Error handling functions
@@ -36,18 +35,49 @@ export function handleError(error: ErrorInfo) {
 	
 	// Set as current error for display
 	errorStore.currentError = error;
-	errorStore.isErrorModalOpen = true;
+	
+	// For serious errors, navigate to error page
+	if (isSeriousError(error.code)) {
+		navigateToErrorPage(error);
+	} else {
+		// For minor errors, show toast
+		showErrorToast(error);
+	}
 }
 
 export function clearError() {
 	errorStore.currentError = null;
-	errorStore.isErrorModalOpen = false;
 }
 
 export function clearAllErrors() {
 	errorStore.currentError = null;
 	errorStore.errorHistory = [];
-	errorStore.isErrorModalOpen = false;
+}
+
+function navigateToErrorPage(error: ErrorInfo) {
+	// Encode error data to pass to error page
+	const errorData = encodeURIComponent(JSON.stringify({
+		code: error.code,
+		message: error.message instanceof Error ? {
+			name: error.message.name,
+			message: error.message.message,
+			stack: error.message.stack
+		} : error.message,
+		details: error.details,
+		timestamp: error.timestamp.toISOString(),
+		url: error.url
+	}));
+	
+	// Navigate to dedicated error page
+	goto(`/error?data=${errorData}`);
+}
+
+function showErrorToast(error: ErrorInfo) {
+	const message = error.message instanceof Error ? error.message.message : String(error.message);
+	toast.error(message, {
+		description: error.details,
+		duration: 5000
+	});
 }
 
 // Helper to create error info from different sources
@@ -75,6 +105,38 @@ export function createErrorInfo(
 	};
 }
 
+// Get available API routes for 404 error messages
+function getAvailableRoutes(): string {
+	return `Available routes:
+
+Screens:
+- GET /api/screens
+- POST /api/screens
+- PUT /api/screens/{screen_id}
+- DELETE /api/screens/{screen_id}
+
+Assets:
+- GET /api/assets
+- POST /api/assets
+- PUT /api/assets/{asset_id}
+- DELETE /api/assets/{asset_id}
+- POST /api/assets/upload
+
+Other:
+- GET /health
+- WebSocket: /ws`;
+}
+
+// Extract endpoint from URL for better error messages
+function extractEndpoint(url: string): string {
+	try {
+		const urlObj = new URL(url);
+		return urlObj.pathname;
+	} catch {
+		return url;
+	}
+}
+
 // API error handler
 export function handleApiError(error: any, url?: string) {
 	let code = 500;
@@ -83,8 +145,15 @@ export function handleApiError(error: any, url?: string) {
 	
 	if (error instanceof Response) {
 		code = error.status;
-		message = `HTTP ${error.status}: ${error.statusText}`;
-		details = `Request to ${error.url} failed`;
+		
+		if (code === 404 && url) {
+			const endpoint = extractEndpoint(url);
+			message = `Route not found: ${endpoint}`;
+			details = `\n${getAvailableRoutes()}`;
+		} else {
+			message = `HTTP ${error.status}: ${error.statusText}`;
+			details = `Request to ${error.url} failed`;
+		}
 	} else if (error instanceof Error) {
 		if (error.message.includes('Failed to fetch')) {
 			code = 'NETWORK';
@@ -100,12 +169,8 @@ export function handleApiError(error: any, url?: string) {
 	
 	const errorInfo = createErrorInfo(code, message, details, url);
 	
-	// Only show error panel for serious errors
-	if (typeof code === 'number' && (code >= 400)) {
-		handleError(errorInfo);
-	} else if (code === 'NETWORK') {
-		handleError(errorInfo);
-	}
+	// Handle errors appropriately
+	handleError(errorInfo);
 	
 	return errorInfo;
 }
@@ -116,21 +181,28 @@ export async function safeFetch(url: string, options?: RequestInit): Promise<Res
 		const response = await fetch(url, options);
 		
 		if (!response.ok) {
-			handleApiError(response, url);
-			throw response;
+			// Create a more detailed error response for API errors
+			const errorResponse = response.clone();
+			errorResponse.url = url; // Ensure URL is properly set
+			handleApiError(errorResponse, url);
+			throw errorResponse;
 		}
 		
 		return response;
 	} catch (error) {
-		handleApiError(error, url);
+		// For network errors or other exceptions
+		if (!(error instanceof Response)) {
+			handleApiError(error, url);
+		}
 		throw error;
 	}
 }
 
-// Check if error should show full error panel (vs just toast)
+// Check if error should show full error page (vs just toast)
 export function isSeriousError(code: number | string): boolean {
 	if (typeof code === 'number') {
 		return code >= 400; // 4xx and 5xx errors
 	}
-	return ['NETWORK', 'TIMEOUT', 'JS'].includes(String(code));
+	// Only JavaScript and custom errors get full pages, network errors get toasts
+	return ['JS', 'CUSTOM', 'LIVE'].includes(String(code));
 }

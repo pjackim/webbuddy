@@ -3,11 +3,43 @@
 	import ErrorPanel from '$lib/components/ErrorPanelComplete.svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	
+	// Get available routes for 404 errors
+	function getAvailableAppRoutes(): string {
+		return `Available pages:
+
+Main Application:
+- / (Home - Canvas and Screens)
+- /demo/error-panel (Error Panel Component Demo)
+- /demo/error-testing (Error Testing Dashboard)
+
+API Endpoints:
+- GET /api/screens
+- POST /api/screens
+- PUT /api/screens/{screen_id}
+- DELETE /api/screens/{screen_id}
+- GET /api/assets
+- POST /api/assets
+- PUT /api/assets/{asset_id}
+- DELETE /api/assets/{asset_id}
+- POST /api/assets/upload
+- GET /health
+- WebSocket: /ws`;
+	}
+	
 	// Format error details for display
-	$: errorDetails = $page.error?.stack || $page.error?.message || 'No additional details available';
+	$: errorDetails = (() => {
+		if ($page.status === 404) {
+			// For 404 errors, show the attempted route and available routes
+			return getAvailableAppRoutes();
+		}
+		return $page.error?.stack || $page.error?.message || 'No additional details available';
+	})();
 	
 	// Determine error message
 	$: errorMessage = (() => {
+		if ($page.status === 404) {
+			return `Page not found: ${$page.url.pathname}`;
+		}
 		if ($page.error instanceof Error) {
 			return $page.error;
 		}
@@ -18,6 +50,7 @@
 	$: language = (() => {
 		if ($page.error instanceof Error) return 'javascript';
 		if (errorDetails.includes('{') || errorDetails.includes('[')) return 'json';
+		if ($page.status === 404) return 'bash'; // Routes look better with bash highlighting
 		return 'typescript';
 	})();
 </script>

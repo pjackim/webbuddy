@@ -5,11 +5,44 @@
 	import { api } from '$lib/api.js';
 	
 	// Test functions for different error scenarios
-	async function test404Error() {
+	// Generate random endpoint for testing
+	function generateRandomEndpoint(): string {
+		const prefixes = ['users', 'posts', 'comments', 'products', 'orders', 'files', 'data'];
+		const actions = ['create', 'update', 'delete', 'export', 'import', 'sync'];
+		const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+		const action = actions[Math.floor(Math.random() * actions.length)];
+		const id = Math.floor(Math.random() * 1000);
+		return `/${prefix}/${action}/${id}`;
+	}
+
+	async function test404RandomEndpoint() {
+		const randomEndpoint = generateRandomEndpoint();
 		try {
-			await api('/nonexistent-endpoint');
+			await api(randomEndpoint);
 		} catch (error) {
-			// Error already handled by safeFetch in api.js
+			// Error already handled by safeFetch - will show the attempted endpoint
+			console.log('Random 404 error handled:', error);
+		}
+	}
+	
+	async function test404TypicalEndpoints() {
+		const commonEndpoints = ['/users', '/posts/123', '/admin/dashboard', '/api/v2/data', '/files/upload'];
+		const endpoint = commonEndpoints[Math.floor(Math.random() * commonEndpoints.length)];
+		try {
+			await api(endpoint);
+		} catch (error) {
+			// Error already handled by safeFetch
+			console.log('Typical 404 error handled:', error);
+		}
+	}
+	
+	async function test404DeepNestedPath() {
+		const deepPath = '/api/v1/organizations/123/projects/456/tasks/789/comments/edit';
+		try {
+			await api(deepPath);
+		} catch (error) {
+			// Error already handled by safeFetch
+			console.log('Deep nested 404 error handled:', error);
 		}
 	}
 	
@@ -50,6 +83,17 @@
 		handleError(errorInfo);
 	}
 	
+	function testMinorNetworkError() {
+		// This will show as a toast instead of redirecting to error page
+		const errorInfo = createErrorInfo(
+			'NETWORK',
+			'Connection timeout',
+			'The request took too long to complete.',
+			window.location.href
+		);
+		handleError(errorInfo);
+	}
+	
 	function testCustomError() {
 		const error = new Error('Custom application error');
 		error.stack = `Error: Custom application error
@@ -75,6 +119,21 @@
 		// This will be caught by the unhandledrejection handler
 		Promise.reject(new Error('Unhandled promise rejection test'));
 	}
+	
+	// Custom endpoint testing
+	let customEndpoint = $state('/users/123');
+	
+	async function testCustomEndpoint() {
+		if (!customEndpoint.trim()) {
+			customEndpoint = '/example/endpoint';
+		}
+		try {
+			await api(customEndpoint);
+		} catch (error) {
+			// Error already handled by safeFetch - will show whatever endpoint was attempted
+			console.log('Custom 404 error handled for:', customEndpoint);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -95,12 +154,35 @@
 				<CardDescription>Test different HTTP status codes</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="destructive" on:click={test404Error}>
-					Test 404 - Not Found
+				<Button class="w-full" variant="destructive" on:click={test404RandomEndpoint}>
+					Test 404 - Random Endpoint
+				</Button>
+				<Button class="w-full" variant="destructive" on:click={test404TypicalEndpoints}>
+					Test 404 - Typical API Call
+				</Button>
+				<Button class="w-full" variant="destructive" on:click={test404DeepNestedPath}>
+					Test 404 - Deep Nested Path
 				</Button>
 				<Button class="w-full" variant="destructive" on:click={test500Error}>
 					Test 500 - Internal Server Error
 				</Button>
+				
+				<div class="pt-4 border-t">
+					<label class="text-xs font-medium" for="custom-endpoint">Test Custom Endpoint:</label>
+					<div class="flex gap-2 mt-2">
+						<input 
+							id="custom-endpoint"
+							type="text" 
+							class="flex-1 px-3 py-2 text-sm border rounded-md" 
+							placeholder="/any/endpoint/you/want"
+							bind:value={customEndpoint}
+						/>
+						<Button variant="destructive" size="sm" on:click={testCustomEndpoint}>
+							Test
+						</Button>
+					</div>
+					<p class="text-xs text-muted-foreground mt-1">Try any endpoint like /users/123, /admin, /api/v2/data, etc.</p>
+				</div>
 			</CardContent>
 		</Card>
 		
@@ -130,9 +212,10 @@
 				<CardDescription>Test connection and network-related errors</CardDescription>
 			</CardHeader>
 			<CardContent class="space-y-3">
-				<Button class="w-full" variant="destructive" on:click={testNetworkError}>
-					Test Network Error
+				<Button class="w-full" variant="outline" on:click={testMinorNetworkError}>
+					Test Network Toast
 				</Button>
+				<p class="text-xs text-muted-foreground">Shows toast notification</p>
 			</CardContent>
 		</Card>
 		
@@ -157,10 +240,11 @@
 		</CardHeader>
 		<CardContent>
 			<ul class="space-y-2 text-sm text-muted-foreground">
-				<li>• <strong>HTTP Errors (404, 500):</strong> Automatically detected from API calls and show the error modal</li>
-				<li>• <strong>JavaScript Errors:</strong> Caught and displayed with full stack traces</li>
-				<li>• <strong>Network Errors:</strong> Connection failures and timeouts trigger error panels</li>
-				<li>• <strong>Global Handlers:</strong> Uncaught errors and unhandled promise rejections are captured</li>
+				<li>• <strong>HTTP 404 Errors:</strong> Show attempted endpoint and list of available API routes</li>
+				<li>• <strong>HTTP 500 Errors:</strong> Redirect to full-page error displays</li>
+				<li>• <strong>JavaScript Errors:</strong> Redirect to dedicated error pages with full stack traces</li>
+				<li>• <strong>Network Errors:</strong> Show toast notifications (not full pages)</li>
+				<li>• <strong>Global Handlers:</strong> Uncaught errors redirect to error pages</li>
 				<li>• <strong>404 Pages:</strong> Try visiting a non-existent URL like <code>/nonexistent-page</code></li>
 			</ul>
 		</CardContent>
