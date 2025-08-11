@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      ".*",
+      "*"
+    ],
+    "additionalDirectories": [
+      "/mnt/z/Coding/webbuddy/webbuddy/docs/"
+    ]
+  }
+}

@@ -2,11 +2,12 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Frontend Dev Server",
+            "label": "Frontend Dev Server (bash)",
             "type": "shell",
             "command": "bash",
             "args": [
-                "${workspaceFolder}/frontend/dev.sh"
+                "-lc",
+                "export PATH=\"$LOCALAPPDATA/bun/bin:$PATH\"; ./dev.sh"
             ],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
@@ -17,7 +18,32 @@
                 "reveal": "always",
                 "panel": "dedicated",
                 "clear": false
-            }
+            },
+            "detail": "Runs bun dev via dev.sh (adds Windows bun install path to PATH for Git Bash)."
+        },
+        {
+            "label": "Frontend Dev Server (PowerShell)",
+            "type": "shell",
+            "command": "pwsh",
+            "args": [
+                "-NoLogo",
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}/frontend/dev.ps1"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "problemMatcher": [],
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": false
+            },
+            "detail": "PowerShell version with log truncation logic (uses bun from Windows PATH)."
         }
     ]
 }

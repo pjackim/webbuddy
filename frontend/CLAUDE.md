@@ -169,10 +169,9 @@ Prioritize using components and logic described in the documentation. This will 
 ### Required Testing Process
 Before claiming any task is complete, you MUST:
 
-1. **Start the development server**: `bun run dev` (frontend on localhost:5173)
-2. **Test via browser interaction** using either:
+1. **No need to start the development server, it is always hot reloading**: you can see live logs here: `frontend\dev_live_output.log`
+2. **Test webpage via browser interaction** using:
    - **Kapture MCP**: Browser automation for testing features and validating state
-   - **BrowserMCP**: Alternative browser testing approach
 
 ### Browser Testing Requirements
 - Navigate to http://localhost:5173 and interact with the application
