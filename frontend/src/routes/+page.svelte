@@ -29,7 +29,7 @@
 				// Upload to backend to get a URL
 				const { url } = await uploadFile(file);
 				// Place on the first screen by default at (50,50)
-				const sc = screens[0];
+				const sc = screens()[0];
 				if (!sc) {
 					toast.error('No screen available to place the asset.', { id: toastId });
 					continue;

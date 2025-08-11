@@ -36,6 +36,11 @@
           }
         })()
   );
+
+  // Narrow variant to the exact type accepted by Code.Root
+  const codeVariant: 'default' | 'secondary' | undefined = $derived(
+    variant === 'default' ? 'default' : variant === 'secondary' ? 'secondary' : undefined
+  );
 </script>
 
 <div class={`w-full h-full flex items-center justify-center p-6 ${className}`}>
@@ -53,13 +58,13 @@
       <Code.Root
         class={`relative rounded-lg shadow-sm ${codeClass}`}
         code={codeText}
-        lang={lang}
-        variant={variant}
+        lang={lang as 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript'}
+        variant={codeVariant}
         hideLines={hideLines}
         highlight={highlight}
       >
         <div class="absolute right-2 top-2">
-          <Code.CopyButton size="icon" />
+          <Code.CopyButton variant="ghost" size="icon" />
         </div>
       </Code.Root>
     </Code.Overflow>

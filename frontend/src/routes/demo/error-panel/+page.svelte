@@ -63,7 +63,7 @@ Available routes:
 			{#each examples as example, i}
 				<button
 					class="px-4 py-2 rounded-lg {i === currentExample ? 'bg-primary text-primary-foreground' : 'bg-muted'}"
-					onclick={() => currentExample = i}
+					on:click={() => currentExample = i}
 				>
 					{example.code} Error
 				</button>
@@ -100,16 +100,19 @@ Available routes:
 
 		<h3>Example Usage</h3>
 		<pre><code>{`<script>
-	import ErrorPanel from '$lib/components/ErrorPanel.svelte';
+	import ErrorPanel from '$lib/components/ErrorPanelComplete.svelte';
 </script>
 
 <ErrorPanel
 	errorCode={500}
-	errorMessage="Database connection failed"
-	errorDetails="Connection timeout after 30 seconds..."
+	errorMessage={\`Database connection failed
+
+Details:
+Connection timeout after 30 seconds...\`}
 	language="typescript"
-	showCopyButton={true}
-	startCollapsed={true}
+/>`}</code></pre>
+	</div>
+</div>
 />`}</code></pre>
 	</div>
 </div>

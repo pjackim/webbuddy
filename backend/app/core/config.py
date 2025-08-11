@@ -9,7 +9,10 @@ class Settings(BaseSettings):
     ENV: str = "dev"
 
     # CORS
-    CORS_ORIGINS: list[str] = ["*"]  # Override in prod
+    CORS_ORIGINS: list[str] = [
+        "http://localhost:5173",  # SvelteKit dev server
+        "http://localhost:8000",  # The backend itself (for docs, etc.)
+    ]
 
     # Base URL used to build public asset URLs (e.g., http://localhost:8000)
     PUBLIC_BASE_URL: Optional[AnyHttpUrl] = None

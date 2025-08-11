@@ -35,16 +35,19 @@ export type TextAsset = BaseAsset & {
 };
 export type Asset = ImageAsset | TextAsset;
 
-export const screens = $state<Screen[]>([]);
-export const assets = $state<Asset[]>([]);
+export const store = $state({ screens: [] as Screen[], assets: [] as Asset[] });
 export const online = new PersistedState('online', true);
 export const selected = $state<string | null>(null);
 
-const _screensById = $derived(new Map(screens.map((sc) => [sc.id, sc])));
+// Convenient accessors for the arrays
+export const screens = () => store.screens;
+export const assets = () => store.assets;
+
+const _screensById = $derived(new Map(store.screens.map((sc) => [sc.id, sc])));
 export const screensById = () => _screensById;
 const _assetsByScreen = $derived.by(() => {
 	const map = new Map<string, Asset[]>();
-	for (const a of assets) {
+	for (const a of store.assets) {
 		const arr = map.get(a.screen_id) || [];
 		arr.push(a);
 		map.set(a.screen_id, arr);
@@ -55,31 +58,37 @@ const _assetsByScreen = $derived.by(() => {
 export const assetsByScreen = () => _assetsByScreen;
 
 export function upsertAsset(a: Asset) {
-	const idx = assets.findIndex((x) => x.id === a.id);
-	if (idx >= 0) assets[idx] = a;
-	else assets.push(a);
+	const idx = store.assets.findIndex((x) => x.id === a.id);
+	if (idx >= 0) store.assets[idx] = a;
+	else store.assets.push(a);
 }
 
 export function removeAsset(id: string) {
-	const idx = assets.findIndex((a) => a.id === id);
-	if (idx >= 0) assets.splice(idx, 1);
+	const idx = store.assets.findIndex((a) => a.id === id);
+	if (idx >= 0) store.assets.splice(idx, 1);
+}
+
+// Convenience setter for cross-module updates
+export function setScreens(list: Screen[]) {
+	store.screens.length = 0;
+	store.screens.push(...list);
 }
 
 export function upsertScreen(s: Screen) {
-	const idx = screens.findIndex((x) => x.id === s.id);
-	if (idx >= 0) screens[idx] = s;
-	else screens.push(s);
+	const idx = store.screens.findIndex((x) => x.id === s.id);
+	if (idx >= 0) store.screens[idx] = s;
+	else store.screens.push(s);
 }
 
 export function removeScreen(id: string) {
-	const idx = screens.findIndex((s) => s.id === id);
-	if (idx >= 0) screens.splice(idx, 1);
+	const idx = store.screens.findIndex((s) => s.id === id);
+	if (idx >= 0) store.screens.splice(idx, 1);
 }
 
 export function getScreen(id: string) {
-	return screens.find((s) => s.id === id);
+	return store.screens.find((s) => s.id === id);
 }
 
 export function getAsset(id: string) {
-	return assets.find((a) => a.id === id);
+	return store.assets.find((a) => a.id === id);
 }

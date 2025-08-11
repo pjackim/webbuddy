@@ -86,7 +86,7 @@
 		}}
 	>
 		<Layer>
-			{#each screens as sc}
+			{#each screens() as sc}
 				<ScreenFrame {sc} />
 			{/each}
 		</Layer>
