@@ -74,13 +74,12 @@
 
 
 
-    /********************************************************************/
-    /*  _____ _                                 _      _    _           */
-    /* |_   _| |_  ___ _ __  ___  __ ____ _ _ _(_)__ _| |__| |___ ___   */
-    /*   | | | ' \/ -_) '  \/ -_) \ V / _` | '_| / _` | '_ \ / -_|_-<   */
-    /*   |_| |_||_\___|_|_|_\___|  \_/\__,_|_| |_\__,_|_.__/_\___/__/   */
-    /********************************************************************/
-
+/********************************************************************/
+/*  _____ _                                 _      _    _           */
+/* |_   _| |_  ___ _ __  ___  __ ____ _ _ _(_)__ _| |__| |___ ___   */
+/*   | | | ' \/ -_) '  \/ -_) \ V / _` | '_| / _` | '_ \ / -_|_-<   */
+/*   |_| |_||_\___|_|_|_\___|  \_/\__,_|_| |_\__,_|_.__/_\___/__/   */
+/********************************************************************/
     --color-primary          : inherit;  /* 	Primary brand color */
     --color-primary-content  : inherit;  /* 	Foreground content color to use on primary color */
     --color-secondary        : inherit;  /* 	Secondary brand color */
@@ -118,7 +117,6 @@
 /*  \___\___/_|_|_| .__/\___/_||_\___|_||_\__|   \_/\__,_|_| |_\__,_|_.__/_\___/__/   */
 /*                |_|                                                                 */
 /**************************************************************************************/
-
 	--alert-color              : inherit;  /* color of the alert */
 	--badge-color              : inherit;  /* color of the badge */
 	--size                     : inherit;  /* size of the badge */
@@ -219,41 +217,28 @@
 	--join-ee                  : inherit;  /* end end border radius of the join */
 
 
-
-
-
-
+/************************************************************/
 /*  ___             _           ___         _ _             */
 /* | _ ) ___ _ _ __| |___ _ _  | _ \__ _ __| (_)_  _ ___    */
 /* | _ \/ _ \ '_/ _` / -_) '_| |   / _` / _` | | || (_-<    */
 /* |___/\___/_| \__,_\___|_|   |_|_\__,_\__,_|_|\_,_/__/    */
 /************************************************************/
+    --radius-box     : inherit;  /* For large sized components like card, modal, alert, etc.     */
+    --radius-field   : inherit;  /* For medium sized components like button, input, select, tab, etc.        */
+    --radius-selector: inherit;  /* For small sized components like checkbox, toggle, badge, etc.        */
+
+    .rounded-box;
+    .rounded-field;
+    .rounded-selector;
 
 
---radius-box     : inherit;  /* For large sized components like card, modal, alert, etc.     */
---radius-field   : inherit;  /* For medium sized components like button, input, select, tab, etc.        */
---radius-selector: inherit;  /* For small sized components like checkbox, toggle, badge, etc.        */
-
-.rounded-box;
-.rounded-field;
-.rounded-selector;
-
-
-
-
-
-
-
-
-
-
-    /*   ___     _           _   _ _   _ _ _ _          */
-    /*  / __|___| |___ _ _  | | | | |_(_) (_) |_ _  _   */
-    /* | (__/ _ \ / _ \ '_| | |_| |  _| | | |  _| || |  */
-    /*  \___\___/_\___/_|    \___/ \__|_|_|_|\__|\_, |  */
-    /*                                           |__/   */
-    /****************************************************/
-
+/****************************************************/
+/*   ___     _           _   _ _   _ _ _ _          */
+/*  / __|___| |___ _ _  | | | | |_(_) (_) |_ _  _   */
+/* | (__/ _ \ / _ \ '_| | |_| |  _| | | |  _| || |  */
+/*  \___\___/_\___/_|    \___/ \__|_|_|_|\__|\_, |  */
+/*                                           |__/   */
+/****************************************************/
     .bg-primary          ;  /* Sets the background color to the primary color */
     .to-primary          ;  /* Sets the ending color for a gradient to the primary color */
     .via-primary         ;  /* Sets the middle color for a gradient to the primary color */
@@ -276,13 +261,6 @@
 
 
 
-
-
-
-
-
-
-
 [data-theme='CustomTheme'] {
 	.my-btn {
 		background-color: #1ea1f1;
@@ -293,6 +271,21 @@
 		border-color: #1c96e1;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* 
   ____        __             _ _      ___                      _     _            
