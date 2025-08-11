@@ -1,0 +1,16 @@
+import { page } from '@vitest/browser/context';
+import { describe, expect, it } from 'vitest';
+import { render } from 'vitest-browser-svelte';
+
+// @ts-expect-error: Vite handles .svelte imports at runtime; no TS types needed here
+import Page from './+page.svelte';
+
+describe('/about/+page.svelte', () => {
+  it('renders the About heading', async () => {
+    render(Page);
+
+    const heading = page.getByRole('heading', { level: 1 });
+    await expect.element(heading).toBeInTheDocument();
+  });
+});
+

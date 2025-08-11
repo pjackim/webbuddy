@@ -68,6 +68,22 @@
 					</NavigationMenu.Item>
 
 					<NavigationMenu.Item>
+						<NavigationMenu.Trigger>Demos</NavigationMenu.Trigger>
+						<NavigationMenu.Content>
+							<div class="p-4 w-64 space-y-2">
+								<a href="/demo/error-panel" class="block p-2 hover:bg-muted rounded-lg">
+									<div class="font-medium">Error Panel</div>
+									<div class="text-sm text-muted-foreground">View error panel component</div>
+								</a>
+								<a href="/demo/error-testing" class="block p-2 hover:bg-muted rounded-lg">
+									<div class="font-medium">Error Testing</div>
+									<div class="text-sm text-muted-foreground">Test error handling</div>
+								</a>
+							</div>
+						</NavigationMenu.Content>
+					</NavigationMenu.Item>
+
+					<NavigationMenu.Item>
 						<NavigationMenu.Link href="/about">About</NavigationMenu.Link>
 					</NavigationMenu.Item>
 				</NavigationMenu.List>
