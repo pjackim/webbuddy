@@ -1,6 +1,22 @@
 <script lang="ts">
 	import ErrorPanel from '$lib/components/ErrorPanelComplete.svelte';
 
+	// Function to generate a real JavaScript error with stack trace
+	function generateTestError() {
+		try {
+			// Create a nested function call to generate a meaningful stack trace
+			function deepFunction() {
+				function nestedFunction() {
+					throw new Error('Test error with real stack trace');
+				}
+				return nestedFunction();
+			}
+			return deepFunction();
+		} catch (error) {
+			return error;
+		}
+	}
+
 	// Example error messages and logs
 	const examples = [
 		{
@@ -43,10 +59,34 @@ Available routes:
   "path": "/api/admin/users"
 }`,
 			language: 'json' as const
+		},
+		{
+			code: 'JS',
+			message: generateTestError(),
+			details: 'This is a real JavaScript error with an actual stack trace generated at runtime.',
+			language: 'javascript' as const
 		}
 	];
 
 	let currentExample = $state(0);
+
+	// Function to simulate different types of errors
+	function triggerError() {
+		try {
+			// Simulate a fetch error
+			throw new TypeError('Failed to fetch: Network error');
+		} catch (error) {
+			// Add this error as a new example
+			const newExample = {
+				code: 'LIVE',
+				message: error,
+				details: 'This error was just generated dynamically when you clicked the button!',
+				language: 'javascript' as const
+			};
+			examples.push(newExample);
+			currentExample = examples.length - 1;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -59,7 +99,7 @@ Available routes:
 	<!-- Example Selector -->
 	<div class="mb-8">
 		<h2 class="text-xl font-semibold mb-4">Examples:</h2>
-		<div class="flex gap-4">
+		<div class="flex gap-4 flex-wrap">
 			{#each examples as example, i}
 				<button
 					class="px-4 py-2 rounded-lg {i === currentExample ? 'bg-primary text-primary-foreground' : 'bg-muted'}"
@@ -68,6 +108,12 @@ Available routes:
 					{example.code} Error
 				</button>
 			{/each}
+			<button
+				class="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
+				on:click={triggerError}
+			>
+				Generate Live Error
+			</button>
 		</div>
 	</div>
 
@@ -110,9 +156,6 @@ Available routes:
 Details:
 Connection timeout after 30 seconds...\`}
 	language="typescript"
-/>`}</code></pre>
-	</div>
-</div>
 />`}</code></pre>
 	</div>
 </div>

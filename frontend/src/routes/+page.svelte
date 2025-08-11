@@ -3,7 +3,7 @@
 	import Canvas from '../lib/components/Canvas.svelte';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { api, uploadFile } from '../lib/api';
-	import { online, upsertAsset, screens, type Asset } from '$lib/stores.svelte.ts';
+	import { online, upsertAsset, screens, type Asset } from '$lib/stores.svelte';
 	import { toast } from 'svelte-sonner';
 
 	let hover = $state(false);

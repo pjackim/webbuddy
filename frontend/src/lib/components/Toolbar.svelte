@@ -5,7 +5,7 @@
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
-	import { online } from '$lib/stores.svelte.ts';
+	import { online } from '$lib/stores.svelte.js';
 	import { api } from '../api';
 	import { toast } from 'svelte-sonner';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
@@ -30,47 +30,55 @@
 	}
 </script>
 
-<div class="flex justify-center p-4 border-b">
-	<NavigationMenu.Root>
-		<NavigationMenu.List class="flex items-center gap-4">
-			<NavigationMenu.Item>
-				<NavigationMenu.Link href="/" class="font-bold text-lg">Web Buddy</NavigationMenu.Link>
-			</NavigationMenu.Item>
+<div class="relative z-20 border-b bg-background">
+	<div class="flex h-14 items-center justify-between px-4">
+		<!-- Left: Brand -->
+		<a href="/" class="font-bold text-lg">Web Buddy</a>
 
-			<NavigationMenu.Item>
-				<NavigationMenu.Trigger>Screens</NavigationMenu.Trigger>
-				<NavigationMenu.Content>
-					<div class="p-4 w-64">
-						<p class="text-sm text-muted-foreground mb-4">
-							Manage your screens or add a new one.
-						</p>
-						<Button class="w-full" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
-					</div>
-				</NavigationMenu.Content>
-			</NavigationMenu.Item>
+		<!-- Center: Navigation -->
+		<div class="flex-1 flex justify-center">
+			<NavigationMenu.Root>
+				<NavigationMenu.List class="flex items-center gap-4">
+					<NavigationMenu.Item>
+						<NavigationMenu.Trigger>Screens</NavigationMenu.Trigger>
+						<NavigationMenu.Content>
+							<div class="p-4 w-64">
+								<p class="text-sm text-muted-foreground mb-4">
+									Manage your screens or add a new one.
+								</p>
+								<Button class="w-full" onclick={() => (addScreenOpen = true)}>Add New Screen</Button>
+							</div>
+						</NavigationMenu.Content>
+					</NavigationMenu.Item>
 
-			<NavigationMenu.Item>
-				<NavigationMenu.Trigger>Settings</NavigationMenu.Trigger>
-				<NavigationMenu.Content>
-					<div class="p-4 w-64">
-						<h3 class="text-lg font-medium mb-4">Settings</h3>
-						<div class="flex items-center justify-between">
-							<Label for="offline-mode">Offline Mode</Label>
-							<Switch id="offline-mode" bind:checked={online.current} />
-						</div>
-						<p class="text-sm text-muted-foreground mt-2">
-							When offline, assets are stored locally.
-						</p>
-					</div>
-				</NavigationMenu.Content>
-			</NavigationMenu.Item>
+					<NavigationMenu.Item>
+						<NavigationMenu.Trigger>Settings</NavigationMenu.Trigger>
+						<NavigationMenu.Content>
+							<div class="p-4 w-64">
+								<h3 class="text-lg font-medium mb-4">Settings</h3>
+								<div class="flex items-center justify-between">
+									<Label for="offline-mode">Offline Mode</Label>
+									<Switch id="offline-mode" bind:checked={online.current} />
+								</div>
+								<p class="text-sm text-muted-foreground mt-2">
+									When offline, assets are stored locally.
+								</p>
+							</div>
+						</NavigationMenu.Content>
+					</NavigationMenu.Item>
 
-			<NavigationMenu.Item>
-				<NavigationMenu.Link href="/about">About</NavigationMenu.Link>
-			</NavigationMenu.Item>
-		</NavigationMenu.List>
-	</NavigationMenu.Root>
+					<NavigationMenu.Item>
+						<NavigationMenu.Link href="/about">About</NavigationMenu.Link>
+					</NavigationMenu.Item>
+				</NavigationMenu.List>
+			</NavigationMenu.Root>
+		</div>
 
+		<!-- Right: spacer / actions area (reserved to keep center truly centered) -->
+		<div class="w-[8rem] flex items-center justify-end"></div>
+	</div>
+
+	<!-- Dialog lives at root to avoid layout interference -->
 	<Dialog.Root bind:open={addScreenOpen}>
 		<Dialog.Content>
 			<Dialog.Header>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Code from '$lib/components/ui/code/index.js';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '$lib/utils';
 
 	interface Props {
 		/** The error code (e.g., 500, 404, 403) */
@@ -85,10 +85,12 @@
 				code={combinedErrorContent}
 				lang={language}
 				variant="default"
-				class="max-h-[600px]"
+				class="relative max-h-[600px]"
 			>
 				{#if showCopyButton}
-					<Code.CopyButton variant="ghost" size="icon" />
+					<div class="absolute right-2 top-2">
+						<Code.CopyButton variant="ghost" size="icon" />
+					</div>
 				{/if}
 			</Code.Root>
 		</Code.Overflow>

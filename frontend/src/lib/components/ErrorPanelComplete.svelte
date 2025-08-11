@@ -1,12 +1,12 @@
 <script lang="ts">
 	import * as Code from '$lib/components/ui/code/index.js';
-	import { cn } from '$lib/utils.js';
+	import { cn } from '$lib/utils';
 
 	interface Props {
 		/** The error code (e.g., 500, 404, 403) */
 		errorCode: number | string;
-		/** The error message or logs to display */
-		errorMessage: string;
+		/** The error message, logs, or Error object to display */
+		errorMessage: string | Error;
 		/** Additional error details or stack trace */
 		errorDetails?: string;
 		/** Language for syntax highlighting (default: 'typescript') */
@@ -32,12 +32,42 @@
 		class: className
 	}: Props = $props();
 
-	// Combine error message and details for display
+	// Extract and format error content for display
 	const combinedErrorContent = $derived.by(() => {
-		if (errorDetails) {
-			return `${errorMessage}\n\n${errorDetails}`;
+		let messageText = '';
+		let stackText = '';
+		
+		// Handle Error objects
+		if (errorMessage instanceof Error) {
+			messageText = `${errorMessage.name}: ${errorMessage.message}`;
+			stackText = errorMessage.stack || '';
+			
+			// Clean up the stack trace by removing the redundant error message line
+			if (stackText.startsWith(messageText)) {
+				stackText = stackText.substring(messageText.length + 1); // +1 for the newline
+			}
+		} else if (typeof errorMessage === 'object' && errorMessage !== null) {
+			// Handle other object types (like API error responses)
+			try {
+				messageText = JSON.stringify(errorMessage, null, 2);
+			} catch {
+				messageText = String(errorMessage);
+			}
+		} else {
+			messageText = String(errorMessage);
 		}
-		return errorMessage;
+		
+		// Add additional details if provided
+		if (errorDetails) {
+			stackText = stackText ? `${stackText}\n\n--- Additional Details ---\n${errorDetails}` : errorDetails;
+		}
+		
+		// Combine message and stack/details
+		if (stackText) {
+			return `${messageText}\n\n--- Stack Trace ---\n${stackText}`;
+		}
+		
+		return messageText;
 	});
 
 	// Determine the title based on error code or custom title
@@ -85,10 +115,12 @@
 				code={combinedErrorContent}
 				lang={language}
 				variant="default"
-				class="max-h-[600px]"
+				class="relative max-h-[600px]"
 			>
 				{#if showCopyButton}
-					<Code.CopyButton variant="ghost" size="icon" />
+					<div class="absolute right-2 top-2">
+						<Code.CopyButton variant="ghost" size="icon" />
+					</div>
 				{/if}
 			</Code.Root>
 		</Code.Overflow>
