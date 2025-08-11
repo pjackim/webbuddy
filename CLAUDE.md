@@ -13,14 +13,10 @@ WebBuddy is a full-stack web application for managing digital screens and assets
 
 ### Frontend (from `frontend/` directory)
 ```bash
-npm run dev          # Start dev server (port 5173)
-npm run build        # Build for production
-npm run preview      # Preview production build
-npm run test         # Run unit tests
-npm run test:unit    # Run unit tests with vitest
-npm run check        # Type check with svelte-check
-npm run lint         # Lint with ESLint and Prettier
-npm run format       # Format code with Prettier
+bun run dev          # Start dev server (port 5173) - hot reload enabled
+bun run check        # Type check with svelte-check
+bun run lint         # Lint with ESLint and Prettier
+bun run format       # Format code with Prettier
 ```
 
 ### Backend (from `backend/` directory)
@@ -100,9 +96,9 @@ Key components:
 - **SvelteKit**: Full-stack framework
 - **shadcn-svelte**: UI component library (prioritize over custom components)
 - **Konva.js**: 2D canvas library for graphics
-- **TailwindCSS**: Utility-first CSS framework
+- **TailwindCSS v4**: Latest utility-first CSS framework
 - **TypeScript**: Type safety throughout
-- **Vitest**: Testing framework
+- **runed**: Svelte 5 utilities for advanced reactivity patterns
 
 ### Backend Stack
 - **FastAPI**: Modern async Python web framework
@@ -119,6 +115,23 @@ Key components:
 - Code must be DRY, clean, efficient, modular, and reusable
 - Ensure proper logging (INFO and DEBUG levels)
 - Use TypeScript throughout the frontend
+- Use **Bun** as the package manager for all frontend dependencies
+
+### Frontend Organization
+- Keep routes for pages and layouts only. Move everything reusable to `src/lib`
+- Treat third-party UI like vendor code: isolate it under `lib/vendor/` and expose only your own wrappers from `lib/ui/`
+- Use feature-based organization under `lib/features/` (canvas, toolbar, error-panel, etc.)
+- Co-locate tiny, page-specific components next to routes. Move anything generic to `lib/`
+
+### CSS Architecture
+- Use one **TailwindCSS v4** entry CSS that imports layer files (`base.css`, `components.css`, `utilities.css`)
+- Prefer TailwindCSS v4 classes in Svelte 5 components; reserve @apply for patterns used 3+ times
+- Don't import from vendor anywhere except your wrappers
+
+### Reactivity Patterns
+- Use Svelte 5 runes ($state, $derived, $effect) for component reactivity
+- Leverage **runed** utilities for advanced reactivity patterns (debounced, throttled, element-rect, etc.)
+- See `docs/runed/` for comprehensive utility documentation
 
 ### WebSocket Communication
 The app uses WebSocket events for real-time collaboration:
@@ -139,10 +152,38 @@ Backend uses environment variables (`.env` file supported):
 - `EXTERNAL_ENABLED`: Enable/disable external service calls
 - Development defaults are pre-configured in `docker-compose.yml`
 
-## Testing
-- Frontend: `npm run test` (Vitest)
-- Backend: `uv run test` (pytest)
-- No specific test framework assumptions - check existing tests for patterns
+## Documentation Access
+
+### VERY IMPORTANT: [READ **ALL** DOCUMENTATION](../docs/)
+
+> By default, use [shadcn-svelte components](../docs/shadcn-svelte/) for almost all UI elements.
+
+If online, you are required to use the `svelte5-documentation`, `konva-documentation`, `shadcn-documentation` MCP Servers to access the latest documentation and code examples. This is not optional and must be followed strictly.
+
+Prioritize using components and logic described in the documentation. This will ensure consistency and maintainability across the project.
+
+## Testing Strategy
+
+**IMPORTANT**: Testing is done through browser interaction, NOT unit tests.
+
+### Required Testing Process
+Before claiming any task is complete, you MUST:
+
+1. **Start the development server**: `bun run dev` (frontend on localhost:5173)
+2. **Test via browser interaction** using either:
+   - **Kapture MCP**: Browser automation for testing features and validating state
+   - **BrowserMCP**: Alternative browser testing approach
+
+### Browser Testing Requirements
+- Navigate to http://localhost:5173 and interact with the application
+- Test all modified features by using them in the browser
+- Verify state changes, UI updates, and real-time synchronization
+- Check WebSocket connectivity and live updates between browser instances
+- Validate canvas interactions, asset management, and screen operations
+
+### Backend Testing
+- Backend: `uv run test` (pytest) - only for critical backend logic
+- Primary validation through frontend browser testing
 
 ## Port Configuration
 - Frontend dev server: 5173

@@ -1,3 +1,51 @@
-/* custom utilities */
+/* Custom utilities and Tailwind v4 @utility definitions */
 @layer utilities {
+}
+
+/* TailwindCSS v4 Custom Utilities - Top level (not nested) */
+@utility scrollable-content {
+	block-size: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	overscroll-behavior: contain;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-gutter: stable both-edges;
+}
+
+@utility layout-container {
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+@utility demo-layout {
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	padding: 2rem;
+	gap: 2rem;
+}
+
+@utility responsive-card {
+	max-height: calc(100vh - 8rem);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	backdrop-filter: blur(6px);
+	background: oklch(var(--card-oklch) / 0.85);
+	border: 1px solid oklch(var(--border-oklch) / 0.15);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+@utility responsive-card-content {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
 }

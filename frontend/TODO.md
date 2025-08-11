@@ -1,283 +1,230 @@
-# AGENTS Frontend Refactor
+# Frontend Refactor — Open Issues and Recommended Fixes
 
-VERY IMPORTANT: [READ **ALL** DOCUMENTATION]("../docs/")
-
-Try not to change the resulting behavior (Or Style!) of the app, just the structure and organization of the project.
-
-## Notes:
-- Svelte5
-- Tailwindv4
-- Bun package manager
-- Daily UI components
-- `Shadcn-svelte` components and `Shadcn-svelte-extras`
-    - Follow the [documentation](../docs/shadcn-svelte/) for UI components and patterns.
-
-
-## Big ideas (TL;DR)
-
-* Keep **routes** for pages and layouts only. Move everything reusable to **src/lib**.
-* Treat third-party UI like **vendor code**: isolate it under `lib/vendor/` and expose only your **own wrappers** from `lib/ui/` so swapping libraries later is painless.
-* Use **one Tailwind entry CSS** that imports a few tiny layer files (`base.css`, `components.css`, `utilities.css`) and optional **theme tokens**. Prefer Tailwind classes in Svelte components; reserve `@apply` for patterns used 3+ times.
-* Co-locate tiny, page-specific components next to the route. Move anything generic to `lib/`.
+Status: No code changes applied yet. This document records the remaining errors and inconsistencies and what the official docs recommend as best fixes.
 
 ---
 
-# Suggested frontend layout
+## 1) Tailwind v4 build error: "`@utility` cannot be nested"
 
-```
-frontend/
-├─ src/
-│  ├─ app.html
-│  ├─ app.d.ts
-│  ├─ routes/
-│  │  ├─ +layout.svelte
-│  │  ├─ +page.svelte
-│  │  ├─ (marketing)/...            # route groups
-│  │  ├─ (app)/...                  # protected app
-│  │  └─ error/+page.svelte
-│  ├─ lib/
-│  │  ├─ api/                       # fetchers, typed clients
-│  │  │  └─ client.ts
-│  │  ├─ assets/                    # app-owned assets (icons, svgs)
-│  │  ├─ config/                    # constants/env mapping
-│  │  ├─ stores/                    # writable/derived stores
-│  │  ├─ utils/                     # helpers (date, classnames, etc.)
-│  │  ├─ hooks/                     # tiny composables (use-*)
-│  │  ├─ vendor/                    # third-party components (read-only)
-│  │  │  └─ shadcn/… or radix/…
-│  │  ├─ ui/                        # YOUR public UI surface (thin wrappers)
-│  │  │  ├─ button/
-│  │  │  │  ├─ Button.svelte        # wraps vendor, normalizes API
-│  │  │  │  └─ index.ts
-│  │  │  ├─ input/…
-│  │  │  └─ index.ts                # barrel exports for ui/*
-│  │  └─ features/                  # domain widgets (Canvas, Toolbar, etc.)
-│  │     ├─ canvas/
-│  │     │  ├─ Canvas.svelte
-│  │     │  ├─ Grid.svelte
-│  │     │  └─ index.ts
-│  │     └─ error-panel/
-│  │        ├─ ErrorPanel.svelte
-│  │        └─ index.ts
-│  ├─ styles/
-│  │  ├─ app.css                    # single entry imported by app
-│  │  ├─ base.css                   # @layer base
-│  │  ├─ components.css             # @layer components (rare)
-│  │  ├─ utilities.css              # tiny custom utilities (rare)
-│  │  └─ theme.css                  # CSS vars / Tailwind v4 @theme tokens
-│  ├─ ws.ts                         # websocket helper (or lib/ws/)
-│  ├─ index.ts                      # lib re-exports
-│  └─ vite-env.d.ts
-├─ static/                          # public static files
-│  └─ robots.txt
-├─ svelte.config.js
-├─ tailwind.config.(js|ts)?         # (v4 optional; keep only if needed)
-├─ postcss.config.cjs
-├─ tsconfig.json
-└─ vite.config.ts
-```
+- Evidence:
+  - LATEST_ERROR.md shows:
+    - [plugin:@tailwindcss/vite:generate:serve] `@utility` cannot be nested.
+  - Legacy path in error: `frontend/src/lib/components/ui/code/code.svelte` (file no longer exists)
+  - Actual `@utility` usage lives in `src/styles/theme.css`:
+    - `@utility scrollable-content`, `@utility layout-container`, `@utility demo-layout`, `@utility responsive-card`, `@utility responsive-card-content`.
 
-### Why these moves?
+- Analysis:
+  - Tailwind v4’s `@utility` directive must appear at the top level (not inside `@layer`, `@media`, `@supports`, or any other at-rule).
+  - If any earlier block in the file has an unbalanced brace or a plugin wraps CSS, `@utility` blocks can be parsed as “nested,” triggering this error.
+  - `theme.css` is complex: it mixes `@import`, `@plugin`, `@custom-variant`, `@theme`, multiple `@layer` blocks, `@keyframes`, standard class rules, and then `@utility` blocks at the end. Even if visually top-level, a malformed or tool-injected wrapper can make them effectively nested.
 
-* `src/lib/vendor/*` holds **external** component source, untouched.
-* `src/lib/ui/*` are your **wrappers** that stabilize props, class names, and slots so you can swap vendors later without hunting through your app.
-* `src/lib/features/*` groups domain components (Canvas, Toolbar, ErrorPanel) so they don’t drown next to primitives.
-* Route files stay lean—page orchestration only.
+- Best fix (per Tailwind CSS v4 “CSS-first” guidance):
+  - Keep `@utility` directives at true top-level.
+  - Prefer placing custom `@utility` rules into a dedicated small file (e.g., `src/styles/utilities.css`) to minimize the chance of accidental nesting caused by earlier constructs.
+  - Ensure there are no unbalanced braces in `@layer base`/`@layer components` blocks (especially around nested `@media`).
+  - Keep plugin directives (`@plugin 'daisyui'`) and tokens separate from `@utility` rules to reduce parser complexity.
+
+- Steps to implement:
+  1. Move all `@utility ...` definitions from `src/styles/theme.css` into `src/styles/utilities.css` (top-level only, not wrapped).
+  2. Verify that `src/styles/utilities.css` is imported by your single entry CSS (see Issue 2).
+  3. Quickly sanity-check `theme.css` for unmatched braces (close all `@layer` and `@media` blocks).
+  4. Restart the dev server to clear the Tailwind/Vite pipeline.
+
+- Verification:
+  - Run `npm run dev` (or `bun dev` if using Bun) and confirm the Tailwind plugin no longer errors.
+  - Check that all moved utility classes still work in the UI.
 
 ---
 
-# Conventions for external UI
+## 2) Import order of `app.css` deviates from the refactor plan
 
-Because most of your `components/ui/*` are external:
+- Evidence:
+  - Current `src/styles/app.css`:
+    ```
+    @import 'tailwindcss';
+    @import './base.css';
+    @import './components.css';
+    @import './utilities.css';
+    @import './theme.css';
+    ```
+  - The refactor plan recommends importing tokens early so they’re available to base/components/utilities.
 
-1. **Vendor isolation**
+- Best fix (per Tailwind v4 + design tokens guidance):
+  - Import order should be:
+    1) `@import 'tailwindcss';`
+    2) `@import './theme.css';`   (expose tokens first)
+    3) `@import './base.css';`
+    4) `@import './components.css';`
+    5) `@import './utilities.css';`
 
-   * Move them to `src/lib/vendor/shadcn/*` (or the library name).
-   * Don’t import from `vendor` anywhere except your wrappers.
+  This ensures CSS variables or `@theme` tokens are defined before layers/classes consume them.
 
-2. **Wrappers as your public API**
-
-   * Create `src/lib/ui/button/Button.svelte` etc. Wrap the vendor component, set your defaults, and expose a stable prop API.
-   * Export only from `lib/ui/index.ts`. Everywhere else in the app imports from `$lib/ui`.
-
-3. **Class strategy**
-
-   * Use Tailwind classes directly in wrappers.
-   * If a class cluster repeats across multiple wrappers, extract it with `@apply` into `components.css` as a named utility (e.g., `.btn-base`), then `class="btn-base …"` in the wrapper.
-
-4. **Theming**
-
-   * Centralize colors, radii, spacing scales as CSS variables (or Tailwind v4 `@theme` tokens) in `styles/theme.css`.
-   * Wrappers consume tokens via `var(--*)` or Tailwind token shortcuts so you can re-skin the whole app in one place.
-
----
-
-# Tailwind v4: organizing multiple CSS files
-
-**Entry point (`src/styles/app.css`)**
-
-```css
-/* app.css */
-@import "tailwindcss";      /* v4 single import */
-@import "./theme.css";      /* your design tokens */
-@import "./base.css";
-@import "./components.css";
-@import "./utilities.css";
-```
-
-**Base layer (`base.css`)** — resets & element-level defaults only.
-
-```css
-@layer base {
-  :root {
-    /* fallback tokens (or keep them in theme.css via @theme) */
-  }
-
-  html, body { height: 100%; }
-  body { @apply antialiased; }
-}
-```
-
-**Components layer (`components.css`)** — extracted patterns you reuse a lot.
-
-```css
-@layer components {
-  .btn-base { @apply inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition; }
-  .card     { @apply rounded-xl border bg-background p-4 shadow-sm; }
-}
-```
-
-**Utilities layer (`utilities.css`)** — tiny app-specific utilities you wish Tailwind had.
-
-```css
-@layer utilities {
-  .content-auto { content-visibility: auto; }
-}
-```
-
-**Theme tokens (`theme.css`)**
-
-* Tailwind v4 is “CSS-first”: define tokens in CSS. If you’re using the new `@theme` API, put it here; otherwise define CSS variables.
-
-```css
-/* Option A: CSS variables */
-:root {
-  --color-bg: 255 255 255;            /* use rgb components for opacity support */
-  --color-fg: 15 23 42;
-  --radius-sm: 0.375rem;
-}
-
-[data-theme="dark"] {
-  --color-bg: 2 6 23;
-  --color-fg: 226 232 240;
-}
-
-/* Use in classes: bg-[rgb(var(--color-bg))] text-[rgb(var(--color-fg))] rounded-[var(--radius-sm)] */
-```
-
-> Keep only **one** Tailwind entry CSS (here: `app.css`). Splitting Tailwind into multiple entry points causes stylesheet duplication and JIT misses. Multiple files are fine as **imports** under that entry.
-
-### Where to import `app.css`
-
-* In SvelteKit, import it once in `src/routes/+layout.svelte`:
-
-  ```svelte
-  <script>
-    import '$styles/app.css';
-  </script>
-  <slot />
-  ```
+- Verification:
+  - After reordering, confirm that components still pick up token values (colors, radii, etc.).
+  - No Tailwind warnings about missing tokens.
 
 ---
 
-# Mapping your current files → the new layout
+## 3) Svelte preprocess references a missing PostCSS config
 
-* `src/lib/components/*`
-
-  * Move domain pieces like `Canvas.svelte`, `KonvaGrid.svelte`, `ScreenFrame.svelte`, `Toolbar.svelte` into `src/lib/features/…`.
-  * Keep tiny building blocks (badges, inputs) under your **wrappers** in `src/lib/ui/*`.
-
-* `src/lib/components/ui/*` (mostly external now)
-
-  * Move to `src/lib/vendor/shadcn/*` (read-only), then create wrappers in `src/lib/ui/*` that re-export what you actually use.
-
-* `components.css` (your root)
-
-  * Replace with the `styles/` folder above and import via `app.css`. Keep extracted patterns only; prefer Tailwind classes in components.
-
-* `ws.ts`, stores, utils
-
-  * Slide them under `src/lib/ws.ts`, `src/lib/stores/*`, `src/lib/utils/*`.
-
----
-
-# Practical rules of thumb
-
-**Routes**
-
-* `+layout.svelte` loads global providers and `app.css`.
-* Keep data loading in `+page.ts` / `+page.server.ts`. Components take **data as props**, not fetch inside.
-
-**Components**
-
-* Co-locate page-specific components next to the route (`routes/(app)/dashboard/Chart.svelte`).
-* Promote to `lib/features/*` when reused across routes.
-* Use `index.ts` barrel files in every folder to keep imports short.
-
-**Styling**
-
-* Prefer Tailwind classes inline for 80–90% of cases.
-* Extract with `@apply` only when:
-
-  * the class blob appears 3+ times **and** has meaning (e.g., “card body”).
-* Avoid fighting Tailwind with lots of bespoke CSS—reach for tokens first.
-
-**Theming / design tokens**
-
-* All scales (colors, spacing, radius, shadows) live in `theme.css`.
-* For dark mode, use a `data-theme` attribute on `<html>` and swap variables.
-* Your wrappers translate tokens into Tailwind classes (e.g., `bg-[rgb(var(--color-bg))]`), so vendor components inherit theme automatically.
-
-**3rd-party churn**
-
-* Only your wrappers are imported app-wide. If you replace shadcn with another library, you touch a handful of files in `lib/ui/*`, not your pages.
-
-**Aliases**
-
-* In `tsconfig.json`, set:
-
-  ```json
-  {
-    "compilerOptions": {
-      "paths": {
-        "$lib/*": ["src/lib/*"],
-        "$styles/*": ["src/styles/*"]
+- Evidence:
+  - `svelte.config.js`:
+    ```js
+    preprocess: vitePreprocess({
+      postcss: {
+        configFilePath: join(__dirname, 'postcss.config.cjs')
       }
-    }
-  }
-  ```
+    }),
+    ```
+  - No `frontend/postcss.config.cjs` file is present in the repo root.
 
-  Then import with `$lib/ui`, `$styles/app.css`, etc.
+- Why this matters:
+  - Styles within Svelte components use `@apply` (e.g., vendor `code.svelte`), which require Tailwind/PostCSS to process.
+  - Even with `@tailwindcss/vite`, Svelte preprocess pointing to a missing PostCSS config can cause resolution issues or disable expected transforms in style blocks.
+
+- Best fix (per SvelteKit + Tailwind v4 docs):
+  - Create a minimal `postcss.config.cjs` at the project root:
+    ```js
+    module.exports = {
+      plugins: {
+        tailwindcss: {},
+        autoprefixer: {}
+      }
+    };
+    ```
+  - Alternatively, remove the `postcss` block from `vitePreprocess` and let `@tailwindcss/vite` handle CSS processing, but keeping an explicit PostCSS config is the safer, more predictable path when using `@apply` inside Svelte `<style>` tags.
+
+- Verification:
+  - Run the dev server and ensure component-local `@apply` is working as expected (no raw `@apply` remains in emitted CSS).
 
 ---
 
-# Minimal Tailwind v4 setup (SvelteKit)
+## 4) Stale error path / cache inconsistency
 
-* **postcss.config.cjs**
+- Evidence:
+  - Build error references: `frontend/src/lib/components/ui/code/code.svelte`.
+  - Actual code now lives under `src/lib/vendor/shadcn/code/*` and is re-exported via `src/lib/ui/code/index.ts`.
+  - Repo-wide search found no references to the old path.
 
+- Best fix (per Vite/SvelteKit troubleshooting docs):
+  - Clear caches and restart tooling:
+    - Stop dev server.
+    - Delete `.svelte-kit/` and `node_modules/.vite/` caches.
+    - Restart dev server to rebuild the graph.
+  - Confirm no external tool (e.g., Tailwind content scanning) still targets old directories.
+
+- Verification:
+  - Ensure subsequent error stacks reference current file paths if issues persist.
+
+---
+
+## 5) DaisyUI + Tailwind v4 plugin placement and usage
+
+- Evidence:
+  - `src/styles/theme.css` includes:
+    ```css
+    @import 'tw-animate-css';
+    @plugin "daisyui" {
+      /* themes: synthwave --default; */
+    }
+    ```
+  - The comment warns not to inline JSON config within CSS, which is correct.
+
+- Best fix (per Tailwind v4 + DaisyUI v5 docs):
+  - Load DaisyUI via `@plugin "daisyui";` at the top level (no wrapping JSON config).
+  - Prefer placing `@plugin` near the top of your entry CSS (e.g., `app.css`), not buried inside a tokens file (`theme.css`), to reduce the risk of plugin output interleaving with tokens and layers.
+  - Keep design tokens in `theme.css`, and component/utility layers in their respective files.
+
+- Verification:
+  - After relocating (if you choose to), confirm DaisyUI classes render and no plugin-related parsing errors occur.
+
+---
+
+## 6) Dual Lucide packages (duplication/inconsistency)
+
+- Evidence:
+  - `package.json`:
+    - devDependencies: `@lucide/svelte`
+    - dependencies: `lucide-svelte`
+  - `+layout.svelte` imports from `lucide-svelte`.
+
+- Risk:
+  - Having both can lead to version drift, larger installs, or type resolution confusion.
+
+- Best fix (per Lucide Svelte package guidance):
+  - Standardize on a single package. If you are using `lucide-svelte` in code, remove `@lucide/svelte`. If you prefer `@lucide/svelte`, switch imports accordingly and remove `lucide-svelte`.
+  - Align versions to the latest stable and use consistent named imports across the app.
+
+- Verification:
+  - Run a fresh install and ensure types and runtime imports resolve cleanly.
+
+---
+
+## 7) Vendor/wrapper import policy
+
+- Evidence:
+  - Structure matches the refactor plan:
+    - Vendor code under `src/lib/vendor/shadcn/*`
+    - Public UI surface through `src/lib/ui/*` (barrels and wrappers)
+  - Repo-wide search found no remaining imports from legacy `src/lib/components/ui/*`.
+
+- Best fix (by convention):
+  - Keep enforcing: app code imports only from `$lib/ui` (wrappers), never from `$lib/vendor`.
+  - Optional: Add an ESLint rule or code review checklist to prevent regressions.
+
+- Verification:
+  - Occasional grep to ensure no direct vendor imports sneak in.
+
+---
+
+## 8) Single import of app-wide CSS confirmed
+
+- Evidence:
+  - `src/routes/+layout.svelte` imports `'$styles/app.css'` exactly once, as recommended.
+
+- Action:
+  - No change required.
+
+---
+
+## 9) Optional: Native modules (canvas) and SSR
+
+- Evidence:
+  - `package.json` includes `"canvas": "^3.1.2"` (native module).
+- Risk:
+  - On Windows and some CI/containers, native build may fail or increase setup complexity.
+- Best practice:
+  - If `canvas` is used only client-side, ensure it is not required during SSR. Use dynamic imports or `browser` conditionals as needed.
+  - If SSR needs it, ensure proper system dependencies are documented and available.
+
+---
+
+## Quick Verification Checklist (after applying the fixes above)
+
+1) Styles pipeline
+- [ ] `@utility` rules live in `utilities.css` at top-level (not nested).
+- [ ] `app.css` imports are ordered: tailwindcss → theme.css → base.css → components.css → utilities.css.
+- [ ] DaisyUI `@plugin` directive is top-level, ideally in `app.css`.
+
+2) Tooling config
+- [ ] `postcss.config.cjs` exists with:
   ```js
-  module.exports = {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {}
-    }
-  }
+  module.exports = { plugins: { tailwindcss: {}, autoprefixer: {} } };
   ```
-* **(Optional) tailwind.config.ts** — only if you add plugins or safelist. Otherwise v4 can be config-light.
-* Put your only `@import "tailwindcss";` in `src/styles/app.css`.
+- [ ] Dev server restarted after clearing `.svelte-kit/` and `node_modules/.vite/`.
+
+3) Dependencies and imports
+- [ ] Only one Lucide Svelte package is installed and used consistently.
+- [ ] App code imports UI exclusively from `$lib/ui`, not `$lib/vendor`.
+
+4) Final run
+- [ ] `npm run dev` (or `bun dev`) builds without Tailwind nesting errors.
+- [ ] UI renders with expected tokens, components, and utilities.
 
 ---
 
-# Want me to refactor the tree?
+## Notes from the Refactor Plan (kept for context)
 
-If you like, I can output a rename/move plan (a list of shell commands) to transform your current `frontend/src` into this structure, plus stub a few wrapper examples (e.g., `Button.svelte`, `Card.svelte`) wired to your tokens.
+- Single Tailwind entry (`src/styles/app.css`) that imports token and layer files.
+- Vendor UI isolated in `lib/vendor`, app-wide UI wrappers in `lib/ui`.
+- Route files remain lean; features grouped under `lib/features`.

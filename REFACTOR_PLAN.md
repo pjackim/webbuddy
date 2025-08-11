@@ -20,6 +20,7 @@ Try not to change the resulting behavior (Or Style!) of the app, just the struct
 * Use **one Tailwind entry CSS** that imports a few tiny layer files (`base.css`, `components.css`, `utilities.css`) and optional **theme tokens**. Prefer Tailwind classes in Svelte components; reserve `@apply` for patterns used 3+ times.
 * Co-locate tiny, page-specific components next to the route. Move anything generic to `lib/`.
 
+
 ---
 
 # Suggested frontend layout

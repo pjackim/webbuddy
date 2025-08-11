@@ -5,7 +5,17 @@
       "Bash(curl:*)",
       "Bash(docker compose:*)",
       "Bash(docker logs:*)",
-      "Bash(npm run check:*)"
+      "Bash(npm run check:*)",
+      "mcp__playwright__browser_navigate",
+      "Bash(npx playwright:*)",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_snapshot",
+      "*",
+      "**",
+      "mcp__browsermcp__browser_navigate",
+      "mcp__kapture__list_tabs",
+      "mcp__kapture__new_tab"
     ],
     "deny": []
   }

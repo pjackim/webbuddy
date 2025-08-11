@@ -6,6 +6,7 @@
 > By default, use [shadcn-svelte components](../docs/shadcn-svelte/) for almost all UI elements.
 
 Prioritize using components and logic described in the documentation. This will ensure consistency and maintainability across the project.
+If online, you are required to use the `svelte5-documentation`, `konva-documentation`, `shadcn-documentation`  MCP Servers to access the latest documentation and code examples. This is not optional and must be followed strictly.
 
 ## DEVELOPMENT GUIDELINES:
 - Keep routes for pages and layouts only. Move everything reusable to `src/lib`.
