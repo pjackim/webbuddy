@@ -142,15 +142,6 @@ Available routes:
 	<title>Error Panel Demo</title>
 </svelte:head>
 
-<style lang="postcss">
-    
-        @reference '../../../app.css';
-
-        .scrolling-content {
-            @apply scrollable-content;
-        }
-
-</style>
 
 <div class="demo-layout">
 	<!-- Header Section -->
@@ -311,7 +302,7 @@ Available routes:
 				</Card.Description>
 			</Card.Header>
 			<Card.Content class="responsive-card-content">
-				<div class="scrolling-content space-y-2">
+				<div class="scrollable-content space-y-2">
 					{#each errorHistory as historyItem}
 						<div class="flex items-center gap-3 p-2 bg-muted/50 rounded text-sm">
 							<Badge variant="destructive" class="text-xs">{historyItem.type}</Badge>
