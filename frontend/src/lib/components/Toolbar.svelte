@@ -10,9 +10,9 @@
 	import { toast } from 'svelte-sonner';
 	import Loader2 from 'lucide-svelte/icons/loader-2';
 
-	let name = 'Screen';
-	let width = 1920 * 2;
-	let height = 1080 * 2;
+	let name = $state('Screen');
+	let width = $state(1920 * 2);
+	let height = $state(1080 * 2);
 	let addScreenOpen = $state(false);
 	let isAddingScreen = $state(false);
 

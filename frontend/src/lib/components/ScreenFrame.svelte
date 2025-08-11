@@ -3,13 +3,13 @@
 	import { Group, Rect, Text as KText } from 'svelte-konva';
 	import ImageAsset from './assets/ImageAsset.svelte';
 	import TextAsset from './assets/TextAsset.svelte';
-	import { assetsByScreen, online, upsertAsset, upsertScreen } from '../stores';
+	import { assetsByScreen, online, upsertAsset, upsertScreen } from '$lib/stores.svelte.ts';
 	import { api } from '../api';
 	import { onMount } from 'svelte';
 	import type { KonvaMouseEvent } from 'svelte-konva';
 
 	let { sc }: { sc: Screen } = $props();
-	let myAssets: Asset[] = $derived(assetsByScreen.get(sc.id) || []);
+	let myAssets: Asset[] = $derived(assetsByScreen().get(sc.id) || []);
 
 	async function load() {
 		const list: Asset[] = await api<Asset[]>(`/assets?screen_id=${sc.id}`);

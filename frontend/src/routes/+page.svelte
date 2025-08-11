@@ -44,9 +44,10 @@
 
 <div
 	class="flex flex-col h-screen"
-	on:dragover|preventDefault={() => (hover = true)}
-	on:dragleave={() => (hover = false)}
-	on:drop={onDrop}
+	role="group"
+	ondragover|preventDefault={() => (hover = true)}
+	ondragleave={() => (hover = false)}
+	ondrop={onDrop}
 >
 	<Toolbar />
 	<div class="relative flex-1">

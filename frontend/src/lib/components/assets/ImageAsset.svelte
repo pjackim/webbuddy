@@ -7,7 +7,7 @@
 	import type { ImageAsset as ImageAssetType } from '$lib/stores.svelte.ts';
 
 	let { a }: { a: ImageAssetType } = $props();
-	let htmlImage: HTMLImageElement;
+	let htmlImage = $state<HTMLImageElement>();
 	let isDragging = $state(false);
 	let start = { x: 0, y: 0 };
 	let orig = { x: 0, y: 0 };
