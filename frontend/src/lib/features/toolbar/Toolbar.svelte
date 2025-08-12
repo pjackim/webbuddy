@@ -8,7 +8,7 @@
 	import { online } from '$lib/stores';
 	import { api } from '$lib/api';
 	import { toast } from 'svelte-sonner';
-	import Loader2 from 'lucide-svelte/icons/loader-2';
+	import { Loader2 } from '@lucide/svelte';
 
 	let name = $state('Screen');
 	let width = $state(1920 * 2);

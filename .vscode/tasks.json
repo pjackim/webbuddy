@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "frontend: dev",
+            "label": " frontend: dev",
             "type": "shell",
             "command": "bun run dev",
             "options": {
@@ -12,7 +12,7 @@
             "problemMatcher": []
         },
         {
-            "label": "frontend: dev:smart",
+            "label": " frontend: dev:smart",
             "type": "shell",
             "command": "bun run dev:smart",
             "options": {
@@ -22,7 +22,7 @@
             "problemMatcher": []
         },
         {
-            "label": "frontend: build",
+            "label": " frontend: build",
             "type": "shell",
             "command": "bun run build",
             "options": {
@@ -34,7 +34,7 @@
             }
         },
         {
-            "label": "frontend: test",
+            "label": " frontend: test",
             "type": "shell",
             "command": "bun run test",
             "options": {
@@ -43,7 +43,7 @@
             "group": "test"
         },
         {
-            "label": "frontend: test:unit",
+            "label": " frontend: test:unit",
             "type": "shell",
             "command": "bun run test:unit",
             "options": {
@@ -52,7 +52,7 @@
             "group": "test"
         },
         {
-            "label": "[🐧 WSL] - frontend: dev",
+            "label": "🐧 frontend: dev",
             "type": "shell",
             "command": "npm run dev",
             "options": {
@@ -65,7 +65,7 @@
             "problemMatcher": []
         },
         {
-            "label": "[🐧 WSL] - frontend: dev:smart",
+            "label": "🐧 frontend: dev:smart",
             "type": "shell",
             "command": "bun run dev:smart",
             "options": {
@@ -78,7 +78,7 @@
             "problemMatcher": []
         },
         {
-            "label": "[🐧 WSL] - frontend: build",
+            "label": "🐧 frontend: build",
             "type": "shell",
             "command": "npm run build",
             "options": {
@@ -93,7 +93,7 @@
             }
         },
         {
-            "label": "[🐧 WSL] - frontend: test",
+            "label": "🐧 frontend: test",
             "type": "shell",
             "command": "bun run test",
             "options": {
@@ -105,7 +105,7 @@
             "group": "test"
         },
         {
-            "label": "[🐧 WSL] - frontend: test:unit",
+            "label": "🐧 frontend: test:unit",
             "type": "shell",
             "command": "bun run test:unit",
             "options": {
