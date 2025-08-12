@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ErrorPanelComplete as ErrorPanel } from '$lib/features/error-panel';
-	import * as Card from '$lib/ui/card';
-	import { Button } from '$lib/ui/button';
 	import { Badge } from '$lib/ui/badge';
+	import { Button } from '$lib/ui/button';
+	import * as Card from '$lib/ui/card';
 	import { toast } from 'svelte-sonner';
 
 	// Enhanced error generation with realistic scenarios
@@ -26,6 +26,8 @@
 						return nestedFunction();
 					}
 					return deepFunction();
+					// Satisfy TS return type (this line is never reached because deepFunction throws)
+					throw new Error('Unreachable');
 			}
 		} catch (error) {
 			return error;
@@ -103,11 +105,11 @@ Available routes:
 			});
 
 			// Add this error as a new example
-			const newExample = {
+			const newExample: Example = {
 				code: `LIVE-${type.toUpperCase()}`,
 				message: error,
 				details: `This ${type} error was generated dynamically at ${new Date().toLocaleTimeString()}`,
-				language: 'javascript' as const
+				language: 'javascript'
 			};
 			examples.push(newExample);
 			currentExample = examples.length - 1;
@@ -145,12 +147,12 @@ Available routes:
 <div class="demo-layout">
 	<!-- Header Section -->
 	<div class="text-center space-y-4">
-		<h1 class="text-4xl font-bold">ErrorPanel Component Demo</h1>
-		<p class="text-lg text-muted-foreground max-w-3xl mx-auto">
+		<h1 class="text-4xl md:text-5xl font-bold tracking-tight">ErrorPanel Component Demo</h1>
+		<p class="text-base md:text-lg text-muted-foreground/90 max-w-3xl mx-auto">
 			Comprehensive error handling and display system with syntax highlighting, copy functionality,
 			and robust error processing.
 		</p>
-		<div class="flex justify-center gap-4 flex-wrap">
+		<div class="flex justify-center gap-2 md:gap-4 flex-wrap">
 			<Badge variant="outline">Svelte 5</Badge>
 			<Badge variant="outline">TypeScript</Badge>
 			<Badge variant="outline">Tailwind CSS</Badge>
@@ -159,7 +161,7 @@ Available routes:
 	</div>
 
 	<!-- Controls Section -->
-	<Card.Root class="responsive-card">
+	<Card.Root class="responsive-card border-border/30">
 		<Card.Header class="flex-shrink-0">
 			<Card.Title>Error Examples & Live Generation</Card.Title>
 			<Card.Description>
@@ -244,7 +246,7 @@ Available routes:
 	</Card.Root>
 
 	<!-- Error Display Section -->
-	<Card.Root class="responsive-card flex-1 min-h-0">
+	<Card.Root class="responsive-card border-border/30 flex-1 min-h-0">
 		<Card.Header class="flex-shrink-0">
 			<div class="flex items-center justify-between">
 				<Card.Title>Error Display</Card.Title>
@@ -269,6 +271,8 @@ Available routes:
 							errorDetails={examples[currentExample].details}
 							language={examples[currentExample].language}
 							class="h-full border-0 p-0"
+							codeVariant="secondary"
+							startCollapsed={true}
 						/>
 					{:else}
 						<div class="flex items-center justify-center h-full">
@@ -282,7 +286,7 @@ Available routes:
 
 	<!-- History Section -->
 	{#if errorHistory.length > 0}
-		<Card.Root class="responsive-card max-h-48">
+		<Card.Root class="responsive-card border-border/30 max-h-48">
 			<Card.Header class="flex-shrink-0">
 				<div class="flex items-center justify-between">
 					<Card.Title>Error History</Card.Title>

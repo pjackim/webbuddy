@@ -49,3 +49,34 @@
 	min-height: 0;
 	overflow: hidden;
 }
+
+/* Minimal blue glass presets */
+@utility glass-blue-sm {
+	backdrop-filter: blur(4px);
+	background: oklch(0.67 0.21 259 / 0.18); /* light blue tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.18);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+@utility glass-blue {
+	backdrop-filter: blur(8px);
+	background: oklch(0.67 0.21 259 / 0.24); /* medium tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.2);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+@utility glass-blue-lg {
+	backdrop-filter: blur(16px);
+	background: oklch(0.67 0.21 259 / 0.32); /* stronger tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.24);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}

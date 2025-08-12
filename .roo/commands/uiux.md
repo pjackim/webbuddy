@@ -1,5 +1,5 @@
 ---
-description: "Brief description of what this command does"
+description: "This document outlines the UI/UX guidelines and style, focusing on Svelte and Tailwind CSS."
 ---
 
 - Remember the following important mindset when providing code:

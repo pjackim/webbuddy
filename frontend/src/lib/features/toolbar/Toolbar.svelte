@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="relative z-20 border-b glass">
+<div class="relative z-20 border-b glassmorphism">
 	<div class="flex h-14 items-center justify-between px-4">
 		<!-- Left: Brand -->
 		<a href="/" class="font-bold text-lg hover:text-primary transition-colors">WebBuddy</a>

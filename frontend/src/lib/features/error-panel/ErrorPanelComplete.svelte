@@ -222,23 +222,27 @@
 		return 'default';
 	});
 
-	// Get appropriate color classes based on severity
-	const severityClasses = $derived.by(() => {
+	// Accent-only styles per severity (avoid coloring entire text)
+	const severityBorder = $derived.by(() => {
 		switch (errorSeverity) {
 			case 'critical':
-				return 'text-red-500';
+				return 'border-red-500/30';
 			case 'warning':
-				return 'text-yellow-600';
+				return 'border-yellow-500/30';
 			case 'info':
-				return 'text-blue-600';
+				return 'border-blue-500/30';
 			default:
-				return 'text-foreground';
+				return 'border-border/60';
 		}
 	});
 </script>
 
 <div
-	class={cn('flex flex-col h-full min-h-[400px] p-6 border rounded-lg', severityClasses, className)}
+	class={cn(
+		'flex flex-col h-full min-h-[400px] p-6 border rounded-lg bg-card/85 backdrop-blur shadow-sm',
+		severityBorder,
+		className
+	)}
 >
 	<!-- Error Code Display -->
 	<div class="text-center mb-6 flex-shrink-0">
