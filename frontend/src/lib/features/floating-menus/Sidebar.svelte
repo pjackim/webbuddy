@@ -14,7 +14,7 @@
 		Trash2,
 		Copy,
 		MoreHorizontal
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let isCollapsed = $state(false);
 	let layers = $state([
@@ -65,7 +65,7 @@
 
 <div class="fixed left-4 top-1/2 transform -translate-y-1/2 z-40">
 	<Sidebar.Provider>
-		<div class="glassmorphism border border-border/50 rounded-lg shadow-2xl backdrop-blur-md w-64">
+		<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md w-64">
 			<Sidebar.Root class="bg-transparent border-0 w-full">
 				<Sidebar.Header class="border-b border-border/20 px-4 py-3">
 					<div class="flex items-center gap-2">

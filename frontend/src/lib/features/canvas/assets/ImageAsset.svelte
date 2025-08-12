@@ -45,7 +45,7 @@
 		image: htmlImage,
 		x: a.x,
 		y: a.y,
-		draggable: false
+			draggable: false
 	}}
 	on:mousedown={onDown}
 	on:mousemove={onMove}

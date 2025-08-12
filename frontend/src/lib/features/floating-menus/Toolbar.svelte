@@ -14,13 +14,13 @@
 		Save,
 		Undo,
 		Redo
-	} from 'lucide-svelte';
+	} from '@lucide/svelte';
 
 	let selectedTool = $state('pointer');
 </script>
 
 <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-	<div class="glassmorphism border border-border/50 rounded-lg shadow-2xl backdrop-blur-md">
+	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
 		<Menubar.Root class="border-0 bg-transparent">
 			<Menubar.Menu>
 				<Menubar.Trigger class="px-2 hover:bg-accent/20">Tools</Menubar.Trigger>
@@ -89,10 +89,8 @@
 
 			<div class="flex items-center pl-4 pr-2 gap-2">
 				<Popover.Root>
-					<Popover.Trigger asChild let:builder>
-						<Button builders={[builder]} variant="ghost" size="sm" class="h-8 w-8 p-0">
-							<Settings class="h-4 w-4" />
-						</Button>
+					<Popover.Trigger class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-sm text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+						<Settings class="h-4 w-4" />
 					</Popover.Trigger>
 					<Popover.Content class="glassmorphism border border-border/50 w-80">
 						<div class="space-y-4">
@@ -130,9 +128,9 @@
 					</Popover.Content>
 				</Popover.Root>
 
-				<Button variant="ghost" size="sm" class="h-8 w-8 p-0">
+				<button class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-sm text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
 					<Save class="h-4 w-4" />
-				</Button>
+				</button>
 			</div>
 		</Menubar.Root>
 	</div>

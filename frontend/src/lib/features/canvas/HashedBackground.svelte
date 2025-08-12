@@ -94,15 +94,4 @@
 	{/each}
 </Group>
 
-<style lang="postcss">
-	@include glassmorphism;
-	:global(.hashed-background) {
-		-webkit-tap-highlight-color: transparent;
-		-webkit-font-smoothing: antialiased;
-		/* @layer glassmorphism; */
-		/* fill: none; */
-
-		width: 100%;
-		height: 100%;
-	}
-</style>
+<!-- Intentionally no component-scoped CSS; visual style is conveyed via Konva shapes -->

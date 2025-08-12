@@ -1,5 +1,12 @@
 /* Custom utilities and Tailwind v4 @utility definitions */
 @layer utilities {
+	.rounded-sm { border-radius: calc(var(--radius) - 4px); }
+	.rounded { border-radius: calc(var(--radius) - 2px); }
+	.rounded-md { border-radius: calc(var(--radius) - 2px); }
+	.rounded-lg { border-radius: var(--radius); }
+	.rounded-xl { border-radius: calc(var(--radius) + 4px); }
+	.rounded-2xl { border-radius: calc(var(--radius) + 8px); }
+	.rounded-3xl { border-radius: calc(var(--radius) + 12px); }
 }
 
 /* TailwindCSS v4 Custom Utilities - Top level (not nested) */

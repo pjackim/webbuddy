@@ -53,33 +53,31 @@
 	on:mouseup={onScreenUp}
 	on:mousemove={onScreenMove}
 >
-	<div class="glass">
-		<!-- Hashed background pattern -->
-		<HashedBackground
-			width={sc.width}
-			height={sc.height}
-			fill="#22222200"
-			strokeColor="oklch(70.7% .022 261.325)"
-			strokeWidth={2}
-			cornerRadius={8}
-			lineSpacing={40}
-		/>
-		<KText
-			config={{
-				text: `${sc.name} (${sc.width}×${sc.height})`,
-				fill: '#e2e8f0',
-				fontSize: 14,
-				fontWeight: '500',
-				x: 12,
-				y: 12
-			}}
-		/>
-		{#each myAssets as a (a.id)}
-			{#if a.type === 'image'}
-				<ImageAsset {a} />
-			{:else}
-				<TextAsset {a} />
-			{/if}
-		{/each}
-	</div>
+    <!-- Hashed background pattern -->
+    <HashedBackground
+        width={sc.width}
+        height={sc.height}
+        fill="#22222200"
+        strokeColor="oklch(70.7% .022 261.325)"
+        strokeWidth={2}
+        cornerRadius={8}
+        lineSpacing={40}
+    />
+    <KText
+        config={{
+            text: `${sc.name} (${sc.width}×${sc.height})`,
+            fill: '#e2e8f0',
+            fontSize: 14,
+            fontWeight: '500',
+            x: 12,
+            y: 12
+        }}
+    />
+    {#each myAssets as a (a.id)}
+        {#if a.type === 'image'}
+            <ImageAsset {a} />
+        {:else}
+            <TextAsset {a} />
+        {/if}
+    {/each}
 </Group>

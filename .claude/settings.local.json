@@ -22,7 +22,13 @@
       "mcp__kapture__navigate",
       "mcp__kapture__screenshot",
       "mcp__kapture__console_logs",
-      "mcp__kapture__reload"
+      "mcp__kapture__reload",
+      "mcp__kapture__keypress",
+      "mcp__kapture__click",
+      "mcp__kapture__dom",
+      "Bash(bunx:*)",
+      "mcp__kapture__elements",
+      "mcp__kapture__hover"
     ],
     "deny": []
   }

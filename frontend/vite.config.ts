@@ -19,18 +19,18 @@ export default defineConfig(({ command, mode }) => {
 	// Ensure Vitest resolves browser entry points when running under the Vitest process
 	// to match Svelte 5 + Vite expectations during tests
 	resolve: {
-    alias: {
-      $lib: path.resolve("./src/lib"),
-        },
-    },
-		// Avoid requiring @types/node: check via globalThis
-		// typeof globalThis !== 'undefined' &&
-		// typeof (globalThis as any).process !== 'undefined' &&
-		// Boolean((globalThis as any).process?.env?.VITEST)
-		// 	? {
-		// 			conditions: ['browser']
-		// 		}
-		// 	: undefined,
+		alias: {
+			$lib: path.resolve("./src/lib"),
+		},
+	},
+	// Avoid requiring @types/node: check via globalThis
+	// typeof globalThis !== 'undefined' &&
+	// typeof (globalThis as any).process !== 'undefined' &&
+	// Boolean((globalThis as any).process?.env?.VITEST)
+	// 	? {
+	// 			conditions: ['browser']
+	// 		}
+	// 	: undefined,
 	test: {
 		expect: { requireAssertions: true },
 		globals: true,
@@ -89,4 +89,5 @@ export default defineConfig(({ command, mode }) => {
 			}
 		]
 	}
+	};
 });

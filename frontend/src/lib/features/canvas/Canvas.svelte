@@ -9,13 +9,28 @@
 	import { api } from '$lib/api';
 	import { connectWS } from '$lib/ws';
 
-	let scale = $state(0.5);
+    type CanvasProps = {
+        initialScale?: number;
+        minScale?: number;
+        maxScale?: number;
+        showGrid?: boolean;
+    };
+
+    const {
+        initialScale = 0.5,
+        minScale = 0.1,
+        maxScale = 3,
+        showGrid = true
+    }: CanvasProps = $props();
+
+    let scale = $state(initialScale);
 	let offset = $state({ x: 0, y: 0 });
-	let panning = $state(false);
+    let panning = $state(false);
+    let allowPan = $state(false); // hold Space or use middle mouse
 	let last = { x: 0, y: 0 };
 	let container: HTMLElement;
 	let viewport = $state({ width: 0, height: 0 });
-	let gridEnabled = $state(true);
+    let gridEnabled = $state(showGrid);
 
 	async function load() {
 		const sc = await api('/screens');
@@ -39,7 +54,7 @@
 		const factor = 1.1;
 		const direction = e.deltaY > 0 ? -1 : 1;
 		const oldScale = scale;
-		const newScale = Math.max(0.1, Math.min(3, scale * (direction > 0 ? factor : 1 / factor)));
+        const newScale = Math.max(minScale, Math.min(maxScale, scale * (direction > 0 ? factor : 1 / factor)));
 
 		const mousePointTo = {
 			x: (pointer.x - offset.x) / oldScale,
@@ -55,10 +70,12 @@
 		offset = newPos;
 	}
 
-	function onMouseDown(e: MouseEvent) {
+    function onMouseDown(e: MouseEvent) {
 		// only start panning when inside the canvas container
 		if (!container || !(e.target instanceof Node) || !container.contains(e.target)) return;
-		panning = true;
+        // enable pan with Space key or middle mouse button
+        if (!allowPan && e.button !== 1) return;
+        panning = true;
 		last = { x: e.clientX, y: e.clientY };
 	}
 	function onMouseMove(e: MouseEvent) {
@@ -69,12 +86,23 @@
 		offset.y += dy;
 		last = { x: e.clientX, y: e.clientY };
 	}
-	function onMouseUp() {
+    function onMouseUp() {
 		panning = false;
 	}
 
-	function resetView() {
-		scale = 0.5;
+    function onKeyDown(e: KeyboardEvent) {
+        if (e.code === 'Space') {
+            allowPan = true;
+        }
+    }
+    function onKeyUp(e: KeyboardEvent) {
+        if (e.code === 'Space') {
+            allowPan = false;
+        }
+    }
+
+    function resetView() {
+        scale = initialScale;
 		offset = {
 			x: viewport.width / 2,
 			y: (viewport.height - 64) / 2
@@ -98,16 +126,22 @@
 			};
 			updateViewport();
 			window.addEventListener('resize', updateViewport);
-			window.addEventListener('keydown', (e) => {
+
+			const onKeyControls = (e: KeyboardEvent) => {
 				if (e.key === 'g' && !e.ctrlKey && !e.metaKey) {
 					toggleGrid();
 				} else if (e.key === 'r' && !e.ctrlKey && !e.metaKey) {
 					resetView();
 				}
-			});
+			};
+			window.addEventListener('keydown', onKeyControls);
+            window.addEventListener('keydown', onKeyDown);
+            window.addEventListener('keyup', onKeyUp);
 			return () => {
 				window.removeEventListener('resize', updateViewport);
-				window.removeEventListener('keydown', toggleGrid);
+				window.removeEventListener('keydown', onKeyControls);
+                window.removeEventListener('keydown', onKeyDown);
+                window.removeEventListener('keyup', onKeyUp);
 			};
 		}
 	});
@@ -125,6 +159,8 @@
 	class="relative w-full h-full glassmorphism canvas-container"
 	bind:this={container}
 	aria-label="Canvas area"
+	class:cursor-grab={allowPan && !panning}
+	class:cursor-grabbing={panning}
 >
 	<Stage
 		config={{
@@ -151,7 +187,7 @@
 		</Layer>
 	</Stage>
 
-	<div class="absolute bottom-4 left-4 flex gap-2 z-20">
+    <div class="absolute bottom-4 left-4 flex gap-2 z-20">
 		<button
 			class="px-3 py-1 bg-background/80 border rounded text-sm hover:bg-muted"
 			style="backdrop-filter: blur(8px);"
@@ -172,5 +208,8 @@
 		>
 			Zoom: {Math.round(scale * 100)}%
 		</div>
+        <div class="px-2 py-1 text-xs text-muted-foreground select-none" style="backdrop-filter: blur(8px);">
+            Hold Space or use Middle Mouse to pan
+        </div>
 	</div>
 </section>
