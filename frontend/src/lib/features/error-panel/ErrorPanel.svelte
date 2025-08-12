@@ -1,7 +1,6 @@
 <script lang="ts">
-	// Reusable error panel that centers a big status code above an expandable log viewer.
-	// Depends on shadcn-svelte Code component being installed at $lib/ui/code.
-	import * as Code from '$lib/ui/code';
+	// Legacy wrapper component. Prefer using ErrorPanelComplete directly.
+	import ErrorPanelComplete from './ErrorPanelComplete.svelte';
 
 	type Lang = 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript' | (string & {});
 	type Variant = 'default' | 'secondary' | (string & {});
@@ -24,8 +23,8 @@
 		codeClass = ''
 	} = $props();
 
-	// Normalize logs to string for the Code component (Svelte 5 runes)
-	const codeText = $derived(
+	// Normalize logs
+	const errorMessage = $derived(
 		typeof logs === 'string'
 			? logs
 			: (() => {
@@ -37,40 +36,23 @@
 				})()
 	);
 
-	// Narrow variant to the exact type accepted by Code.Root
-	const codeVariant: 'default' | 'secondary' | undefined = $derived(
-		variant === 'default' ? 'default' : variant === 'secondary' ? 'secondary' : undefined
+	const codeVariant: 'default' | 'secondary' = $derived(
+		variant === 'default' ? 'default' : 'secondary'
 	);
 </script>
 
-<div class={`w-full h-full flex items-center justify-center p-6 ${className}`}>
-	<div class="w-full max-w-4xl">
-		<div class="text-center mb-6">
-			<div class="text-7xl font-black leading-none tracking-tight">{statusCode}</div>
-			{#if title}
-				<div class="mt-2 text-sm text-muted-foreground">{title}</div>
-			{/if}
-		</div>
-
-		<!-- Collapsible overflow wrapper around the code block -->
-		<Code.Overflow bind:collapsed>
-			<!-- Position the CopyButton over the code via relative container on Root -->
-			<Code.Root
-				class={`relative rounded-lg shadow-sm ${codeClass}`}
-				code={codeText}
-				lang={lang as 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript'}
-				variant={codeVariant}
-				{hideLines}
-				{highlight}
-			>
-				<div class="absolute right-2 top-2">
-					<Code.CopyButton variant="ghost" size="icon" />
-				</div>
-			</Code.Root>
-		</Code.Overflow>
-
-		<!-- Optional consumer-provided actions or notes below the code -->
-		<slot />
-	</div>
-</div>
+<ErrorPanelComplete
+	errorCode={statusCode}
+	errorMessage={errorMessage}
+	language={lang as 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript'}
+	startCollapsed={collapsed}
+	title={title}
+	{hideLines}
+	{highlight}
+	codeVariant={codeVariant}
+	codeClass={codeClass}
+	class={className}
+>
+	<slot />
+</ErrorPanelComplete>
 

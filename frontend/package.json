@@ -72,9 +72,10 @@
         "deploy:prod": "npm run build:prod && echo \"Deploy to production\"",
         
         "// CI/CD Pipeline": "========== CI/CD Commands ==========",
-        "ci": "npm run clean && npm install --frozen-lockfile && npm run check && npm run lint && npm run test:ci && npm run build:prod",
-        "ci:quick": "npm run lint:fix && npm run test && npm run build",
-        "ci:full": "npm run ci && npm run test:coverage",
+        "ci": "node scripts/ci-pipeline.mjs --env=production",
+        "ci:quick": "node scripts/ci-pipeline.mjs --env=development --skip-tests",
+        "ci:full": "node scripts/ci-pipeline.mjs --env=production --verbose",
+        "ci:staging": "node scripts/ci-pipeline.mjs --env=staging",
         
         "// Utilities": "========== Utility Commands ==========",
         "start": "npm run dev",

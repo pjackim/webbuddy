@@ -98,7 +98,7 @@
 
 	<!-- Dialog lives at root to avoid layout interference -->
 	<Dialog.Root bind:open={addScreenOpen}>
-		<Dialog.Content class="bg-transparent glassmorphism">
+		<Dialog.ContentBlur class="bg-transparent glassmorphism">
 			<Dialog.Header>
 				<Dialog.Title>Add New Screen</Dialog.Title>
 				<Dialog.Description>Configure the details for your new screen.</Dialog.Description>
@@ -129,6 +129,6 @@
 					{/if}
 				</Button>
 			</Dialog.Footer>
-		</Dialog.Content>
+		</Dialog.ContentBlur>
 	</Dialog.Root>
 </div>
