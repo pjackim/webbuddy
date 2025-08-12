@@ -1,120 +1,314 @@
 {
     "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+    },
     "tasks": [
         {
-            "label": " frontend: dev",
+            "label": "Frontend: Development",
             "type": "shell",
-            "command": "bun run dev",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "dev"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
             "isBackground": true,
-            "problemMatcher": []
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^(ERROR|Warning)\\s+(.*)$",
+                    "severity": 1,
+                    "message": 2
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Local:.*",
+                    "endsPattern": ".*ready in.*"
+                }
+            }
         },
         {
-            "label": " frontend: dev:smart",
+            "label": "Frontend: Development (Smart)",
             "type": "shell",
-            "command": "bun run dev:smart",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "dev:smart"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
             "isBackground": true,
-            "problemMatcher": []
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^(ERROR|Warning)\\s+(.*)$",
+                    "severity": 1,
+                    "message": 2
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Local:.*",
+                    "endsPattern": ".*ready in.*"
+                }
+            }
         },
         {
-            "label": " frontend: build",
+            "label": "Frontend: Build",
             "type": "shell",
-            "command": "bun run build",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "build"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                "$tsc",
+                {
+                    "pattern": {
+                        "regexp": "^(ERROR|Error)\\s+(.*)$",
+                        "severity": 1,
+                        "message": 2
+                    }
+                }
+            ]
         },
         {
-            "label": " frontend: test",
+            "label": "Frontend: Build Production",
             "type": "shell",
-            "command": "bun run test",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "build:prod"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "group": "test"
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [
+                "$tsc",
+                {
+                    "pattern": {
+                        "regexp": "^(ERROR|Error)\\s+(.*)$",
+                        "severity": 1,
+                        "message": 2
+                    }
+                }
+            ]
         },
         {
-            "label": " frontend: test:unit",
+            "label": "Frontend: Preview",
             "type": "shell",
-            "command": "bun run test:unit",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "preview"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "group": "test"
-        },
-        {
-            "label": "🐧 frontend: dev",
-            "type": "shell",
-            "command": "npm run dev",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "runOptions": {
-                "runOn": "wsl"
-            },
-            "isBackground": false,
-            "problemMatcher": []
-        },
-        {
-            "label": "🐧 frontend: dev:smart",
-            "type": "shell",
-            "command": "bun run dev:smart",
-            "options": {
-                "cwd": "${workspaceFolder}/frontend"
-            },
-            "runOptions": {
-                "runOn": "wsl"
-            },
+            "group": "build",
             "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
             "problemMatcher": []
         },
         {
-            "label": "🐧 frontend: build",
+            "label": "Frontend: Test",
             "type": "shell",
-            "command": "npm run build",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "test"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
-            },
-            "runOptions": {
-                "runOn": "wsl"
             },
             "group": {
-                "kind": "build",
+                "kind": "test",
                 "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^\\s*FAIL\\s+(.*)$",
+                    "file": 1
+                }
             }
         },
         {
-            "label": "🐧 frontend: test",
+            "label": "Frontend: Test Watch",
             "type": "shell",
-            "command": "bun run test",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "test:watch"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "runOptions": {
-                "runOn": "wsl"
+            "group": "test",
+            "isBackground": true,
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
             },
-            "group": "test"
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^\\s*FAIL\\s+(.*)$",
+                    "file": 1
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*Watching for file changes.*",
+                    "endsPattern": ".*Waiting for file changes.*"
+                }
+            }
         },
         {
-            "label": "🐧 frontend: test:unit",
+            "label": "Frontend: Test Coverage",
             "type": "shell",
-            "command": "bun run test:unit",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "test:coverage"],
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "runOptions": {
-                "runOn": "wsl"
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Frontend: Type Check",
+            "type": "shell",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "check"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
             },
-            "group": "test"
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "Frontend: Lint",
+            "type": "shell",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "lint"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": "$eslint-stylish"
+        },
+        {
+            "label": "Frontend: Format",
+            "type": "shell",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "format"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Frontend: Clean",
+            "type": "shell",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "Frontend: Deploy",
+            "type": "shell",
+            "command": "${config:webbuddy.packageManager}",
+            "args": ["run", "deploy"],
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "dependsOn": ["Frontend: Build Production"]
+        },
+        {
+            "label": "Frontend: Full CI Pipeline",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Frontend: Clean",
+                "Frontend: Type Check",
+                "Frontend: Lint",
+                "Frontend: Test",
+                "Frontend: Build Production"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
         }
     ]
 }

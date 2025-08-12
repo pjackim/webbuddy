@@ -1,14 +1,14 @@
 <script lang="ts">
-	import * as NavigationMenu from '$lib/ui/navigation-menu';
-	import * as Dialog from '$lib/ui/dialog';
+	import { api } from '$lib/api';
+	import { online } from '$lib/stores';
 	import { Button } from '$lib/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
 	import { Input } from '$lib/ui/input';
 	import { Label } from '$lib/ui/label';
+	import * as NavigationMenu from '$lib/ui/navigation-menu';
 	import { Switch } from '$lib/ui/switch';
-	import { online } from '$lib/stores';
-	import { api } from '$lib/api';
-	import { toast } from 'svelte-sonner';
 	import { Loader2 } from '@lucide/svelte';
+	import { toast } from 'svelte-sonner';
 
 	let name = $state('Screen');
 	let width = $state(1920 * 2);
@@ -37,7 +37,7 @@
 
 		<!-- Center: Navigation -->
 		<div class="flex-1 flex justify-center">
-			<NavigationMenu.Root>
+			<NavigationMenu.Root viewport={false}>
 				<NavigationMenu.List class="flex items-center gap-4">
 					<NavigationMenu.Item>
 						<NavigationMenu.Trigger class="glassmorphism">Screens</NavigationMenu.Trigger>
