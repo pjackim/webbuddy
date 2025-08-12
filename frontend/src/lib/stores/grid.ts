@@ -16,18 +16,18 @@ export const isGridVisible = {
 		// For now, we'll just return the current value on subscribe.
 		// This means it won't be reactive in the way a normal store is, but it will persist.
 		// The component using this will need to re-evaluate it to get the latest value.
-		
+
 		// A better way to handle this is to wrap it in a readable or writable store if we need reactivity across components
 		// that are not re-rendered. But for the layout, this should be sufficient.
-		
+
 		// Let's try a more reactive approach.
 		// We can't directly subscribe to PersistedState, so we'll create a writable store that syncs with it.
 		// This is not ideal, but it will work.
-		
+
 		// Let's re-read the docs. Maybe I missed something.
 		// The docs show using `.current` directly in the template.
 		// Svelte 5 runes should make this reactive automatically.
-		
+
 		// Let's try a simpler approach first, just exporting the state.
 		return () => {};
 	}

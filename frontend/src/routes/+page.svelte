@@ -1,9 +1,9 @@
 <script lang="ts">
-	import Toolbar from '../lib/components/Toolbar.svelte';
-	import Canvas from '../lib/components/Canvas.svelte';
-	import * as Card from '$lib/components/ui/card/index.js';
-	import { api, uploadFile } from '../lib/api';
-	import { online, upsertAsset, screens, type Asset } from '$lib/stores.svelte';
+	import { Toolbar } from '$lib/features/toolbar';
+	import { Canvas } from '$lib/features/canvas';
+	import * as Card from '$lib/ui/card';
+	import { api, uploadFile } from '$lib/api';
+	import { online, upsertAsset, screens, type Asset } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
 
 	let hover = $state(false);
@@ -60,7 +60,9 @@
 	<div class="layout-main">
 		{#if hover}
 			<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-				<Card.Root class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse">
+				<Card.Root
+					class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse"
+				>
 					<Card.Content class="text-center">
 						<h2 class="text-2xl font-bold text-glow">Drop files to upload</h2>
 						<p class="text-muted-foreground mt-2">Drag and drop your images here</p>

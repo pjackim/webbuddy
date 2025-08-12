@@ -1,0 +1,82 @@
+{
+    "// WebBuddy VSCode Configuration": "Professional development settings",
+    
+    "// Package Manager Configuration": "Configure which package manager to use in tasks",
+    "webbuddy.packageManager": "bun",
+    
+    "// Editor Configuration": "Code quality and formatting",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.rulers": [100, 120],
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120,
+    
+    "// File associations": "Svelte and TypeScript support",
+    "files.associations": {
+        "*.svelte": "svelte"
+    },
+    
+    "// Language specific settings": "Per-language formatting",
+    "[svelte]": {
+        "editor.defaultFormatter": "svelte.svelte-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    
+    "// TypeScript configuration": "Enhanced TS support",
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.suggest.autoImports": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    
+    "// Svelte configuration": "Svelte language server settings",
+    "svelte.enable-ts-plugin": true,
+    "svelte.plugin.css.diagnostics.enable": true,
+    "svelte.plugin.svelte.diagnostics.enable": true,
+    
+    "// Search configuration": "Exclude build artifacts from search",
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/.svelte-kit": true,
+        "**/coverage": true
+    },
+    
+    "// File explorer configuration": "Hide build artifacts",
+    "files.exclude": {
+        "**/.svelte-kit": true,
+        "**/build": false,
+        "**/dist": false,
+        "**/coverage": false
+    },
+    
+    "// Git configuration": "Enhanced git support",
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "git.enableSmartCommit": true,
+    
+    "// Terminal configuration": "Better terminal experience",
+    "terminal.integrated.defaultProfile.windows": "PowerShell",
+    "terminal.integrated.cwd": "${workspaceFolder}/frontend",
+    
+    "// Extension recommendations": "Workspace extensions",
+    "extensions.recommendations": [
+        "svelte.svelte-vscode",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "christian-kohler.path-intellisense",
+        "ms-vscode.vscode-json"
+    ]
+}
