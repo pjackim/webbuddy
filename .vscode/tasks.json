@@ -2,48 +2,119 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Frontend Dev Server (bash)",
+            "label": "frontend: dev",
             "type": "shell",
-            "command": "bash",
-            "args": [
-                "-lc",
-                "export PATH=\"$LOCALAPPDATA/bun/bin:$PATH\"; ./dev.sh"
-            ],
+            "command": "bun run dev",
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "problemMatcher": [],
             "isBackground": true,
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": false
-            },
-            "detail": "Runs bun dev via dev.sh (adds Windows bun install path to PATH for Git Bash)."
+            "problemMatcher": []
         },
         {
-            "label": "Frontend Dev Server (PowerShell)",
+            "label": "frontend: dev:smart",
             "type": "shell",
-            "command": "pwsh",
-            "args": [
-                "-NoLogo",
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "Bypass",
-                "-File",
-                "${workspaceFolder}/frontend/dev.ps1"
-            ],
+            "command": "bun run dev:smart",
             "options": {
                 "cwd": "${workspaceFolder}/frontend"
             },
-            "problemMatcher": [],
             "isBackground": true,
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated",
-                "clear": false
+            "problemMatcher": []
+        },
+        {
+            "label": "frontend: build",
+            "type": "shell",
+            "command": "bun run build",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
             },
-            "detail": "PowerShell version with log truncation logic (uses bun from Windows PATH)."
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "frontend: test",
+            "type": "shell",
+            "command": "bun run test",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "test"
+        },
+        {
+            "label": "frontend: test:unit",
+            "type": "shell",
+            "command": "bun run test:unit",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "test"
+        },
+        {
+            "label": "[🐧 WSL] - frontend: dev",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        },
+        {
+            "label": "[🐧 WSL] - frontend: dev:smart",
+            "type": "shell",
+            "command": "bun run dev:smart",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "[🐧 WSL] - frontend: build",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "[🐧 WSL] - frontend: test",
+            "type": "shell",
+            "command": "bun run test",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": "test"
+        },
+        {
+            "label": "[🐧 WSL] - frontend: test:unit",
+            "type": "shell",
+            "command": "bun run test:unit",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": "test"
         }
     ]
 }

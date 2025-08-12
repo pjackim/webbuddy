@@ -9,7 +9,7 @@
 	import { Grid } from '$lib/features/grid';
 	import { gridVisibility } from '$lib/stores/grid';
 	import { Button } from '$lib/ui/button';
-	import { Cog } from 'lucide-svelte';
+	import Cog from '@lucide/svelte/icons/cog';
 
 	let { children } = $props();
 

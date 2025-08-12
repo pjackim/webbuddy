@@ -1,8 +1,6 @@
 /* NOTE: DaisyUI theme plugin block removed (was causing Tailwind v4 parsing errors).
 	If re-adding DaisyUI, prefer a minimal theme file or rely on default themes. */
 
-
-
 [data-theme='CustomTheme'] {
 	.my-btn {
 		background-color: #1ea1f1;
@@ -10,7 +8,9 @@
 	}
 	.my-btn:hover {
 		background-color: #1c96e1;
-		/* Decorative banner removed for brevity */
-		/* IMPORTANT: Do not include any @plugin directives here. Tailwind v4 requires
-			plugins to be configured via @tailwindcss/postcss or the Vite plugin, and
-			DaisyUI CSS-level @plugin blocks cause build failures. */
+	}
+}
+/* Decorative banner removed for brevity */
+/* IMPORTANT: Do not include any @plugin directives here. Tailwind v4 requires
+	plugins to be configured via @tailwindcss/postcss or the Vite plugin, and
+	DaisyUI CSS-level @plugin blocks cause build failures. */
