@@ -1,0 +1,120 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": " frontend: dev",
+            "type": "shell",
+            "command": "bun run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": " frontend: dev:smart",
+            "type": "shell",
+            "command": "bun run dev:smart",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": " frontend: build",
+            "type": "shell",
+            "command": "bun run build",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": " frontend: test",
+            "type": "shell",
+            "command": "bun run test",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "test"
+        },
+        {
+            "label": " frontend: test:unit",
+            "type": "shell",
+            "command": "bun run test:unit",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "group": "test"
+        },
+        {
+            "label": "🐧 frontend: dev",
+            "type": "shell",
+            "command": "npm run dev",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "isBackground": false,
+            "problemMatcher": []
+        },
+        {
+            "label": "🐧 frontend: dev:smart",
+            "type": "shell",
+            "command": "bun run dev:smart",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "isBackground": true,
+            "problemMatcher": []
+        },
+        {
+            "label": "🐧 frontend: build",
+            "type": "shell",
+            "command": "npm run build",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "🐧 frontend: test",
+            "type": "shell",
+            "command": "bun run test",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": "test"
+        },
+        {
+            "label": "🐧 frontend: test:unit",
+            "type": "shell",
+            "command": "bun run test:unit",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            },
+            "runOptions": {
+                "runOn": "wsl"
+            },
+            "group": "test"
+        }
+    ]
+}

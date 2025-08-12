@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      ".*",
+      "*",
+      "Bash(rm:*)",
+      "mcp__konva-documentation__konva_documentation"
+    ],
+    "additionalDirectories": [
+      "/mnt/z/Coding/webbuddy/webbuddy/docs/"
+    ]
+  }
+}

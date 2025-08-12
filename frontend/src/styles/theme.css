@@ -1,0 +1,489 @@
+/* Custom dark variant helper (kept for compatibility with existing selectors) */
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * =================================================================
+ * ROOT THEME VARIABLES (LIGHT & DARK MODE)
+ * =================================================================
+ */
+:root {
+	--radius: 0.5rem; /* Slightly reduced for cleaner look */
+
+	/* OKLCH values for light theme - updated to complement dark theme */
+	--background-oklch: 0.97 0.005 220;
+	--foreground-oklch: 0.15 0.02 220;
+	--card-oklch: 0.99 0.002 220;
+	--card-foreground-oklch: 0.15 0.02 220;
+	--popover-oklch: 0.99 0.002 220;
+	--popover-foreground-oklch: 0.15 0.02 220;
+	--primary-oklch: 0.55 0.22 195; /* Cyan/teal primary */
+	--primary-foreground-oklch: 0.95 0.01 220;
+	--secondary-oklch: 0.92 0.01 220;
+	--secondary-foreground-oklch: 0.25 0.02 220;
+	--muted-oklch: 0.94 0.008 220;
+	--muted-foreground-oklch: 0.55 0.015 220;
+	--accent-oklch: 0.65 0.18 195; /* Bright cyan accent */
+	--accent-foreground-oklch: 0.95 0.01 220;
+	--destructive-oklch: 0.55 0.2 25;
+	--border-oklch: 0.88 0.01 220;
+	--input-oklch: 0.92 0.008 220;
+	--ring-oklch: 0.55 0.22 195;
+
+	/* DaisyUI variable mapping to our OKLCH tokens */
+	--p: oklch(var(--primary-oklch));
+	--pc: oklch(var(--primary-foreground-oklch));
+	--s: oklch(var(--secondary-oklch));
+	--a: oklch(var(--accent-oklch));
+	--n: oklch(0.278 0.033 256.848);
+	--b1: oklch(var(--background-oklch));
+	--b2: oklch(var(--card-oklch));
+	--b3: oklch(0.278 0.033 256.848);
+	--bc: oklch(var(--foreground-oklch));
+	--in: oklch(0.6 0.118 184.704);
+	--su: oklch(0.828 0.189 84.429);
+	--wa: oklch(0.769 0.188 70.08);
+	--er: oklch(0.704 0.191 22.216);
+
+	/* DaisyUI radius/animation tokens */
+	--rounded-box: var(--radius);
+	--rounded-btn: calc(var(--radius) - 2px);
+	--rounded-badge: var(--radius);
+	--animation-btn: 0.25s;
+	--animation-input: 0.2s;
+	--btn-focus-scale: 0.97;
+	--border-btn: 1px;
+	--tab-border: 1px;
+	--tab-radius: 0.5rem;
+}
+
+/* Dark theme inspired by the reference UI - deep navy with cyan accents */
+.dark {
+	/* OKLCH values for dark theme - matching reference UI aesthetic */
+	--background-oklch: 0.08 0.015 230; /* Deep navy background */
+	--foreground-oklch: 0.9 0.005 200; /* Light cyan-tinted text */
+	--card-oklch: 0.12 0.02 225; /* Slightly lighter navy for cards */
+	--card-foreground-oklch: 0.92 0.008 200;
+	--popover-oklch: 0.1 0.018 225; /* Darker navy for popovers */
+	--popover-foreground-oklch: 0.95 0.005 200;
+	--primary-oklch: 0.7 0.25 190; /* Vibrant cyan primary */
+	--primary-foreground-oklch: 0.05 0.01 230;
+	--secondary-oklch: 0.18 0.025 225;
+	--secondary-foreground-oklch: 0.85 0.008 200;
+	--muted-oklch: 0.15 0.02 225;
+	--muted-foreground-oklch: 0.65 0.015 200;
+	--accent-oklch: 0.75 0.22 185; /* Bright teal accent */
+	--accent-foreground-oklch: 0.05 0.01 230;
+	--destructive-oklch: 0.65 0.22 25;
+	--border-oklch: 1 0 0; /* Set to white for use with alpha */
+	--input-oklch: 1 0 0;
+	--ring-oklch: 0.7 0.25 190; /* Bright cyan ring for focus */
+}
+
+/*
+ * =================================================================
+ * THEME & TOKENS
+ *
+ * This section maps our OKLCH variables to shadcn/ui-like variable names
+ * and defines radius tokens.
+ * =================================================================
+ */
+@theme {
+	--color-zinc-50: #fafafa;
+	--color-zinc-100: #f4f4f5;
+	--color-zinc-200: #e4e4e7;
+	--color-zinc-300: #d4d4d8;
+	--color-zinc-400: #a1a1aa;
+	--color-zinc-500: #71717a;
+	--color-zinc-600: #52525b;
+	--color-zinc-700: #3f3f46;
+	--color-zinc-800: #27272a;
+	--color-zinc-900: #18181b;
+	--color-zinc-950: #09090b;
+}
+
+@theme inline {
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+
+	--color-background: oklch(var(--background-oklch));
+	--color-foreground: oklch(var(--foreground-oklch));
+	--color-card: oklch(var(--card-oklch));
+	--color-card-foreground: oklch(var(--card-foreground-oklch));
+	--color-popover: oklch(var(--popover-oklch));
+	--color-popover-foreground: oklch(var(--popover-foreground-oklch));
+	--color-primary: oklch(var(--primary-oklch));
+	--color-primary-foreground: oklch(var(--primary-foreground-oklch));
+	--color-secondary: oklch(var(--secondary-oklch));
+	--color-secondary-foreground: oklch(var(--secondary-foreground-oklch));
+	--color-muted: oklch(var(--muted-oklch));
+	--color-muted-foreground: oklch(var(--muted-foreground-oklch));
+	--color-accent: oklch(var(--accent-oklch));
+	--color-accent-foreground: oklch(var(--accent-foreground-oklch));
+	--color-destructive: oklch(var(--destructive-oklch));
+	--color-border: oklch(var(--border-oklch) / 0.1); /* Default subtle border */
+	--color-input: oklch(var(--input-oklch) / 0.15);
+	--color-ring: oklch(var(--ring-oklch));
+}
+
+/*
+ * =================================================================
+ * BASE & COMPONENT STYLES
+ *
+ * This is where the magic happens. We define the base styles,
+ * background glow, and the shiny/glowing border effects.
+ * =================================================================
+ */
+@layer base {
+	* {
+		@apply border-border;
+	}
+	body {
+		@apply bg-background text-foreground min-h-screen relative;
+		/* Grid pattern background with glowing effect */
+		background-image:
+			linear-gradient(90deg, oklch(var(--border-oklch) / 0.08) 1px, transparent 1px),
+			linear-gradient(180deg, oklch(var(--border-oklch) / 0.08) 1px, transparent 1px),
+			radial-gradient(
+				ellipse 100% 80% at 50% -20%,
+				oklch(var(--primary-oklch) / 0.08),
+				transparent 50%
+			),
+			radial-gradient(
+				ellipse 120% 60% at 20% 100%,
+				oklch(var(--accent-oklch) / 0.06),
+				transparent 50%
+			);
+		background-size:
+			40px 40px,
+			40px 40px,
+			100% 100%,
+			100% 100%;
+		background-position:
+			0 0,
+			0 0,
+			0 0,
+			0 0;
+	}
+
+	/* Enhanced grid pattern for dark mode */
+	.dark body {
+		background-image:
+			linear-gradient(90deg, oklch(var(--border-oklch) / 0.04) 1px, transparent 1px),
+			linear-gradient(180deg, oklch(var(--border-oklch) / 0.04) 1px, transparent 1px),
+			radial-gradient(
+				ellipse 100% 80% at 50% -10%,
+				oklch(var(--primary-oklch) / 0.12),
+				transparent 60%
+			),
+			radial-gradient(
+				ellipse 120% 70% at 80% 120%,
+				oklch(var(--accent-oklch) / 0.08),
+				transparent 50%
+			),
+			radial-gradient(ellipse 80% 50% at 20% -20%, oklch(var(--ring-oklch) / 0.06), transparent 40%);
+		background-size:
+			50px 50px,
+			50px 50px,
+			100% 100%,
+			100% 100%,
+			100% 100%;
+	}
+}
+
+.test {
+	background-color: red !important;
+	width: 200px !important;
+	height: 200px !important;
+}
+
+@layer components {
+	/*
+   * -----------------------------------------------------------------
+   * The "Shiny Border" Effect
+   *
+   * This utility applies a pseudo-element to create a glowing,
+   * animated, conic-gradient border around an element.
+   * -----------------------------------------------------------------
+   */
+	.shiny-border {
+		@apply relative overflow-hidden;
+	}
+	.shiny-border::before {
+		content: '';
+		@apply absolute;
+		/* Replaced unsupported negative utilities to avoid Tailwind error */
+		z-index: -1;
+		top: -1px;
+		left: -1px;
+		width: calc(100% + 2px);
+		height: calc(100% + 2px);
+		animation: spin-slow 3s linear infinite;
+		background-image: conic-gradient(
+			from 180deg at 50% 50%,
+			oklch(var(--primary-oklch) / 0.8) 0deg,
+			oklch(var(--ring-oklch) / 0.5) 100deg,
+			oklch(var(--secondary-oklch) / 0) 180deg,
+			oklch(var(--ring-oklch) / 0.5) 260deg,
+			oklch(var(--primary-oklch) / 0.8) 360deg
+		);
+		border-radius: inherit;
+	}
+
+	/*
+   * -----------------------------------------------------------------
+   * Component-specific styles
+   * -----------------------------------------------------------------
+   */
+
+	/* Glassmorphic Cards matching reference UI */
+	.card {
+		@apply border;
+		backdrop-filter: blur(12px);
+		background: oklch(var(--card-oklch) / 0.7);
+		border-color: oklch(var(--border-oklch) / 0.2);
+		box-shadow:
+			0 8px 32px oklch(var(--background-oklch) / 0.1),
+			inset 0 1px 0 oklch(var(--border-oklch) / 0.1);
+	}
+
+	.dark .card {
+		background: oklch(var(--card-oklch) / 0.5);
+		border-color: oklch(var(--border-oklch) / 0.08);
+		box-shadow:
+			0 8px 32px oklch(0 0 0 / 0.2),
+			inset 0 1px 0 oklch(var(--border-oklch) / 0.05);
+	}
+
+	/* Enhanced Buttons with glow effects */
+	.btn {
+		@apply transition-all duration-300;
+		backdrop-filter: blur(8px);
+		box-shadow: 0 2px 8px oklch(var(--background-oklch) / 0.1);
+	}
+	.btn.btn-primary {
+		background: oklch(var(--primary-oklch) / 0.9);
+		box-shadow:
+			0 4px 16px oklch(var(--primary-oklch) / 0.3),
+			inset 0 1px 0 oklch(var(--primary-oklch) / 0.2);
+	}
+	.dark .btn.btn-primary {
+		box-shadow:
+			0 4px 20px oklch(var(--primary-oklch) / 0.4),
+			0 0 40px oklch(var(--primary-oklch) / 0.1),
+			inset 0 1px 0 oklch(var(--primary-oklch) / 0.2);
+	}
+	.btn:hover {
+		transform: translateY(-0.125rem);
+		box-shadow:
+			0 6px 20px oklch(var(--background-oklch) / 0.15),
+			0 2px 8px oklch(var(--background-oklch) / 0.1);
+	}
+	.btn.btn-primary:hover {
+		box-shadow:
+			0 6px 24px oklch(var(--primary-oklch) / 0.4),
+			0 0 50px oklch(var(--primary-oklch) / 0.15),
+			inset 0 1px 0 oklch(var(--primary-oklch) / 0.3);
+	}
+
+	/* Enhanced Inputs with glassmorphic design */
+	.input,
+	.textarea,
+	.select {
+		@apply transition-all duration-300;
+		backdrop-filter: blur(12px);
+		background: oklch(var(--input-oklch) / 0.5);
+		border-color: oklch(var(--border-oklch) / 0.2);
+	}
+	.dark .input,
+	.dark .textarea,
+	.dark .select {
+		background: oklch(var(--input-oklch) / 0.05);
+		border-color: oklch(var(--border-oklch) / 0.08);
+	}
+	:is(.input, .textarea, .select):focus {
+		@apply outline-none;
+		border-color: oklch(var(--ring-oklch) / 0.6) !important;
+		box-shadow:
+			0 0 0 2px oklch(var(--ring-oklch) / 0.2),
+			0 4px 12px oklch(var(--ring-oklch) / 0.1);
+	}
+	.dark :is(.input, .textarea, .select):focus {
+		box-shadow:
+			0 0 0 2px oklch(var(--ring-oklch) / 0.3),
+			0 4px 16px oklch(var(--ring-oklch) / 0.15),
+			0 0 30px oklch(var(--ring-oklch) / 0.08);
+	}
+}
+
+/* Define animation at root level for compatibility */
+@keyframes spin-slow {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Enhanced utilities for the new design */
+@layer utilities {
+	.animate-spin-slow {
+		animation: spin-slow 3s linear infinite;
+	}
+
+	.glow-cyan {
+		box-shadow:
+			0 0 20px oklch(var(--primary-oklch) / 0.3),
+			0 0 40px oklch(var(--primary-oklch) / 0.1);
+	}
+
+	.glow-accent {
+		box-shadow:
+			0 0 20px oklch(var(--accent-oklch) / 0.3),
+			0 0 40px oklch(var(--accent-oklch) / 0.1);
+	}
+
+	.text-glow {
+		text-shadow: 0 0 10px oklch(var(--primary-oklch) / 0.5);
+	}
+
+	.bg-grid {
+		background-image:
+			linear-gradient(90deg, oklch(var(--border-oklch) / 0.1) 1px, transparent 1px),
+			linear-gradient(180deg, oklch(var(--border-oklch) / 0.1) 1px, transparent 1px);
+		background-size: 20px 20px;
+	}
+
+	.glassmorphism {
+		backdrop-filter: blur(16px);
+		background: oklch(var(--card-oklch) / 0.3);
+		border: 1px solid oklch(var(--border-oklch) / 0.15);
+	}
+
+	.dark .glassmorphism {
+		background: oklch(var(--card-oklch) / 0.15);
+		border: 1px solid oklch(var(--border-oklch) / 0.08);
+	}
+}
+
+.ease-in-out {
+	--tw-ease: var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+	transition-timing-function: var(--ease-in-out, cubic-bezier(0.4, 0, 0.2, 1));
+	transition-duration: 0.15s;
+}
+
+/*
+ * =================================================================
+ * RESPONSIVE LAYOUT UTILITIES - MOVED TO utilities.css
+ * 
+ * @utility definitions have been moved to utilities.css to fix
+ * Tailwind v4 nesting error. Utilities must be at top-level.
+ * =================================================================
+ */
+
+/* Base layout styles that need to be global */
+@layer base {
+	html,
+	body {
+		height: 100%;
+		overflow: hidden;
+		position: fixed;
+		inset: 0;
+	}
+
+	#app,
+	#svelte {
+		height: 100vh;
+		width: 100vw;
+		overflow: hidden;
+		position: relative;
+	}
+}
+
+/* Component-level utility classes */
+@layer components {
+	.layout-header {
+		flex-shrink: 0;
+		z-index: 40;
+	}
+
+	.layout-main {
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
+		position: relative;
+	}
+
+	/* Cross-browser scrollbar styling */
+	.scrollable-content {
+		scrollbar-width: thin;
+		scrollbar-color: oklch(var(--border-oklch) / 0.4) transparent;
+	}
+
+	.scrollable-content::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.scrollable-content::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.scrollable-content::-webkit-scrollbar-thumb {
+		background: oklch(var(--border-oklch) / 0.4);
+		border-radius: 3px;
+	}
+
+	.scrollable-content::-webkit-scrollbar-thumb:hover {
+		background: oklch(var(--border-oklch) / 0.6);
+	}
+
+	/* Dark mode responsive card styling */
+	.dark .responsive-card {
+		background: oklch(var(--card-oklch) / 0.7);
+		border-color: oklch(var(--border-oklch) / 0.06);
+		box-shadow:
+			0 4px 16px oklch(0 0 0 / 0.15),
+			inset 0 1px 0 oklch(var(--border-oklch) / 0.04);
+	}
+
+	/* Viewport utilities */
+	.viewport-full {
+		height: 100vh;
+		width: 100vw;
+	}
+
+	.viewport-minus-header {
+		height: calc(100vh - 4rem);
+	}
+
+	.viewport-minus-toolbar {
+		height: calc(100vh - 4rem);
+	}
+
+	/* Responsive grid system for desktop */
+	@media (min-width: 1024px) {
+		.desktop-grid {
+			display: grid;
+			gap: 1rem;
+			height: 100%;
+		}
+
+		.desktop-grid-sidebar {
+			grid-template-columns: 300px 1fr;
+		}
+
+		.desktop-grid-three-col {
+			grid-template-columns: 250px 1fr 300px;
+		}
+	}
+
+	/* High DPI display optimizations */
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+		.canvas-container {
+			image-rendering: -webkit-optimize-contrast;
+			image-rendering: crisp-edges;
+		}
+	}
+}
