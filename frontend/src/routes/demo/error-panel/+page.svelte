@@ -144,26 +144,20 @@ Available routes:
 	<title>Error Panel Demo</title>
 </svelte:head>
 
-<div class="demo-layout">
+<div class="container mx-auto p-8 max-w-4xl">
 	<!-- Header Section -->
 	<div class="text-center space-y-4">
-		<h1 class="text-4xl md:text-5xl font-bold tracking-tight">ErrorPanel Component Demo</h1>
+		<h1 class="text-3xl font-bold mb-8 text-glow">ErrorPanel Component Demo</h1>
 		<p class="text-base md:text-lg text-muted-foreground/90 max-w-3xl mx-auto">
 			Comprehensive error handling and display system with syntax highlighting, copy functionality,
 			and robust error processing.
 		</p>
-		<div class="flex justify-center gap-2 md:gap-4 flex-wrap">
-			<Badge variant="outline">Svelte 5</Badge>
-			<Badge variant="outline">TypeScript</Badge>
-			<Badge variant="outline">Tailwind CSS</Badge>
-			<Badge variant="outline">Syntax Highlighting</Badge>
-		</div>
 	</div>
 
 	<!-- Controls Section -->
-	<Card.Root class="responsive-card border-border/30">
+	<Card.Root class="glassmorphism">
 		<Card.Header class="flex-shrink-0">
-			<Card.Title>Error Examples & Live Generation</Card.Title>
+			<Card.Title class="text-primary">Error Examples & Live Generation</Card.Title>
 			<Card.Description>
 				Select from predefined examples or generate live errors for testing
 			</Card.Description>
@@ -246,10 +240,10 @@ Available routes:
 	</Card.Root>
 
 	<!-- Error Display Section -->
-	<Card.Root class="responsive-card border-border/30 flex-1 min-h-0">
+	<Card.Root class="glassmorphism flex-1 min-h-0">
 		<Card.Header class="flex-shrink-0">
 			<div class="flex items-center justify-between">
-				<Card.Title>Error Display</Card.Title>
+				<Card.Title class="text-primary">Error Display</Card.Title>
 				<Badge variant="secondary">
 					{examples[currentExample]?.language || 'typescript'}
 				</Badge>
@@ -286,10 +280,10 @@ Available routes:
 
 	<!-- History Section -->
 	{#if errorHistory.length > 0}
-		<Card.Root class="responsive-card border-border/30 max-h-48">
+		<Card.Root class="glassmorphism max-h-48">
 			<Card.Header class="flex-shrink-0">
 				<div class="flex items-center justify-between">
-					<Card.Title>Error History</Card.Title>
+					<Card.Title class="text-primary">Error History</Card.Title>
 					<Button variant="outline" size="sm" onclick={clearHistory}>Clear History</Button>
 				</div>
 				<Card.Description>

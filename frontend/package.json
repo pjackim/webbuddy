@@ -10,7 +10,6 @@
         "dev:open": "vite dev --host 0.0.0.0 --port 5173 --open",
         "dev:https": "vite dev --host 0.0.0.0 --port 5173 --https",
         "dev:debug": "DEBUG=vite:* vite dev --host 0.0.0.0 --port 5173",
-        
         "// Building": "========== Build Commands ==========",
         "prebuild": "npm run clean && npm run check",
         "build": "vite build",
@@ -20,13 +19,11 @@
         "build:stats": "vite-bundle-analyzer dist/stats.html",
         "postbuild": "npm run build:verify",
         "build:verify": "node scripts/build-verify.mjs",
-        
         "// Preview & Serve": "========== Preview Commands ==========",
         "preview": "vite preview --host 0.0.0.0 --port 4173",
         "preview:open": "vite preview --host 0.0.0.0 --port 4173 --open",
         "serve": "npm run preview",
         "serve:prod": "npm run build:prod && npm run preview",
-        
         "// Testing": "========== Testing Commands ==========",
         "pretest": "npm run lint:fix",
         "test": "vitest run",
@@ -37,13 +34,11 @@
         "test:browser": "vitest run --browser.enabled --browser.name=chromium",
         "test:ci": "vitest run --reporter=junit --outputFile=test-results.xml",
         "test:debug": "vitest run --inspect-brk",
-        
         "// Quality Assurance": "========== QA Commands ==========",
         "prepare": "svelte-kit sync",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --threshold error",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
         "typecheck": "npm run check",
-        
         "// Linting & Formatting": "========== Code Quality Commands ==========",
         "lint": "eslint . --ext .js,.ts,.svelte --max-warnings 0",
         "lint:fix": "eslint . --ext .js,.ts,.svelte --fix",
@@ -51,36 +46,31 @@
         "format": "prettier --write .",
         "format:check": "prettier --check .",
         "format:staged": "lint-staged",
-        
         "// Maintenance": "========== Maintenance Commands ==========",
         "clean": "rimraf build dist .svelte-kit coverage test-results.xml eslint-report.html",
         "clean:deps": "rimraf node_modules package-lock.json && npm install",
         "clean:cache": "rimraf .svelte-kit/generated .vite",
         "clean:all": "npm run clean && npm run clean:cache && npm run clean:deps",
-        
         "// Dependencies": "========== Dependency Management ==========",
         "deps:check": "npm-check-updates",
         "deps:update": "npm-check-updates -u && npm install",
         "deps:audit": "npm audit",
         "deps:audit:fix": "npm audit fix",
         "deps:outdated": "npm outdated",
-        
         "// Deployment": "========== Deployment Commands ==========",
         "predeploy": "npm run ci",
         "deploy": "echo \"Deployment script not configured\" && exit 1",
         "deploy:staging": "npm run build:staging && echo \"Deploy to staging\"",
         "deploy:prod": "npm run build:prod && echo \"Deploy to production\"",
-        
         "// CI/CD Pipeline": "========== CI/CD Commands ==========",
         "ci": "node scripts/ci-pipeline.mjs --env=production",
         "ci:quick": "node scripts/ci-pipeline.mjs --env=development --skip-tests",
         "ci:full": "node scripts/ci-pipeline.mjs --env=production --verbose",
         "ci:staging": "node scripts/ci-pipeline.mjs --env=staging",
-        
         "// Utilities": "========== Utility Commands ==========",
         "start": "npm run dev",
         "info": "npm run --silent print:info",
-        "print:info": "node -e \"console.log('\\n🚀 WebBuddy Frontend\\n📦 Node:', process.version, '\\n📁 CWD:', process.cwd(), '\\n🌍 ENV:', process.env.NODE_ENV || 'development')\"" 
+        "print:info": "node -e \"console.log('\\n🚀 WebBuddy Frontend\\n📦 Node:', process.version, '\\n📁 CWD:', process.cwd(), '\\n🌍 ENV:', process.env.NODE_ENV || 'development')\""
     },
     "devDependencies": {
         "@devantic/diaper": "^2.2.2",
@@ -138,6 +128,7 @@
     "dependencies": {
         "@lucide/svelte": "^0.539.0",
         "@tailwindcss/postcss": "^4.1.11",
+        "@types/node": "^24.2.1",
         "bun": "^1.2.20",
         "canvas": "^3.1.2",
         "konva": "^9.3.22",

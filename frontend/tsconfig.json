@@ -12,14 +12,21 @@
 		"moduleResolution": "bundler",
 		// Let TS accept non-TS extensions like .svelte in imports
 		"allowArbitraryExtensions": true,
-		"types": ["svelte", "svelte.d.ts", "vite/client"],
+        "types": [
+            "node",
+            "svelte",
+            "svelte.d.ts",
+            "vite/client"
+        ],
 		"plugins": [
 			// {
 			//     "name": "typescript-svelte-plugin"
 			// }
 		],
 		"paths": {
-			"$lib/*": ["./src/lib/*"],
+            "$lib": [
+                "./src/lib"
+            ],
 			"$styles/*": ["./src/styles/*"]
 		}
 	},
