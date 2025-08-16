@@ -5,8 +5,8 @@ from app.api import api
 from app.api.websocket import router as ws_router
 from app.core.config import settings
 from app.core.logging_config import configure_logging
+
 # from app.models.screen_models import ScreenCreate  # removed: no default seeding
-from app.state.memory_state import STATE
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import (
@@ -55,6 +55,8 @@ async def seed_default_data() -> None:
     # Do not auto-create a default screen.
     # Startup only ensures storage dirs exist (handled above).
     return None
+
+
 @app.get("/docs", include_in_schema=False)
 def custom_swagger_ui() -> HTMLResponse:
     return get_swagger_ui_html(

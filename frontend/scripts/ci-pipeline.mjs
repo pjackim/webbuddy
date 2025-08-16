@@ -19,7 +19,7 @@ const environment = args.find(arg => arg.startsWith('--env='))?.replace('--env='
 
 // Detect package manager
 function detectPackageManager() {
-  if (existsSync('bun.lockb')) return 'bun';
+  if (existsSync('bun.lockb') || existsSync('bun.lock')) return 'bun';
   if (existsSync('yarn.lock')) return 'yarn';
   if (existsSync('pnpm-lock.yaml')) return 'pnpm';
   return 'npm';
