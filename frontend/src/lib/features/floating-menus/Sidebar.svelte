@@ -194,19 +194,19 @@
 									<label class="text-xs font-medium">Size</label>
 									<div class="grid grid-cols-2 gap-2">
 										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">W</label>
+											<label class="text-xs text-muted-foreground">Width</label>
 											<input
 												type="number"
 												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="200"
+												value="3840"
 											/>
 										</div>
 										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">H</label>
+											<label class="text-xs text-muted-foreground">Height</label>
 											<input
 												type="number"
 												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="150"
+												value="2160"
 											/>
 										</div>
 									</div>
