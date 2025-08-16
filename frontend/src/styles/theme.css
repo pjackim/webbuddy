@@ -106,6 +106,12 @@
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
+	
+	/* Border radius utilities */
+	--radius-xs: 0.125rem;
+	--radius-2xl: calc(var(--radius) + 8px);
+	--radius-3xl: calc(var(--radius) + 12px);
+	--radius-full: 9999px;
 
 	--color-background: oklch(var(--background-oklch));
 	--color-foreground: oklch(var(--foreground-oklch));
@@ -165,6 +171,9 @@
 			0 0,
 			0 0,
 			0 0;
+		/* Subtle pulsing animation for background glow */
+		will-change: background-size, background-position;
+		animation: bg-pulse 18s ease-in-out infinite alternate;
 	}
 
 	/* Enhanced grid pattern for dark mode */
@@ -189,6 +198,9 @@
 			100% 100%,
 			100% 100%,
 			100% 100%;
+		/* Subtle pulsing animation for dark mode glow */
+		will-change: background-size, background-position;
+		animation: bg-pulse-dark 20s ease-in-out infinite alternate;
 	}
 }
 
@@ -324,6 +336,75 @@
 	}
 	to {
 		transform: rotate(360deg);
+	}
+}
+
+/* Gentle background pulsing for light mode (must match 4 background layers) */
+@keyframes bg-pulse {
+	from {
+		/* Keep the grid layers static, pulse only the two radial layers */
+		background-size:
+			40px 40px,
+			40px 40px,
+			100% 100%,
+			100% 100%;
+		background-position:
+			0 0,
+			0 0,
+			0 0,
+			0 0;
+	}
+	to {
+		background-size:
+			40px 40px,
+			40px 40px,
+			106% 106%,
+			112% 112%;
+		background-position:
+			0 0,
+			0 0,
+			0 -1%,
+			1% 0;
+	}
+}
+
+/* Gentle background pulsing for dark mode (must match 5 background layers) */
+@keyframes bg-pulse-dark {
+	from {
+		background-size:
+			50px 50px,
+			50px 50px,
+			100% 100%,
+			100% 100%,
+			100% 100%;
+		background-position:
+			0 0,
+			0 0,
+			0 0,
+			0 0,
+			0 0;
+	}
+	to {
+		background-size:
+			50px 50px,
+			50px 50px,
+			106% 106%,
+			110% 110%,
+			114% 114%;
+		background-position:
+			0 0,
+			0 0,
+			0 -1%,
+			1% 0,
+			-0.5% 0.5%;
+	}
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+	body,
+	.dark body {
+		animation: none !important;
 	}
 }
 

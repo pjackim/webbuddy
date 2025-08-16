@@ -31,13 +31,13 @@ npm i svelte-konva konva
 
 ```svelte
 <script>
-  import { Stage, Layer, Rect } from 'svelte-konva';
+	import { Stage, Layer, Rect } from 'svelte-konva';
 </script>
 
 <Stage config={{ width: 1000, height: 1000 }}>
-  <Layer>
-    <Rect config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }} />
-  </Layer>
+	<Layer>
+		<Rect config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }} />
+	</Layer>
 </Stage>
 ```
 
@@ -47,21 +47,21 @@ You can listen to Konva events by using the Svelte `on:event` Syntax. All [Konva
 
 ```svelte
 <script>
-  import { Stage, Layer, Rect } from 'svelte-konva';
+	import { Stage, Layer, Rect } from 'svelte-konva';
 
-  function handleClick(e) {
-    const konvaEvent = e.detail;
-    window.alert(`Clicked on rectangle: ${konvaEvent.type}`);
-  }
+	function handleClick(e) {
+		const konvaEvent = e.detail;
+		window.alert(`Clicked on rectangle: ${konvaEvent.type}`);
+	}
 </script>
 
 <Stage config={{ width: 1000, height: 1000 }}>
-  <Layer>
-    <Rect
-      config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }}
-      on:pointerclick={handleClick}
-    />
-  </Layer>
+	<Layer>
+		<Rect
+			config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }}
+			on:pointerclick={handleClick}
+		/>
+	</Layer>
 </Stage>
 ```
 
@@ -71,27 +71,27 @@ In various cases it is useful and required to be able to access the underlying K
 
 ```svelte
 <script>
-  import { onMount, tick } from 'svelte';
-  import { Stage, Layer, Rect } from 'svelte-konva';
+	import { onMount, tick } from 'svelte';
+	import { Stage, Layer, Rect } from 'svelte-konva';
 
-  let rectangle;
+	let rectangle;
 
-  onMount(async () => {
-    // Wait for dom update so the rectangle handle becomes defined
-    await tick();
+	onMount(async () => {
+		// Wait for dom update so the rectangle handle becomes defined
+		await tick();
 
-    const json = rectangle.toJSON();
-    window.alert(`Rectangle as JSON: ${json}`);
-  });
+		const json = rectangle.toJSON();
+		window.alert(`Rectangle as JSON: ${json}`);
+	});
 </script>
 
 <Stage config={{ width: 1000, height: 1000 }}>
-  <Layer>
-    <Rect
-      config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }}
-      bind:handle={rectangle}
-    />
-  </Layer>
+	<Layer>
+		<Rect
+			config={{ x: 100, y: 100, width: 400, height: 200, fill: 'blue' }}
+			bind:handle={rectangle}
+		/>
+	</Layer>
 </Stage>
 ```
 
@@ -101,26 +101,26 @@ By default svelte-konva keeps your config in sync (position, rotation, scale, et
 
 ```svelte
 <script>
-  import { Stage, Layer, Rect } from 'svelte-konva';
+	import { Stage, Layer, Rect } from 'svelte-konva';
 
-  let rectangleConfig = {
-    x: 100,
-    y: 100,
-    width: 400,
-    height: 200,
-    fill: 'blue',
-    draggable: true
-  };
+	let rectangleConfig = {
+		x: 100,
+		y: 100,
+		width: 400,
+		height: 200,
+		fill: 'blue',
+		draggable: true
+	};
 
-  $: console.log(
-    `Rectangle was dragged. New x: ${rectangleConfig.x}. New y: ${rectangleConfig.y}.`
-  );
+	$: console.log(
+		`Rectangle was dragged. New x: ${rectangleConfig.x}. New y: ${rectangleConfig.y}.`
+	);
 </script>
 
 <Stage config={{ width: 1000, height: 1000 }}>
-  <Layer>
-    <Rect bind:config={rectangleConfig} />
-  </Layer>
+	<Layer>
+		<Rect bind:config={rectangleConfig} />
+	</Layer>
 </Stage>
 ```
 
@@ -150,20 +150,20 @@ _MyCanvas.svelte_
 
 ```svelte
 <script>
-  import { Stage, Layer, Rect } from 'svelte-konva';
-  import OtherComponentUsingSvelteKonva from './OtherComponentUsingSvelteKonva.svelte';
+	import { Stage, Layer, Rect } from 'svelte-konva';
+	import OtherComponentUsingSvelteKonva from './OtherComponentUsingSvelteKonva.svelte';
 
-  const rectangleConfig = {
-    /*...*/
-  };
+	const rectangleConfig = {
+		/*...*/
+	};
 </script>
 
 <Stage config={{ width: 1000, height: 1000 }}>
-  <Layer>
-    <Rect bind:config={rectangleConfig} />
+	<Layer>
+		<Rect bind:config={rectangleConfig} />
 
-    <OtherComponentUsingSvelteKonva />
-  </Layer>
+		<OtherComponentUsingSvelteKonva />
+	</Layer>
 </Stage>
 ```
 
@@ -173,25 +173,25 @@ _+page.svelte_
 
 ```svelte
 <script>
-  import { onMount } from 'svelte';
-  // typescript:
-  // import type MyCanvasComponent from '$lib/MyCanvas.svelte';
+	import { onMount } from 'svelte';
+	// typescript:
+	// import type MyCanvasComponent from '$lib/MyCanvas.svelte';
 
-  let MyCanvas;
-  // typescript:
-  // let MyCanvas: typeof MyCanvasComponent;
+	let MyCanvas;
+	// typescript:
+	// let MyCanvas: typeof MyCanvasComponent;
 
-  onMount(async () => {
-    // Dynamically import your canvas component encapsulating all svelte-konva functionality inside onMount()
-    MyCanvas = (await import('$lib/MyCanvas.svelte')).default;
-  });
+	onMount(async () => {
+		// Dynamically import your canvas component encapsulating all svelte-konva functionality inside onMount()
+		MyCanvas = (await import('$lib/MyCanvas.svelte')).default;
+	});
 </script>
 
 <div>
-  <p>This is my fancy server side rendered (or prerendered) page.</p>
+	<p>This is my fancy server side rendered (or prerendered) page.</p>
 
-  <!-- Use your dynamically imported svelte-konva canvas component with a svelte:component block, you can pass any component props as usual -->
-  <svelte:component this={MyCanvas} someProp="SomeString" />
+	<!-- Use your dynamically imported svelte-konva canvas component with a svelte:component block, you can pass any component props as usual -->
+	<svelte:component this={MyCanvas} someProp="SomeString" />
 </div>
 ```
 
@@ -203,17 +203,17 @@ _+page.svelte_
 
 ```svelte
 <script>
-  import MyCanvasComponent from '$lib/MyCanvas.svelte?client'; // Client-side only import
+	import MyCanvasComponent from '$lib/MyCanvas.svelte?client'; // Client-side only import
 
-  // Set component variable to null if page is rendered in SSR, otherwise use client-side only import
-  let MyCanvas = import.meta.env.SSR ? null : MyCanvasComponent;
+	// Set component variable to null if page is rendered in SSR, otherwise use client-side only import
+	let MyCanvas = import.meta.env.SSR ? null : MyCanvasComponent;
 </script>
 
 <div>
-  <p>This is my fancy server side rendered (or prerendered) page.</p>
+	<p>This is my fancy server side rendered (or prerendered) page.</p>
 
-  <!-- Use your dynamically imported svelte-konva canvas component with a svelte:component block, you can pass any component props as usual -->
-  <svelte:component this={MyCanvas} someProp="SomeString" />
+	<!-- Use your dynamically imported svelte-konva canvas component with a svelte:component block, you can pass any component props as usual -->
+	<svelte:component this={MyCanvas} someProp="SomeString" />
 </div>
 ```
 

@@ -1,5 +1,12 @@
 /* Custom utilities and Tailwind v4 @utility definitions */
 @layer utilities {
+	.rounded-sm { border-radius: calc(var(--radius) - 4px); }
+	.rounded { border-radius: calc(var(--radius) - 2px); }
+	.rounded-md { border-radius: calc(var(--radius) - 2px); }
+	.rounded-lg { border-radius: var(--radius); }
+	.rounded-xl { border-radius: calc(var(--radius) + 4px); }
+	.rounded-2xl { border-radius: calc(var(--radius) + 8px); }
+	.rounded-3xl { border-radius: calc(var(--radius) + 12px); }
 }
 
 /* TailwindCSS v4 Custom Utilities - Top level (not nested) */
@@ -48,4 +55,35 @@
 	flex: 1;
 	min-height: 0;
 	overflow: hidden;
+}
+
+/* Minimal blue glass presets */
+@utility glass-blue-sm {
+	backdrop-filter: blur(4px);
+	background: oklch(0.67 0.21 259 / 0.18); /* light blue tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.18);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+@utility glass-blue {
+	backdrop-filter: blur(8px);
+	background: oklch(0.67 0.21 259 / 0.24); /* medium tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.2);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
+}
+
+@utility glass-blue-lg {
+	backdrop-filter: blur(16px);
+	background: oklch(0.67 0.21 259 / 0.32); /* stronger tint */
+	border: 1px solid oklch(var(--border-oklch) / 0.24);
+	border-radius: var(--radius);
+	box-shadow:
+		0 4px 16px oklch(var(--background-oklch) / 0.08),
+		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
 }

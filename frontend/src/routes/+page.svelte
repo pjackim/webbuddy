@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Toolbar } from '$lib/features/toolbar';
+	import { Toolbar, Sidebar } from '$lib/features/floating-menus';
 	import { Canvas } from '$lib/features/canvas';
 	import * as Card from '$lib/ui/card';
+	import * as ContextMenu from '$lib/ui/context-menu';
 	import { api, uploadFile } from '$lib/api';
 	import { online, upsertAsset, screens, type Asset } from '$lib/stores';
 	import { toast } from 'svelte-sonner';
@@ -47,29 +48,46 @@
 	}
 </script>
 
-<div
-	class="layout-container"
-	role="group"
-	ondragover={onDragOver}
-	ondragleave={() => (hover = false)}
-	ondrop={onDrop}
->
-	<div class="layout-header">
-		<Toolbar />
-	</div>
-	<div class="layout-main">
-		{#if hover}
-			<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-				<Card.Root
-					class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse"
-				>
-					<Card.Content class="text-center">
-						<h2 class="text-2xl font-bold text-glow">Drop files to upload</h2>
-						<p class="text-muted-foreground mt-2">Drag and drop your images here</p>
-					</Card.Content>
-				</Card.Root>
+<ContextMenu.Root>
+	<ContextMenu.Trigger class="w-full h-full">
+		<div
+			class="layout-container relative"
+			role="group"
+			ondragover={onDragOver}
+			ondragleave={() => (hover = false)}
+			ondrop={onDrop}
+		>
+			<!-- Floating Toolbar -->
+			<Toolbar />
+			
+			<!-- Floating Sidebar -->
+			<Sidebar />
+
+			<div class="layout-main">
+				{#if hover}
+					<div class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+						<Card.Root
+							class="w-1/2 h-1/2 border-4 border-dashed border-primary flex items-center justify-center glassmorphism glow-cyan animate-pulse"
+						>
+							<Card.Content class="text-center">
+								<h2 class="text-2xl font-bold text-glow">Drop files to upload</h2>
+								<p class="text-muted-foreground mt-2">Drag and drop your images here</p>
+							</Card.Content>
+						</Card.Root>
+					</div>
+				{/if}
+				<Canvas />
 			</div>
-		{/if}
-		<Canvas />
-	</div>
-</div>
+		</div>
+	</ContextMenu.Trigger>
+	<ContextMenu.Content class="glassmorphism border border-border/50">
+		<ContextMenu.Item>Reset Canvas</ContextMenu.Item>
+		<ContextMenu.Item>Zoom to Fit</ContextMenu.Item>
+		<ContextMenu.Separator />
+		<ContextMenu.Item>Paste</ContextMenu.Item>
+		<ContextMenu.Item>Select All</ContextMenu.Item>
+		<ContextMenu.Separator />
+		<ContextMenu.Item>Background Color</ContextMenu.Item>
+		<ContextMenu.Item>Canvas Settings</ContextMenu.Item>
+	</ContextMenu.Content>
+</ContextMenu.Root>

@@ -17,6 +17,14 @@
 		startCollapsed?: boolean;
 		/** Custom title instead of "Internal Error" */
 		title?: string;
+		/** Optional Code.Root variant passthrough */
+		codeVariant?: 'default' | 'secondary';
+		/** Optional Code.Root line hiding */
+		hideLines?: boolean;
+		/** Optional Code.Root highlight ranges */
+		highlight?: Array<number | [number, number]>;
+		/** Extra class for the Code block itself */
+		codeClass?: string;
 		/** Additional CSS classes */
 		class?: string;
 	}
@@ -29,6 +37,10 @@
 		showCopyButton = true,
 		startCollapsed = true,
 		title,
+		codeVariant = 'default',
+		hideLines,
+		highlight,
+		codeClass,
 		class: className
 	}: Props = $props();
 
@@ -210,23 +222,27 @@
 		return 'default';
 	});
 
-	// Get appropriate color classes based on severity
-	const severityClasses = $derived.by(() => {
+	// Accent-only styles per severity (avoid coloring entire text)
+	const severityBorder = $derived.by(() => {
 		switch (errorSeverity) {
 			case 'critical':
-				return 'text-red-500';
+				return 'border-red-500/30';
 			case 'warning':
-				return 'text-yellow-600';
+				return 'border-yellow-500/30';
 			case 'info':
-				return 'text-blue-600';
+				return 'border-blue-500/30';
 			default:
-				return 'text-foreground';
+				return 'border-border/60';
 		}
 	});
 </script>
 
 <div
-	class={cn('flex flex-col h-full min-h-[400px] p-6 border rounded-lg', severityClasses, className)}
+	class={cn(
+		'flex flex-col h-full min-h-[400px] p-6 border rounded-lg bg-card/85 backdrop-blur shadow-sm',
+		severityBorder,
+		className
+	)}
 >
 	<!-- Error Code Display -->
 	<div class="text-center mb-6 flex-shrink-0">
@@ -244,8 +260,10 @@
 			<Code.Root
 				code={combinedErrorContent}
 				lang={language}
-				variant="default"
-				class="relative h-full min-h-[200px]"
+				variant={codeVariant}
+				class={cn('relative h-full min-h-[200px]', codeClass)}
+				{hideLines}
+				{highlight}
 			>
 				{#if showCopyButton}
 					<div class="absolute right-2 top-2 z-10">

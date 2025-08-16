@@ -1,14 +1,14 @@
 <script lang="ts">
-	import * as NavigationMenu from '$lib/ui/navigation-menu';
-	import * as Dialog from '$lib/ui/dialog';
+	import { api } from '$lib/api';
+	import { online } from '$lib/stores';
 	import { Button } from '$lib/ui/button';
+	import * as Dialog from '$lib/ui/dialog';
 	import { Input } from '$lib/ui/input';
 	import { Label } from '$lib/ui/label';
+	import * as NavigationMenu from '$lib/ui/navigation-menu';
 	import { Switch } from '$lib/ui/switch';
-	import { online } from '$lib/stores';
-	import { api } from '$lib/api';
+	import { Loader2 } from 'lucide-svelte';
 	import { toast } from 'svelte-sonner';
-	import { Loader2 } from '@lucide/svelte';
 
 	let name = $state('Screen');
 	let width = $state(1920 * 2);
@@ -30,14 +30,14 @@
 	}
 </script>
 
-<div class="relative z-20 border-b glass">
+<div class="relative z-20 border-b glassmorphism">
 	<div class="flex h-14 items-center justify-between px-4">
 		<!-- Left: Brand -->
 		<a href="/" class="font-bold text-lg hover:text-primary transition-colors">WebBuddy</a>
 
 		<!-- Center: Navigation -->
 		<div class="flex-1 flex justify-center">
-			<NavigationMenu.Root>
+			<NavigationMenu.Root viewport={false}>
 				<NavigationMenu.List class="flex items-center gap-4">
 					<NavigationMenu.Item>
 						<NavigationMenu.Trigger class="glassmorphism">Screens</NavigationMenu.Trigger>
@@ -98,7 +98,7 @@
 
 	<!-- Dialog lives at root to avoid layout interference -->
 	<Dialog.Root bind:open={addScreenOpen}>
-		<Dialog.Content class="bg-transparent glassmorphism">
+		<Dialog.ContentBlur class="bg-transparent glassmorphism">
 			<Dialog.Header>
 				<Dialog.Title>Add New Screen</Dialog.Title>
 				<Dialog.Description>Configure the details for your new screen.</Dialog.Description>
@@ -129,6 +129,6 @@
 					{/if}
 				</Button>
 			</Dialog.Footer>
-		</Dialog.Content>
+		</Dialog.ContentBlur>
 	</Dialog.Root>
 </div>

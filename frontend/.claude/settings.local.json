@@ -4,7 +4,10 @@
       ".*",
       "*",
       "Bash(rm:*)",
-      "mcp__konva-documentation__konva_documentation"
+      "mcp__konva-documentation__konva_documentation",
+      "Bash(chmod:*)",
+      "mcp__kapture__new_tab",
+      "mcp__browsermcp__browser_navigate"
     ],
     "additionalDirectories": [
       "/mnt/z/Coding/webbuddy/webbuddy/docs/"

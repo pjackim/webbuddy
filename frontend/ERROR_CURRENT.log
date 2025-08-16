@@ -1,24 +1,13 @@
-Error: Cannot find module 'lucide-svelte/icons/loader-2' imported from 'Z:/Coding/webbuddy/webbuddy/frontend/src/lib/features/toolbar/Toolbar.svelte'
-    at fetchModule (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:34799:34)
-    at RunnableDevEnvironment.fetchModule (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:35638:10)
-    at fetchModule (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:35607:16)
-    at handleInvoke (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:28915:25)
-    at EventEmitter.listenerForInvokeHandler (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:28976:19)
-    at EventEmitter.emit (node:events:507:28)
-    at Object.send (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:18934:39)
-    at Object.invoke (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:533:31)
-    at Object.invoke (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:582:31)
-    at SSRCompatModuleRunner.getModuleInformation (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:1057:28) {
-  code: 'ERR_MODULE_NOT_FOUND',
-  runnerError: Error: RunnerError
-      at reviveInvokeError (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:474:64)
-      at Object.invoke (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:547:11)
-      at async SSRCompatModuleRunner.getModuleInformation (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:1057:7)
-      at async request (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:1074:83)
-      at async eval (Z:/Coding/webbuddy/webbuddy/frontend/src/lib/features/toolbar/Toolbar.svelte:14:32)
-      at async ESModulesEvaluator.runInlinedModule (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:908:3)
-      at async SSRCompatModuleRunner.directRequest (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:1117:59)
-      at async SSRCompatModuleRunner.directRequest (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/chunks/dep-eRCq8YxU.js:18993:22)
-      at async SSRCompatModuleRunner.cachedRequest (file:///Z:/Coding/webbuddy/webbuddy/frontend/node_modules/vite/dist/node/module-runner.js:1035:73)
-      at async eval (Z:/Coding/webbuddy/webbuddy/frontend/src/lib/features/toolbar/index.ts:4:31)
-}
+ Svelte error: invalid_default_snippet
+Cannot use `{@render children(...)}` if the parent component uses `let:` directives. Consider using a named snippet instead
+https://svelte.dev/e/invalid_default_snippet
+    at invalid_default_snippet (Z:\Coding\webbuddy\webbuddy\frontend\node_modules\svelte\src\internal\shared\errors.js:27:17)
+    at Z:\Coding\webbuddy\webbuddy\frontend\node_modules\bits-ui\dist\bits\popover\components\popover-trigger.svelte:37:21
+    at Floating_layer_anchor (Z:\Coding\webbuddy\webbuddy\frontend\node_modules\bits-ui\dist\bits\utilities\floating-layer\components\floating-layer-anchor.svelte:19:18)
+    at Module.Popover_trigger (Z:/Coding/webbuddy/webbuddy/frontend/node_modules/bits-ui/dist/bits/popover/components/popover-trigger.svelte:42:35)
+    at $$render_inner (Z:/Coding/webbuddy/webbuddy/frontend/src/lib/vendor/shadcn/popover/popover-trigger.svelte:30:33)
+    at Module.Popover_trigger (Z:/Coding/webbuddy/webbuddy/frontend/src/lib/vendor/shadcn/popover/popover-trigger.svelte:52:3)
+    at eval (Z:/Coding/webbuddy/webbuddy/frontend/src/lib/features/floating-menus/Toolbar.svelte:381:28)
+    at Z:\Coding\webbuddy\webbuddy\frontend\node_modules\bits-ui\dist\bits\popover\components\popover.svelte:28:19
+    at Floating_layer (Z:\Coding\webbuddy\webbuddy\frontend\node_modules\bits-ui\dist\bits\utilities\floating-layer\components\floating-layer.svelte:10:18)
+    at Module.Popover (Z:/Coding/webbuddy/webbuddy/frontend/node_modules/bits-ui/dist/bits/popover/components/popover.svelte:36:35)

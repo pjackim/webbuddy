@@ -169,7 +169,7 @@ Prioritize using components and logic described in the documentation. This will 
 ### Required Testing Process
 Before claiming any task is complete, you MUST:
 
-1. **No need to start the development server, it is always hot reloading**: you can see live logs here: `frontend\dev_live_output.log`
+1. **No need to start the development server, it is always hot reloading**: you can see live logs here: `frontend\ERROR_CURRENT.log`
 2. **Test webpage via browser interaction** using:
    - **Kapture MCP**: Browser automation for testing features and validating state
 

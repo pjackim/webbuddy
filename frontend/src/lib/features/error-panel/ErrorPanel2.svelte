@@ -1,3 +1,4 @@
+<!-- DEPRECATED: Prefer using ErrorPanelComplete for richer parsing and consistent API. -->
 <script lang="ts">
 	import * as Code from '$lib/ui/code';
 	import { cn } from '$lib/utils';
