@@ -1,19 +1,17 @@
 <script lang="ts">
-	import * as Sidebar from '$lib/ui/sidebar';
 	import * as ContextMenu from '$lib/ui/context-menu';
+	import * as Sidebar from '$lib/ui/sidebar';
 	import {
-		Layers,
+		Copy,
 		Eye,
 		EyeOff,
-		Lock,
-		Unlock,
 		Image,
-		Type,
+		Layers,
+		Lock,
 		Square,
-		Circle,
 		Trash2,
-		Copy,
-		MoreHorizontal
+		Type,
+		Unlock
 	} from '@lucide/svelte';
 
 	let isCollapsed = $state(false);
@@ -44,7 +42,11 @@
 	function duplicateLayer(layerId: number) {
 		const layer = layers.find((l) => l.id === layerId);
 		if (layer) {
-			const newLayer = { ...layer, id: Math.max(...layers.map((l) => l.id)) + 1, name: `${layer.name} Copy` };
+			const newLayer = {
+				...layer,
+				id: Math.max(...layers.map((l) => l.id)) + 1,
+				name: `${layer.name} Copy`
+			};
 			layers = [...layers, newLayer];
 		}
 	}
@@ -63,7 +65,7 @@
 	}
 </script>
 
-<div class="fixed left-4 top-1/2 transform -translate-y-1/2 z-40">
+<div class="fixed top-1/2 transform -translate-y-1/2 z-40">
 	<Sidebar.Provider>
 		<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md w-64">
 			<Sidebar.Root class="bg-transparent border-0 w-full">
@@ -76,19 +78,28 @@
 
 				<Sidebar.Content class="px-2 py-2">
 					<Sidebar.Group>
-						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground">Canvas Layers</Sidebar.GroupLabel>
+						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground"
+							>Canvas Layers</Sidebar.GroupLabel
+						>
 						<Sidebar.GroupContent>
 							<Sidebar.Menu>
 								{#each layers as layer (layer.id)}
 									<Sidebar.MenuItem class="group">
 										<ContextMenu.Root>
 											<ContextMenu.Trigger class="w-full">
-												<Sidebar.MenuButton class="w-full justify-start px-2 py-1.5 h-auto hover:bg-accent/20">
+												<Sidebar.MenuButton
+													class="w-full justify-start px-2 py-1.5 h-auto hover:bg-accent/20"
+												>
 													<div class="flex items-center gap-2 flex-1 min-w-0">
-														<svelte:component this={getIconForType(layer.type)} class="h-4 w-4 shrink-0" />
+														<svelte:component
+															this={getIconForType(layer.type)}
+															class="h-4 w-4 shrink-0"
+														/>
 														<span class="text-sm truncate">{layer.name}</span>
 													</div>
-													<div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+													<div
+														class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+													>
 														<button
 															class="p-1 hover:bg-accent/40 rounded"
 															onclick={() => toggleLayerVisibility(layer.id)}
@@ -154,7 +165,9 @@
 					<Sidebar.Separator class="my-2" />
 
 					<Sidebar.Group>
-						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground">Properties</Sidebar.GroupLabel>
+						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground"
+							>Properties</Sidebar.GroupLabel
+						>
 						<Sidebar.GroupContent>
 							<div class="px-2 space-y-3">
 								<div class="space-y-1">
@@ -162,11 +175,19 @@
 									<div class="grid grid-cols-2 gap-2">
 										<div class="space-y-1">
 											<label class="text-xs text-muted-foreground">X</label>
-											<input type="number" class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30" value="100" />
+											<input
+												type="number"
+												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+												value="100"
+											/>
 										</div>
 										<div class="space-y-1">
 											<label class="text-xs text-muted-foreground">Y</label>
-											<input type="number" class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30" value="50" />
+											<input
+												type="number"
+												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+												value="50"
+											/>
 										</div>
 									</div>
 								</div>
@@ -176,18 +197,32 @@
 									<div class="grid grid-cols-2 gap-2">
 										<div class="space-y-1">
 											<label class="text-xs text-muted-foreground">W</label>
-											<input type="number" class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30" value="200" />
+											<input
+												type="number"
+												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+												value="200"
+											/>
 										</div>
 										<div class="space-y-1">
 											<label class="text-xs text-muted-foreground">H</label>
-											<input type="number" class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30" value="150" />
+											<input
+												type="number"
+												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+												value="150"
+											/>
 										</div>
 									</div>
 								</div>
 
 								<div class="space-y-1">
 									<label class="text-xs font-medium">Rotation</label>
-									<input type="range" min="0" max="360" value="0" class="w-full h-2 bg-background/50 rounded appearance-none cursor-pointer" />
+									<input
+										type="range"
+										min="0"
+										max="360"
+										value="0"
+										class="w-full h-2 bg-background/50 rounded appearance-none cursor-pointer"
+									/>
 									<div class="text-xs text-muted-foreground text-center">0°</div>
 								</div>
 							</div>
@@ -197,7 +232,7 @@
 
 				<Sidebar.Footer class="border-t border-border/20 p-2">
 					<div class="text-xs text-muted-foreground text-center">
-						{layers.length} layers • {layers.filter(l => l.visible).length} visible
+						{layers.length} layers • {layers.filter((l) => l.visible).length} visible
 					</div>
 				</Sidebar.Footer>
 			</Sidebar.Root>
