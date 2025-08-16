@@ -14,7 +14,10 @@
 		Unlock
 	} from '@lucide/svelte';
 
+	// Sidebar open/close is now managed by Sidebar.Provider/Trigger.
+	// Keeping this for potential external control, but it's unused now.
 	let isCollapsed = $state(false);
+
 	let layers = $state([
 		{ id: 1, name: 'Background Image', type: 'image', visible: true, locked: false },
 		{ id: 2, name: 'Logo', type: 'image', visible: true, locked: false },
@@ -67,16 +70,20 @@
 
 <div class="fixed top-1/2 transform -translate-y-1/2 z-40">
 	<Sidebar.Provider>
-		<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md w-64">
-			<Sidebar.Root class="bg-transparent border-0 w-full">
-				<Sidebar.Header class="border-b border-border/20 px-4 py-3">
-					<div class="flex items-center gap-2">
-						<Layers class="h-5 w-5" />
-						<h2 class="font-semibold text-sm">Layers</h2>
-					</div>
-				</Sidebar.Header>
+		<!-- Collapsible sidebar with restored glassmorphism styling on the container -->
+		<Sidebar.Root
+			collapsible="offcanvas"
+			class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md"
+		>
+			<Sidebar.Header class="border-b border-border/20 px-4 py-3 flex items-center justify-between">
+				<div class="flex items-center gap-2">
+					<Layers class="h-5 w-5" />
+					<h2 class="font-semibold text-sm">Layers</h2>
+				</div>
+				<!-- Intentionally empty: trigger is rendered outside the sidebar -->
+			</Sidebar.Header>
 
-				<Sidebar.Content class="px-2 py-2">
+			<Sidebar.Content class="px-2 py-2">
 					<Sidebar.Group>
 						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground"
 							>Canvas Layers</Sidebar.GroupLabel
@@ -160,80 +167,93 @@
 						</Sidebar.GroupContent>
 					</Sidebar.Group>
 
-					<Sidebar.Separator class="my-2" />
+				<Sidebar.Separator class="my-2" />
 
-					<Sidebar.Group>
-						<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground"
-							>Properties</Sidebar.GroupLabel
-						>
-						<Sidebar.GroupContent>
-							<div class="px-2 space-y-3">
-								<div class="space-y-1">
-									<label class="text-xs font-medium">Position</label>
-									<div class="grid grid-cols-2 gap-2">
-										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">X</label>
-											<input
-												type="number"
-												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="100"
-											/>
-										</div>
-										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">Y</label>
-											<input
-												type="number"
-												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="50"
-											/>
-										</div>
+				<Sidebar.Group>
+					<Sidebar.GroupLabel class="px-2 text-xs text-muted-foreground"
+						>Properties</Sidebar.GroupLabel
+					>
+					<Sidebar.GroupContent>
+						<div class="px-2 space-y-3">
+							<div class="space-y-1">
+								<label class="text-xs font-medium" for="position-x">Position</label>
+								<div class="grid grid-cols-2 gap-2">
+									<div class="space-y-1">
+										<label class="text-xs text-muted-foreground" for="position-x">X</label>
+										<input
+											type="number"
+											class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+											value="100"
+											id="position-x"
+										/>
 									</div>
-								</div>
-
-								<div class="space-y-1">
-									<label class="text-xs font-medium">Size</label>
-									<div class="grid grid-cols-2 gap-2">
-										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">Width</label>
-											<input
-												type="number"
-												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="3840"
-											/>
-										</div>
-										<div class="space-y-1">
-											<label class="text-xs text-muted-foreground">Height</label>
-											<input
-												type="number"
-												class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
-												value="2160"
-											/>
-										</div>
+									<div class="space-y-1">
+										<label class="text-xs text-muted-foreground" for="position-y">Y</label>
+										<input
+											type="number"
+											class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+											value="50"
+											id="position-y"
+										/>
 									</div>
-								</div>
-
-								<div class="space-y-1">
-									<label class="text-xs font-medium">Rotation</label>
-									<input
-										type="range"
-										min="0"
-										max="360"
-										value="0"
-										class="w-full h-2 bg-background/50 rounded appearance-none cursor-pointer"
-									/>
-									<div class="text-xs text-muted-foreground text-center">0°</div>
 								</div>
 							</div>
-						</Sidebar.GroupContent>
-					</Sidebar.Group>
-				</Sidebar.Content>
 
-				<Sidebar.Footer class="border-t border-border/20 p-2">
-					<div class="text-xs text-muted-foreground text-center">
-						{layers.length} layers • {layers.filter((l) => l.visible).length} visible
-					</div>
-				</Sidebar.Footer>
-			</Sidebar.Root>
-		</div>
+							<div class="space-y-1">
+								<label class="text-xs font-medium" for="size-width">Size</label>
+								<div class="grid grid-cols-2 gap-2">
+									<div class="space-y-1">
+										<label class="text-xs text-muted-foreground" for="size-width">Width</label>
+										<input
+											type="number"
+											class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+											value="3840"
+											id="size-width"
+										/>
+									</div>
+									<div class="space-y-1">
+										<label class="text-xs text-muted-foreground" for="size-height">Height</label>
+										<input
+											type="number"
+											class="w-full h-6 text-xs px-2 rounded bg-background/50 border border-border/30"
+											value="2160"
+											id="size-height"
+										/>
+									</div>
+								</div>
+							</div>
+
+							<div class="space-y-1">
+								<label class="text-xs font-medium" for="rotation">Rotation</label>
+								<input
+									type="range"
+									min="0"
+									max="360"
+									value="0"
+									class="w-full h-2 bg-background/50 rounded appearance-none cursor-pointer"
+									id="rotation"
+								/>
+								<div class="text-xs text-muted-foreground text-center">0°</div>
+							</div>
+						</div>
+					</Sidebar.GroupContent>
+				</Sidebar.Group>
+			</Sidebar.Content>
+
+			<Sidebar.Footer class="border-t border-border/20 p-2">
+				<div class="text-xs text-muted-foreground text-center">
+					{layers.length} layers • {layers.filter((l) => l.visible).length} visible
+				</div>
+			</Sidebar.Footer>
+
+			<!-- Keep a rail so users can reopen the sidebar while collapsed -->
+			<Sidebar.Rail />
+		</Sidebar.Root>
+		<!-- Outside floating trigger placed next to the sidebar edge -->
+		<Sidebar.Trigger
+			class="hidden md:flex fixed top-4 left-[calc(var(--sidebar-width)+0.75rem)] z-50"
+			aria-label="Toggle Layers Sidebar"
+			title="Toggle Layers Sidebar"
+		/>
 	</Sidebar.Provider>
 </div>
