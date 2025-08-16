@@ -246,14 +246,15 @@
 				</div>
 			</Sidebar.Footer>
 
+			<!-- Edge-following collapse/expand trigger (visually outside the panel) -->
+			<Sidebar.Trigger
+				class="hidden md:flex absolute top-3 group-data-[side=left]:left-[calc(100%+0.5rem)] group-data-[side=right]:right-[calc(100%+0.5rem)] z-50"
+				aria-label="Toggle Layers Sidebar"
+				title="Toggle Layers Sidebar"
+			/>
+
 			<!-- Keep a rail so users can reopen the sidebar while collapsed -->
 			<Sidebar.Rail />
 		</Sidebar.Root>
-		<!-- Outside floating trigger placed next to the sidebar edge -->
-		<Sidebar.Trigger
-			class="hidden md:flex fixed top-4 left-[calc(var(--sidebar-width)+0.75rem)] z-50"
-			aria-label="Toggle Layers Sidebar"
-			title="Toggle Layers Sidebar"
-		/>
 	</Sidebar.Provider>
 </div>
