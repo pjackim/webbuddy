@@ -84,6 +84,7 @@
 						<Sidebar.GroupContent>
 							<Sidebar.Menu>
 								{#each layers as layer (layer.id)}
+									{@const Icon = getIconForType(layer.type)}
 									<Sidebar.MenuItem class="group">
 										<ContextMenu.Root>
 											<ContextMenu.Trigger class="w-full">
@@ -91,10 +92,7 @@
 													class="w-full justify-start px-2 py-1.5 h-auto hover:bg-accent/20"
 												>
 													<div class="flex items-center gap-2 flex-1 min-w-0">
-														<svelte:component
-															this={getIconForType(layer.type)}
-															class="h-4 w-4 shrink-0"
-														/>
+														<Icon class="h-4 w-4 shrink-0" />
 														<span class="text-sm truncate">{layer.name}</span>
 													</div>
 													<div
