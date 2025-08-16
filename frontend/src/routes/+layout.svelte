@@ -1,15 +1,15 @@
 <script lang="ts">
-	import '$styles/app.css';
 	import favicon from '$lib/assets/favicon.svg';
-	import { ModeWatcher } from 'mode-watcher';
-	import { Toaster } from '$lib/ui/sonner';
-	import { handleError, createErrorInfo } from '$lib/stores/error';
-	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Grid } from '$lib/features/grid';
+	import { createErrorInfo, handleError } from '$lib/stores/error';
 	import { gridVisibility } from '$lib/stores/grid';
 	import { Button } from '$lib/ui/button';
+	import { Toaster } from '$lib/ui/sonner';
+	import '$styles/app.css';
 	import Cog from '@lucide/svelte/icons/cog';
+	import { ModeWatcher } from 'mode-watcher';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
@@ -67,6 +67,8 @@
 	</Button>
 </div>
 
-<ModeWatcher />
-<Toaster />
-{@render children?.()}
+<Tooltip.Provider>
+	<ModeWatcher />
+	<Toaster />
+	{@render children?.()}
+</Tooltip.Provider>

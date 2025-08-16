@@ -1,4 +1,5 @@
 <script lang="ts">
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as ContextMenu from '$lib/ui/context-menu';
 	import * as Sidebar from '$lib/ui/sidebar';
 	import {
@@ -246,12 +247,19 @@
 				</div>
 			</Sidebar.Footer>
 
-			<!-- Edge-following collapse/expand trigger (visually outside the panel) -->
-			<Sidebar.Trigger
-				class="hidden md:flex absolute top-3 group-data-[side=left]:left-[calc(100%+0.5rem)] group-data-[side=right]:right-[calc(100%+0.5rem)] z-50"
-				aria-label="Toggle Layers Sidebar"
-				title="Toggle Layers Sidebar"
-			/>
+			<!-- Edge-following collapse/expand trigger (visually outside the panel) with shadcn tooltip -->
+			<Tooltip.Root>
+				<Tooltip.Trigger>
+					{#snippet child({ props })}
+						<Sidebar.Trigger
+							class="hidden md:flex absolute top-3 group-data-[side=left]:left-[calc(100%+0.5rem)] group-data-[side=right]:right-[calc(100%+0.5rem)] z-50"
+							aria-label="Toggle Layers Sidebar"
+							{...props}
+						/>
+					{/snippet}
+				</Tooltip.Trigger>
+				<Tooltip.Content side="right" sideOffset={8}>Toggle Layers Sidebar</Tooltip.Content>
+			</Tooltip.Root>
 
 			<!-- Keep a rail so users can reopen the sidebar while collapsed -->
 			<Sidebar.Rail />

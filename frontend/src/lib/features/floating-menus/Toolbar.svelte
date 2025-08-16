@@ -1,25 +1,89 @@
 <script lang="ts">
+	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Menubar from '$lib/ui/menubar';
 	import * as Popover from '$lib/ui/popover';
-	import { Button } from '$lib/ui/button';
 	import {
-		MousePointer,
-		Square,
 		Circle,
 		Eraser,
-		Type,
-		Image,
 		Layers,
-		Settings,
+		MousePointer,
+		Redo,
 		Save,
-		Undo,
-		Redo
+		Settings,
+		Square,
+		Type,
+		Undo
 	} from '@lucide/svelte';
 
-	let selectedTool = $state('pointer');
+	// Selected drawing tool state
+	let selectedTool = $state<'pointer' | 'rectangle' | 'circle' | 'text' | 'eraser'>('pointer');
+
+	// Tools config for the centered horizontal toolbar
+	const tools = [
+		{ id: 'pointer' as const, label: 'Pointer Tool', icon: MousePointer, shortcut: 'V' },
+		{ id: 'rectangle' as const, label: 'Rectangle', icon: Square, shortcut: 'R' },
+		{ id: 'circle' as const, label: 'Circle', icon: Circle, shortcut: 'C' },
+		{ id: 'text' as const, label: 'Text Tool', icon: Type, shortcut: 'T' },
+		{ id: 'eraser' as const, label: 'Eraser', icon: Eraser, shortcut: 'E' }
+	];
+
+	// Keyboard shortcuts: V/R/C/T/E
+	$effect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			switch (e.key.toLowerCase()) {
+				case 'v':
+					selectedTool = 'pointer';
+					break;
+				case 'r':
+					selectedTool = 'rectangle';
+					break;
+				case 'c':
+					selectedTool = 'circle';
+					break;
+				case 't':
+					selectedTool = 'text';
+					break;
+				case 'e':
+					selectedTool = 'eraser';
+					break;
+			}
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
 </script>
 
-<div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+<!-- Centered floating horizontal tools toolbar -->
+<div class="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
+		<div class="flex items-center gap-1 px-2 py-1">
+			{#each tools as tool (tool.id)}
+				{#if tool.id === 'eraser'}
+					<div class="w-px h-6 bg-border/60 mx-1"></div>
+				{/if}
+				<Tooltip.Root>
+					<Tooltip.Trigger
+						class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md text-sm transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {selectedTool === tool.id ? 'bg-accent/25 border border-accent/50' : ''}"
+						onclick={() => (selectedTool = tool.id)}
+						aria-pressed={selectedTool === tool.id}
+						type="button"
+					>
+						<tool.icon class="h-4 w-4" />
+					</Tooltip.Trigger>
+					<Tooltip.Content side="bottom" sideOffset={8} class="shadow-md">
+						{tool.label} ({tool.shortcut})
+					</Tooltip.Content>
+				</Tooltip.Root>
+			{/each}
+		</div>
+	</div>
+
+	<!-- Optional hint of the active tool for accessibility -->
+	<span class="sr-only">Active tool: {selectedTool}</span>
+</div>
+
+<!-- Top-right aligned application menubar (moved from center) -->
+<div class="fixed top-4 right-4 z-50">
 	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
 		<Menubar.Root class="border-0 bg-transparent">
 			<Menubar.Menu>
