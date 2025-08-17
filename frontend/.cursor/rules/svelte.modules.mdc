@@ -1,6 +1,5 @@
 ---
 description: Svelte 5 modules organize feature code into self-contained, testable modules -- good for building complex, interactive features.
-globs: **/*.svelte,**/*.svelte.ts,**/*.ts
 alwaysApply: false
 ---
 ## Rule: Build self-contained feature modules in Svelte 5
