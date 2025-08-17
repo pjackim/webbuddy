@@ -82,10 +82,8 @@
 	{@render Button({})}
 {:else}
 	<Tooltip.Root>
-		<Tooltip.Trigger>
-			{#snippet child({ props })}
-				{@render Button({ props })}
-			{/snippet}
+		<Tooltip.Trigger asChild>
+			{@render Button({})}
 		</Tooltip.Trigger>
 		<Tooltip.Content
 			side="right"
