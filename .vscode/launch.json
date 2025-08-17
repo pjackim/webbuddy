@@ -1,0 +1,212 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🚀 Launch Frontend Dev Server",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "dev"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "development",
+                "VITE_DEV": "true"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": [],
+            "preLaunchTask": "npm: install-deps"
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🧪 Run Tests",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "test"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "👀 Run Tests (Watch Mode)",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "test:watch"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🔍 Run Tests with Coverage",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "test:coverage"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🌐 Run Tests in Browser",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "test:browser"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "test"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🏗️ Build Project",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "build"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "production"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "📋 Type Check",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "check"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🧹 Lint & Format",
+            "program": "${workspaceFolder}/frontend/package.json",
+            "args": [
+                "run",
+                "lint:fix"
+            ],
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": false,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "launch",
+            "name": "🎯 Debug Current File",
+            "program": "${file}",
+            "cwd": "${workspaceFolder}/frontend",
+            "env": {
+                "NODE_ENV": "development"
+            },
+            "console": "integratedTerminal",
+            "stopOnEntry": true,
+            "noDebug": false,
+            "runtime": "bun",
+            "runtimeArgs": []
+        },
+        {
+            "type": "bun",
+            "request": "attach",
+            "name": "🔌 Attach to Bun (Debug Mode)",
+            "url": "ws://localhost:6499/",
+            "localRoot": "${workspaceFolder}/frontend",
+            "remoteRoot": "/app",
+            "restart": true,
+            "timeout": 30000
+        },
+        {
+            "type": "bun",
+            "request": "attach",
+            "name": "🔌 Attach to Vite Dev Server",
+            "url": "ws://localhost:5173/",
+            "localRoot": "${workspaceFolder}/frontend",
+            "remoteRoot": "/app",
+            "restart": true,
+            "timeout": 30000
+        }
+    ],
+    "compounds": [
+        {
+            "name": "🚀 Full Development Setup",
+            "configurations": [
+                "🚀 Launch Frontend Dev Server",
+                "🔌 Attach to Vite Dev Server"
+            ],
+            "stopAll": true
+        },
+        {
+            "name": "🧪 Test Suite",
+            "configurations": [
+                "🧪 Run Tests",
+                "📋 Type Check"
+            ],
+            "stopAll": true
+        }
+    ]
+}

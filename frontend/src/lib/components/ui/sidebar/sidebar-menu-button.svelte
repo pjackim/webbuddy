@@ -78,11 +78,8 @@
 	{@render Button({})}
 {:else}
 	<Tooltip.Root>
-		<Tooltip.Trigger {...buttonProps} asChild>
-			<button bind:this={ref}>
-				{@render children?.()}
-			</button>
-		</Tooltip.Trigger>
+		<!-- Use Bits-UI 'child' snippet instead of unsupported 'asChild' prop -->
+		<Tooltip.Trigger child={Button} />
 		<Tooltip.Content
 			side="right"
 			align="center"
@@ -94,6 +91,9 @@
 			{:else if tooltipContent}
 				{@render tooltipContent()}
 			{/if}
+		</Tooltip.Content>
+	</Tooltip.Root>
+{/if}
 		</Tooltip.Content>
 	</Tooltip.Root>
 {/if}

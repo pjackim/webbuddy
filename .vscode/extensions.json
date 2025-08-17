@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "christian-kohler.path-intellisense",
+        "svelte.svelte-vscode",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "oven.bun-vscode",
+        "tamasfe.even-better-toml",
+        "charliermarsh.ruff",
+        "antfu.browse-lite",
+        "ms-vscode-remote.remote-containers",
+        "eamodio.gitlens",
+        "ms-python.python",
+        "selemondev.vscode-shadcn-svelte",
+        "chanzhaoyu.svelte-5-snippets",
+        "ardenivanov.svelte-intellisense",
+    ]
+}

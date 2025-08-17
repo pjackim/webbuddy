@@ -1,26 +1,27 @@
 {
-    "// WebBuddy VSCode Configuration": "Professional development settings",
-    
-    "// Package Manager Configuration": "Configure which package manager to use in tasks",
+    // WebBuddy VSCode Configuration
+    // Configure which package manager to use in tasks
     "webbuddy.packageManager": "bun",
-    
-    "// Editor Configuration": "Code quality and formatting",
+    // Code quality and formatting
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "explicit",
         "source.organizeImports": "explicit"
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.rulers": [100, 120],
+    "editor.rulers": [
+        100,
+        100
+    ],
     "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 120,
-    
-    "// File associations": "Svelte and TypeScript support",
+    "editor.wordWrapColumn": 100,
+    // Svelte and TypeScript support
     "files.associations": {
+        "*.ts": "typescript",
+        "*.svelte.ts": "",
         "*.svelte": "svelte"
     },
-    
-    "// Language specific settings": "Per-language formatting",
+    // Per-language formatting
     "[svelte]": {
         "editor.defaultFormatter": "svelte.svelte-vscode"
     },
@@ -33,50 +34,60 @@
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    
-    "// TypeScript configuration": "Enhanced TS support",
+    // Enhanced TS support
     "typescript.preferences.quoteStyle": "single",
     "typescript.suggest.autoImports": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
-    
-    "// Svelte configuration": "Svelte language server settings",
     "svelte.enable-ts-plugin": true,
+    "svelte.plugin.css.enable": true,
+    "svelte.plugin.html.enable": true,
+    "svelte.plugin.svelte.enable": true,
+    "svelte.plugin.typescript.enable": true,
+    "svelte.plugin.svelte.defaultScriptLanguage": "ts",
+    "svelte.plugin.svelte.format.config.printWidth": 100,
+    "svelte.plugin.svelte.format.config.singleQuote": true,
+    "svelte.plugin.svelte.format.config.svelteStrictMode": true,
+    "svelte.ui.svelteKitFilesContextMenu.enable": "always",
     "svelte.plugin.css.diagnostics.enable": true,
     "svelte.plugin.svelte.diagnostics.enable": true,
-    
-    "// Search configuration": "Exclude build artifacts from search",
     "search.exclude": {
         "**/node_modules": true,
         "**/build": true,
         "**/dist": true,
+        "**/.venv": true,
         "**/.svelte-kit": true,
         "**/coverage": true
     },
-    
-    "// File explorer configuration": "Hide build artifacts",
     "files.exclude": {
-        "**/.svelte-kit": true,
+        "**/.svelte-kit": false,
         "**/build": false,
         "**/dist": false,
         "**/coverage": false
     },
-    
-    "// Git configuration": "Enhanced git support",
+    "files.watcherExclude": {
+        "**/node_modules": true,
+        "**/build": true,
+        "**/dist": true,
+        "**/.svelte-kit": true,
+        "**/coverage": true,
+        "**/.venv": true
+    },
     "git.autofetch": true,
     "git.confirmSync": false,
     "git.enableSmartCommit": true,
-    
-    "// Terminal configuration": "Better terminal experience",
-    "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.cwd": "${workspaceFolder}/frontend",
-    
-    "// Extension recommendations": "Workspace extensions",
-    "extensions.recommendations": [
-        "svelte.svelte-vscode",
-        "bradlc.vscode-tailwindcss",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next",
-        "christian-kohler.path-intellisense",
-        "ms-vscode.vscode-json"
-    ]
+    // The path to the `bun` executable.
+    // "bun.runtime": "/path/to/bun",
+    // If support for Bun should be added to the default "JavaScript Debug Terminal".
+    "bun.debugTerminal.enabled": true,
+    // If the debugger should stop on the first line of the program.
+    "bun.debugTerminal.stopOnEntry": false,
+    // Glob pattern to find test files. Defaults to the value shown below.
+    "bun.test.filePattern": "**/*{.test.,.spec.,_test_,_spec_}{js,ts,tsx,jsx,mts,cts,cjs,mjs}",
+    // The custom script to call for testing instead of `bun test`
+    "bun.test.customScript": "bun test",
+    // Python: Ruff
+    "ruff.enable": true,
+    "ruff.lineLength": 100,
+    "ruff.lint.enable": true,
 }
