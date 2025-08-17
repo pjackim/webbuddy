@@ -5,3 +5,22 @@ __pycache__
 web_buddy_backend.egg-info
 .venv
 build
+
+# Testing artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Uploads directory - contains user uploaded files
+uploads/
+
+# Dependency artifacts
+=*
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*~
