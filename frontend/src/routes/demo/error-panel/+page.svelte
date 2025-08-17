@@ -5,8 +5,16 @@
 	import * as Card from '$lib/ui/card';
 	import { toast } from 'svelte-sonner';
 
+	// Type definition for error examples
+	interface Example {
+		code: number | string;
+		message: string | Error;
+		details?: string;
+		language: 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript';
+	}
+
 	// Enhanced error generation with realistic scenarios
-	function generateTestError(type: string = 'basic') {
+	function generateTestError(type: string = 'basic'): Error {
 		try {
 			switch (type) {
 				case 'network':
@@ -19,23 +27,21 @@
 					throw new Error('Request timeout: Operation took longer than 30 seconds');
 				default:
 					// Create a nested function call for meaningful stack trace
-					function deepFunction() {
-						function nestedFunction() {
+					function deepFunction(): never {
+						function nestedFunction(): never {
 							throw new Error('Test error with real stack trace');
 						}
 						return nestedFunction();
 					}
 					return deepFunction();
-					// Satisfy TS return type (this line is never reached because deepFunction throws)
-					throw new Error('Unreachable');
 			}
 		} catch (error) {
-			return error;
+			return error instanceof Error ? error : new Error(String(error));
 		}
 	}
 
 	// Example error messages and logs
-	const examples = [
+	const examples: Example[] = [
 		{
 			code: 500,
 			message: `const result = await fetch('/api/users');
@@ -132,7 +138,7 @@ Available routes:
 	// Reset examples to original set
 	function resetExamples() {
 		// Remove dynamically added examples
-		while (examples.length > 4 && examples[examples.length - 1].code.startsWith('LIVE')) {
+		while (examples.length > 4 && String(examples[examples.length - 1].code).startsWith('LIVE')) {
 			examples.pop();
 		}
 		currentExample = 0;
@@ -251,7 +257,7 @@ Available routes:
 			<Card.Description>
 				Showing: {examples[currentExample]?.code} -
 				{typeof examples[currentExample]?.message === 'object'
-					? examples[currentExample]?.message?.name || 'Error'
+					? (examples[currentExample]?.message as Error)?.name || 'Error'
 					: 'Custom Error'}
 			</Card.Description>
 		</Card.Header>
