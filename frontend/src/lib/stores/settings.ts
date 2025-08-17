@@ -44,7 +44,7 @@ export interface DebugSettings {
 
 // Default values
 const defaultGridSettings: GridSettings = {
-	visible: false,
+	visible: true, // Enable grid by default for professional theme
 	pattern: 'grid',
 	size: 40,
 	dotRadius: 0.7,

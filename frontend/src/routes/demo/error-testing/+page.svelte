@@ -76,7 +76,7 @@
 		} catch (error) {
 			const errorInfo = createErrorInfo(
 				'JS',
-				error,
+				error instanceof Error ? error : new Error(String(error)),
 				'This error was intentionally triggered for testing',
 				window.location.href
 			);

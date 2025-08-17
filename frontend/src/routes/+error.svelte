@@ -32,7 +32,7 @@ API Endpoints:
 			// For 404 errors, show the attempted route and available routes
 			return getAvailableAppRoutes();
 		}
-		return $page.error?.stack || $page.error?.message || 'No additional details available';
+		return ($page.error as any)?.stack || $page.error?.message || 'No additional details available';
 	})();
 
 	// Determine error message
@@ -52,7 +52,7 @@ API Endpoints:
 		if (errorDetails.includes('{') || errorDetails.includes('[')) return 'json';
 		if ($page.status === 404) return 'bash'; // Routes look better with bash highlighting
 		return 'typescript';
-	})();
+	})() as 'bash' | 'diff' | 'javascript' | 'json' | 'svelte' | 'typescript';
 </script>
 
 <svelte:head>
