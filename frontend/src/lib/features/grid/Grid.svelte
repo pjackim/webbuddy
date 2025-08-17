@@ -222,8 +222,9 @@
 
 <div
 	class="grid-container {additionalClasses}"
-	role="img"
-	aria-label="Interactive grid background"
+	role="application"
+	aria-label="Interactive grid background that can be panned and zoomed"
+	tabindex="0"
 	onmousedown={handleMouseDown}
 	onmouseup={handleMouseUp}
 	onmouseleave={handleMouseUp}

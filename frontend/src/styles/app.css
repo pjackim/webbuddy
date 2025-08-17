@@ -12,15 +12,19 @@
  * 5. Utilities   - Custom utility classes.
  * =================================================================
  */
+@import 'tailwindcss';
 
-/* 1. Import custom theme definitions first */
+/* 1. Import Tailwind's base styles and theme defaults */
+@import 'tailwindcss/theme';
+
+/* 2. Import custom theme definitions to extend or override defaults */
 @import './theme.css';
 
-/* 2. Import Tailwind and its plugins */
-@import 'tailwindcss';
-@import 'tw-animate-css';
+/* 3. Import Tailwind's utility classes */
+@import 'tailwindcss/utilities';
 
-/* 3. Import base, component, and utility layers */
+/* 4. Import plugins and other styles */
+@import 'tw-animate-css';
 @import './base.css';
 @import './components.css';
 @import './utilities.css';
