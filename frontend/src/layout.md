@@ -4,42 +4,28 @@ Based on a review of the Svelte 5 documentation and analysis of the project stru
 
 ## Folder Structure Analysis and Recommendations
 
-Here are concise descriptions for each folder's purpose under Svelte 5 best practices:
-
-*   **`src/lib/api/`**: This folder should contain functions for making external API calls. With Svelte 5, you can leverage `.svelte.js` or `.svelte.ts` files to create reusable, reactive data-fetching logic that can be used across multiple components.
-
-*   **`src/lib/assets/`**: This directory is for static assets like images, fonts, and icons that are imported directly into your components. Vite will process these assets, and you can use them with `@sveltejs/enhanced-img` for optimization.
-
-*   **`src/lib/components/`**: This folder will house your reusable Svelte components. With Svelte 5's introduction of snippets, you can create more flexible and composable components, reducing the need for complex slot-based layouts.
-    *   **`ui/`**: This subfolder is ideal for base UI elements like buttons, inputs, and cards, which are often part of a design system.
-
-*   **`src/lib/config/`**: This directory is suitable for application-wide configuration, such as feature flags, constants, or settings that don't belong in environment variables.
-
-*   **`src/lib/features/`**: This folder is well-suited for self-contained feature modules. Each feature folder can contain its own components, stores, and logic, promoting a modular architecture.
-
-*   **`src/lib/hooks/`**: In Svelte 5, this folder's role shifts. While SvelteKit hooks (`hooks.server.js`, `hooks.client.js`) remain at the `src/` level, this directory can be repurposed for custom reactive logic using `.svelte.js`/`.svelte.ts` files, effectively creating "runic" hooks.
-
-*   **`src/lib/stores/`**: With Svelte 5 runes, the need for traditional Svelte stores is greatly diminished. Global reactive state can be managed using `$state` in `.svelte.ts` files. This folder should be phased out, with its logic migrated to `.svelte.ts` files, possibly within `src/lib/state` or co-located with relevant features.
-
-*   **`src/lib/ui/`**: This folder appears to be redundant with `src/lib/components/ui/`. It is recommended to consolidate all UI components into a single location, preferably `src/lib/components/ui/`, to avoid confusion.
-
-*   **`src/lib/utils/`**: This is the perfect place for utility functions that are not specific to any single component or feature, such as date formatting, string manipulation, or other general-purpose helpers.
-
-*   **`src/lib/vendor/`**: This folder is for third-party libraries or components that are not managed via npm.
-    *   **`shadcn/`**: This is a good place to keep components from the shadcn-svelte library, keeping them separate from your custom application components.
+| Item                         | Description |
+|-----------------------------|-------------|
+| `src/lib/api/`                | Functions for external API calls. Use .svelte.js/.svelte.ts for reusable, reactive data-fetching logic. |
+| `src/lib/assets/`             | Static assets (images, fonts, icons) imported into components. Use @sveltejs/enhanced-img for optimization. |
+| `src/lib/components/`         | Reusable Svelte components. Prefer Svelte 5 snippets for flexible composition. |
+| `src/lib/components/ui/`      | Base UI elements (buttons, inputs, cards) for the design system. |
+| `src/lib/config/`             | App-wide configuration like feature flags and constants (non-env). |
+| `src/lib/features/`           | Self-contained feature modules with their components and logic. |
+| `src/lib/hooks/`              | Custom reactive logic using .svelte.js/.svelte.ts (“runic” hooks). SvelteKit hooks stay in src/. |
+| `src/lib/stores/`             | Role reduced by runes. Reserve for advanced cases: complex async logic (e.g., WebSockets), custom store contracts, and animation stores (tweened, spring). Refactor simple stores to runic state. |
+| `src/lib/ui/`                 | Redundant with src/lib/components/ui/; consolidate into components/ui. |
+| `src/lib/utils/`              | General-purpose utilities (dates, strings, helpers). |
+| `src/lib/vendor/`             | Third-party/vendor code not managed via npm. Wrap and expose via lib/ui as needed. |
+| `src/lib/vendor/shadcn/`      | shadcn-svelte components isolated from app components. |
 
 ## File Roles and Descriptions
 
-Here are the roles of the specified individual files:
-
-*   **`demo.spec.ts`**: This is likely an end-to-end test file for the demo functionality of your application, probably using a testing framework like Playwright or Cypress.
-
-*   **`svelte-ambient.d.ts`**: This is a TypeScript declaration file for providing ambient type definitions for Svelte-specific constructs, ensuring type safety within your `.svelte` files.
-
-*   **`vite-env.d.ts`**: This file provides TypeScript type definitions for Vite-specific environment variables and features, such as `import.meta.env`.
-
-*   **`page.svelte.spec.ts`**: This is a unit or component test file specifically for the `+page.svelte` component at the root of your application, likely using a testing framework like Vitest.
-
-*   **`+error.svelte`**: This is a special SvelteKit file that defines a custom error page for its directory and all sub-routes. This one, being at the root, serves as the application-wide error page.
-
-*   **`+layout.svelte`**: This is the root layout component for your SvelteKit application. It wraps all pages and allows you to define a consistent structure, like navigation bars and footers, that is shared across your entire site.
+| File                 | Role/Description |
+|----------------------|------------------|
+| demo.spec.ts         | End-to-end test for demo flows (e.g., Playwright/Cypress). |
+| svelte-ambient.d.ts  | Ambient TypeScript declarations for Svelte-specific types. |
+| vite-env.d.ts        | Type definitions for Vite (e.g., import.meta.env). |
+| page.svelte.spec.ts  | Unit/component test for the root +page.svelte (e.g., Vitest). |
+| +error.svelte        | Root error page for the app and sub-routes. |
+| +layout.svelte       | Root layout wrapping all pages (nav, footer, shared UI). |

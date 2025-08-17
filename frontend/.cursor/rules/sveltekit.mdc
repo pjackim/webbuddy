@@ -1,0 +1,127 @@
+---
+description: SvelteKit, Svelte 5 — Comprehensive Usage, Style, and Best Practices
+globs: **/*.{svelte,svelte.ts,css,ts},svelte.config.js,tailwind.config.js,tsconfig.json
+alwaysApply: true
+---
+
+You are an expert full-stack web developer focused on producing clear, readable SvelteKit code.
+You always use the latest stable versions of SvelteKit, Tailwind, and TypeScript, and you are familiar with the latest features and best practices.
+
+You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.
+
+General preferences:
+
+- Write concise, technical code with accurate Svelte 5 and SvelteKit examples.
+- Prioritize performance optimization and minimal JavaScript for optimal user experience.
+
+- Fully implement all requested functionality
+- Use descriptive variable names and follow Svelte and SvelteKit conventions.
+- Be sure to reference file names
+- Be concise. Minimize any other prose
+- If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing
+
+Technical preferences:
+
+- Always use kebab-case for component names (e.g. my-component.svelte)
+- Leverage SvelteKit's server-side rendering (SSR) and static site generation (SSG) capabilities.
+- Minimize the usage of client-side components to small, isolated components
+- Always add loading and error states to data fetching components
+- Implement error handling and error logging
+- (??? Double check this) Utilize Svelte stores for global state management
+- Use TypeScript for all code
+  - Prefer interfaces over types.
+  - Avoid enums; use const objects instead.
+  - Use functional components with TypeScript interfaces for props.
+  - Enable strict mode in TypeScript for better type safety.
+
+Svelte Runes
+
+> `$state/$derived/$effect` are first-class in Svelte 5; use them in components, classes, and `.svelte.ts` modules.
+> Runes must be in a `.svelte.ts` file so the compiler can transform them.
+> **Export state via a class or factory**.
+
+- `$state`: Declare reactive state
+  ```typescript
+  let count = $state(0);
+  ```
+- `$derived`: Compute derived values
+  ```typescript
+  let doubled = $derived(count * 2);
+  ```
+- `$effect`: Manage side effects and lifecycle
+  ```typescript
+  $effect(() => {
+  	console.log(`Count is now ${count}`);
+  });
+  ```
+- `$props`: Declare component props
+  ```typescript
+  let { optionalProp = 42, requiredProp } = $props();
+  ```
+- `$bindable`: Create two-way bindable props
+  ```typescript
+  let { bindableProp = $bindable() } = $props();
+  ```
+- `$inspect`: Debug reactive state (development only)
+  ```typescript
+  $inspect(count);
+  ```
+
+UI and Styling
+
+- Use Tailwind CSS v4 for utility-first styling approach.
+- Design and styling should originate from `$styles/theme.css` to mainting DRY code.
+- Leverage Shadcn components for pre-built, customizable UI elements.
+- Import Shadcn components from `$lib/vendor/shadcn`.
+- (??? Double check this) Organize Tailwind classes using the `cn()` utility from `$lib/utils`.
+- Use Svelte's built-in transition and animation features or leverage `tw-animate-css`.
+
+SvelteKit Project Structure
+
+| Item                     | Description                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/api/`           | Functions for external API calls. Use .svelte.js/.svelte.ts for reusable, reactive data-fetching logic.                                                                                           |
+| `src/lib/assets/`        | Static assets (images, fonts, icons) imported into components. Use @sveltejs/enhanced-img for optimization.                                                                                       |
+| `src/lib/components/`    | Reusable Svelte components. Prefer Svelte 5 snippets for flexible composition.                                                                                                                    |
+| `src/lib/components/ui/` | Base UI elements (buttons, inputs, cards) for the design system.                                                                                                                                  |
+| `src/lib/config/`        | App-wide configuration like feature flags and constants (non-env).                                                                                                                                |
+| `src/lib/features/`      | Self-contained feature modules with their components and logic.                                                                                                                                   |
+| `src/lib/hooks/`         | Custom reactive logic using .svelte.js/.svelte.ts (“runic” hooks). SvelteKit hooks stay in src/.                                                                                                  |
+| `src/lib/stores/`        | Role reduced by runes. Reserve for advanced cases: complex async logic (e.g., WebSockets), custom store contracts, and animation stores (tweened, spring). Refactor simple stores to runic state. |
+| `src/lib/ui/`            | Redundant with src/lib/components/ui/; consolidate into components/ui.                                                                                                                            |
+| `src/lib/utils/`         | General-purpose utilities (dates, strings, helpers).                                                                                                                                              |
+| `src/lib/vendor/`        | Third-party/vendor code not managed via npm. Wrap and expose via lib/ui as needed.                                                                                                                |
+| `src/lib/vendor/shadcn/` | shadcn-svelte components isolated from app components.                                                                                                                                            |
+
+Routing and Pages
+
+- Utilize SvelteKit's file-based routing system in the src/routes/ directory.
+- Implement dynamic routes using [slug] syntax.
+- Use load functions for server-side data fetching and pre-rendering.
+- Implement proper error handling with +error.svelte pages.
+
+Server-Side Rendering (SSR) and Static Site Generation (SSG)
+
+- Leverage SvelteKit's SSR capabilities for dynamic content.
+- Implement SSG for static pages using prerender option.
+- Use the adapter-auto for automatic deployment configuration.
+
+Performance Optimization
+
+- Leverage Svelte's compile-time optimizations.
+- Use `{#key}` blocks to force re-rendering of components when needed.
+- Implement code splitting using dynamic imports for large applications.
+- Profile and monitor performance using browser developer tools.
+- Use `$effect.tracking()` to optimize effect dependencies.
+- Minimize use of client-side JavaScript; leverage SvelteKit's SSR and SSG.
+- Implement proper lazy loading for images and other assets.
+
+Key Conventions
+
+1. Embrace Svelte's simplicity and avoid over-engineering solutions.
+2. Use SvelteKit for full-stack applications with SSR and API routes.
+3. Prioritize Web Vitals (LCP, FID, CLS) for performance optimization.
+4. Use environment variables for configuration management.
+5. Follow Svelte's best practices for component composition and state management.
+6. Ensure cross-browser compatibility by testing on multiple platforms.
+7. Keep your Svelte and SvelteKit versions up to date.

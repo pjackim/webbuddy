@@ -1,0 +1,425 @@
+---
+description: Svelte 5 Snippets -- most useful for flexible content injection and eliminating repetitive markup within the same file or component cluster. They excel at parameterized content patterns where you need the same structure with different data, but should be avoided for stateful components or cross-file reuse where regular components are better.
+alwaysApply: false
+---
+# Rule: Svelte 5 Snippets — Master Guide
+
+## Overview
+Snippets are Svelte 5's powerful replacement for slots, enabling flexible content injection, reusable markup, and clean component APIs. This rule ensures consistent, maintainable snippet usage across your codebase.
+
+## Core Concepts
+
+### What Are Snippets?
+- **Reusable markup chunks** that can be passed as props to components
+- **Content injection mechanism** replacing Svelte 4's slot system
+- **Lexically scoped** - only visible in the same scope they're defined
+- **Parameterized** - can accept arguments for dynamic content
+- **Recursive** - can reference themselves and other snippets
+
+### Key Benefits
+- Eliminates code duplication
+- Enables flexible component APIs
+- Maintains clean separation of concerns
+- Supports complex content patterns (tables, lists, trees)
+- Better TypeScript integration than slots
+
+## When to Use Snippets
+
+### ✅ Use Snippets For:
+- **Content injection** into components (table rows, list items, cards)
+- **Reusable markup** that's local to a file or component cluster
+- **Parameterized content** that needs dynamic data
+- **Complex layouts** requiring flexible content structures
+- **Replacing slot patterns** from Svelte 4
+
+### ❌ Don't Use Snippets For:
+- **Stateful components** with their own lifecycle/effects
+- **Cross-file reuse** (use components instead)
+- **Complex behavior** requiring routing, focus management
+- **Rest props** or broad attribute passthrough
+- **Independent functionality** that could be a component
+
+## Implementation Patterns
+
+### Basic Snippet Declaration
+```svelte
+{#snippet name(parameters)}
+  <!-- Markup content -->
+{/snippet}
+```
+
+### Snippet Rendering
+```svelte
+{@render name(arguments)}
+```
+
+### Implicit vs Explicit Snippets
+```svelte
+<!-- Implicit: Content inside component tags becomes 'children' snippet -->
+<Button>Click me</Button>
+
+<!-- Explicit: Named snippets for specific content areas -->
+<Table>
+  {#snippet header()}<th>Name</th><th>Age</th>{/snippet}
+  {#snippet row(person)}<td>{person.name}</td><td>{person.age}</td>{/snippet}
+</Table>
+```
+
+## TypeScript Integration
+
+### Proper Typing
+```svelte
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  // Single parameter
+  let { row }: { row: Snippet<[Person]> } = $props();
+
+  // Multiple parameters
+  let { header }: { header: Snippet<[string, number]> } = $props();
+
+  // Optional snippet
+  let { footer }: { footer?: Snippet<[]> } = $props();
+</script>
+```
+
+### Type Safety Best Practices
+- Always use explicit tuple types: `Snippet<[T, U]>`
+- Avoid `Snippet<any[]>` - be specific about parameters
+- Use optional snippets with `?` for non-required content
+- Leverage TypeScript for compile-time validation
+
+## Directory & File Organization
+
+### Local Snippets
+- **Keep in same file** as their usage (collocate)
+- **Scope to component** or specific feature
+- **Avoid exporting** unless absolutely necessary
+
+### Shared Snippets
+- **Location**: `src/lib/snippets/`
+- **File naming**: `FeatureName.svelte` or `ComponentParts.svelte`
+- **Export pattern**: Use `<script module>` (Svelte ≥ 5.5)
+- **Promote to component** if snippet grows complex
+
+### File Structure Examples
+```
+src/lib/snippets/
+├── TableParts.svelte      # header, row snippets
+├── Media.svelte          # figure, gallery snippets
+├── FormElements.svelte   # input, label snippets
+└── Layout.svelte        # container, grid snippets
+```
+
+## Real-World Examples
+
+### A) Data Table with Snippets
+```svelte
+<!-- DataTable.svelte -->
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  let {
+    data,
+    header,
+    row,
+    emptyMessage = "No data available"
+  }: {
+    data: any[];
+    header: Snippet<[]>;
+    row: Snippet<[any]>;
+    emptyMessage?: string;
+  } = $props();
+</script>
+
+<table class="w-full border-collapse">
+  <thead>
+    <tr class="bg-gray-100">{@render header()}</tr>
+  </thead>
+  <tbody>
+    {#if data.length === 0}
+      <tr><td colspan="100%" class="text-center py-4">{emptyMessage}</td></tr>
+    {:else}
+      {#each data as item}
+        <tr class="border-b">{@render row(item)}</tr>
+      {/each}
+    {/if}
+  </tbody>
+</table>
+```
+
+```svelte
+<!-- Usage -->
+<script>
+  import DataTable from './DataTable.svelte';
+
+  const users = [
+    { id: 1, name: 'Alice', role: 'Admin' },
+    { id: 2, name: 'Bob', role: 'User' }
+  ];
+</script>
+
+<DataTable {users}>
+  {#snippet header()}
+    <th class="px-4 py-2">ID</th>
+    <th class="px-4 py-2">Name</th>
+    <th class="px-4 py-2">Role</th>
+  {/snippet}
+
+  {#snippet row(user)}
+    <td class="px-4 py-2">{user.id}</td>
+    <td class="px-4 py-2">{user.name}</td>
+    <td class="px-4 py-2">{user.role}</td>
+  {/snippet}
+</DataTable>
+```
+
+### B) Card Component with Flexible Content
+```svelte
+<!-- Card.svelte -->
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  let {
+    title,
+    content,
+    actions,
+    variant = 'default'
+  }: {
+    title?: Snippet<[]>;
+    content: Snippet<[]>;
+    actions?: Snippet<[]>;
+    variant?: 'default' | 'elevated' | 'outlined';
+  } = $props();
+
+  const variantClasses = {
+    default: 'bg-white border border-gray-200',
+    elevated: 'bg-white shadow-lg',
+    outlined: 'bg-transparent border-2 border-gray-300'
+  };
+</script>
+
+<div class="rounded-lg p-6 {variantClasses[variant]}">
+  {#if title}
+    <div class="mb-4">{@render title()}</div>
+  {/if}
+
+  <div class="mb-4">{@render content()}</div>
+
+  {#if actions}
+    <div class="flex justify-end gap-2">{@render actions()}</div>
+  {/if}
+</div>
+```
+
+### C) Recursive Tree Structure
+```svelte
+<!-- TreeView.svelte -->
+<script lang="ts">
+  import type { Snippet } from 'svelte';
+
+  interface TreeNode {
+    id: string;
+    label: string;
+    children?: TreeNode[];
+  }
+
+  let {
+    nodes,
+    itemContent,
+    indentSize = 20
+  }: {
+    nodes: TreeNode[];
+    itemContent: Snippet<[TreeNode, number]>;
+    indentSize?: number;
+  } = $props();
+</script>
+
+{#snippet renderTree(items, level = 0)}
+  <ul class="space-y-1">
+    {#each items as item}
+      <li>
+        <div style="padding-left: {level * indentSize}px">
+          {@render itemContent(item, level)}
+        </div>
+        {#if item.children && item.children.length > 0}
+          {@render renderTree(item.children, level + 1)}
+        {/if}
+      </li>
+    {/each}
+  </ul>
+{/snippet}
+
+{@render renderTree(nodes)}
+```
+
+## Migration from Svelte 4 Slots
+
+### Before (Svelte 4)
+```svelte
+<!-- Card.svelte -->
+<div class="card">
+  <div class="header">
+    <slot name="header">Default Header</slot>
+  </div>
+  <div class="content">
+    <slot>Default content</slot>
+  </div>
+</div>
+
+<!-- Usage -->
+<Card>
+  <h2 slot="header">Custom Header</h2>
+  <p>Custom content</p>
+</Card>
+```
+
+### After (Svelte 5)
+```svelte
+<!-- Card.svelte -->
+<script>
+  let { header, default: content } = $props();
+</script>
+
+<div class="card">
+  <div class="header">
+    {@render header?.() ?? <div>Default Header</div>}
+  </div>
+  <div class="content">
+    {@render content?.() ?? <div>Default content</div>}
+  </div>
+</div>
+
+<!-- Usage -->
+<Card>
+  {#snippet header()}<h2>Custom Header</h2>{/snippet}
+  <p>Custom content</p>
+</Card>
+```
+
+## Common Mistakes & Anti-Patterns
+
+### ❌ Don't Do This
+```svelte
+<!-- Mistake 1: Using rest parameters -->
+{#snippet badSnippet(...args)}<!-- content -->{/snippet}
+
+<!-- Mistake 2: Forgetting optional chaining -->
+{@render header()} <!-- Will crash if header is undefined -->
+
+<!-- Mistake 3: Mutating snippet parameters -->
+{#snippet row(item)}
+  {@render item.name = 'Modified'} <!-- Don't mutate props -->
+{/snippet}
+
+<!-- Mistake 4: Complex logic in snippets -->
+{#snippet complexSnippet(data)}
+  {#if data.length > 10}
+    <!-- Complex conditional logic should be in components -->
+  {/if}
+{/snippet}
+```
+
+### ✅ Do This Instead
+```svelte
+<!-- Correct 1: Explicit parameters -->
+{#snippet goodSnippet(item, index)}<!-- content -->{/snippet}
+
+<!-- Correct 2: Safe rendering with fallbacks -->
+{@render header?.() ?? <div>Default Header</div>}
+
+<!-- Correct 3: Immutable data handling -->
+{#snippet row(item)}
+  <td>{item.name}</td>
+{/snippet}
+
+<!-- Correct 4: Simple, focused snippets -->
+{#snippet simpleSnippet(item)}
+  <div>{item.name}</div>
+{/snippet}
+```
+
+## Performance Considerations
+
+### Optimization Strategies
+- **Keep snippets lightweight** - avoid complex computations
+- **Use $state.raw** for large data collections
+- **Memoize expensive operations** outside snippets
+- **Limit snippet nesting** to prevent performance issues
+
+### When to Refactor
+- Snippet exceeds 20+ lines of markup
+- Complex conditional logic or loops
+- Heavy DOM manipulation or event handling
+- Need for independent testing or reuse
+
+## Testing Snippets
+
+### Unit Testing Approach
+```typescript
+// Test snippet rendering
+import { render } from '@testing-library/svelte';
+import { describe, it, expect } from 'vitest';
+import DataTable from './DataTable.svelte';
+
+describe('DataTable', () => {
+  it('renders header snippet correctly', () => {
+    const { getByText } = render(DataTable, {
+      props: {
+        data: [],
+        header: () => '<th>Test Header</th>',
+        row: () => '<td>Test</td>'
+      }
+    });
+
+    expect(getByText('Test Header')).toBeInTheDocument();
+  });
+});
+```
+
+## Review Checklist
+
+### Code Quality
+- [ ] Snippet scope is local and stateless?
+- [ ] Parameters are explicit (no rest params)?
+- [ ] TypeScript types are correct (`Snippet<[T, U]>`)?
+- [ ] Optional snippets use safe rendering (`?.()`)?
+- [ ] No complex logic or side effects in snippets?
+
+### Organization
+- [ ] Local snippets are collocated with usage?
+- [ ] Shared snippets are in `src/lib/snippets/`?
+- [ ] Exported snippets use `<script module>` (Svelte ≥ 5.5)?
+- [ ] Complex snippets have been promoted to components?
+
+### Performance
+- [ ] Snippets are lightweight and focused?
+- [ ] No unnecessary re-renders or expensive operations?
+- [ ] Large data uses appropriate state management?
+
+## Version Compatibility
+
+### Svelte Version Requirements
+- **Svelte 5.0+**: Basic snippet functionality
+- **Svelte 5.5+**: Top-level snippet exports via `<script module>`
+- **Migration path**: Use collocated snippets or refactor to components for older versions
+
+### Fallback Strategies
+```svelte
+<!-- For older Svelte versions, use components instead -->
+<script>
+  // Fallback to component-based approach
+  import TableRow from './TableRow.svelte';
+</script>
+
+{#each data as item}
+  <TableRow {item} />
+{/each}
+```
+
+## Resources & Further Reading
+
+- [Svelte 5 Snippets Documentation](https://svelte.dev/docs/svelte/snippet)
+- [Svelte 5 Migration Guide](https://svelte.dev/docs/svelte/migration)
+- [Svelte 5 Runes Overview](https://svelte.dev/docs/svelte/runes)
+- [TypeScript Integration](https://svelte.dev/docs/typescript)

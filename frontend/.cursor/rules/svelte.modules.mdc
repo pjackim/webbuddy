@@ -1,0 +1,191 @@
+---
+description: Svelte 5 modules organize feature code into self-contained, testable modules -- good for building complex, interactive features.
+alwaysApply: false
+---
+## Rule: Build self-contained feature modules in Svelte 5
+
+Encapsulate each feature’s state, UI, and API within a dedicated directory, `src/lib/features/<feature>/`. This pattern yields clear, maintainable, and portable features.
+
+- **State management**: Prefer Runes inside `.svelte.ts` modules for fine-grained reactivity and compiler optimizations. Use classic stores only when required for interop with external libs or legacy code.
+- **Ownership**: Keep the model as the single source of truth. Expose state via getters and mutate state via methods on the model instance.
+- **No bare rune exports**: Do not export `$derived` or other runes directly from a module. Wrap them in class fields or getters to maintain clear ownership and context.
+- **Side effects**: Use `$effect` only for interactions with the outside world (DOM, network, subscriptions, timers, etc.).
+
+## Directory structure
+
+```
+src/lib/features/<feature>/
+  model.svelte.ts   # State logic: a class or factory using Runes
+  Feature.svelte    # Entry component that orchestrates the feature
+  *.svelte          # Presentational/view components
+  index.ts          # Public API barrel for the feature
+  types.ts          # (optional) Shared TypeScript types
+```
+
+## Model template (`model.svelte.ts`)
+
+```ts
+// src/lib/features/todos/model.svelte.ts
+export type Todo = { id: string; text: string; completed: boolean };
+
+export class TodoModel {
+	// State is local to the model instance
+	todos = $state<Todo[]>([]);
+
+	get remaining() {
+		return $derived(this.todos.filter((t) => !t.completed).length);
+	}
+
+	add(text: string) {
+		this.todos.push({
+			id: crypto.randomUUID(),
+			text,
+			completed: false
+		});
+	}
+
+	remove(id: string) {
+		this.todos = this.todos.filter((t) => t.id !== id);
+	}
+
+	toggle(id: string) {
+		const todo = this.todos.find((t) => t.id === id);
+		if (todo) {
+			todo.completed = !todo.completed;
+		}
+	}
+}
+```
+
+## Entry component template (`Feature.svelte`)
+
+```svelte
+<!-- src/lib/features/todos/Feature.svelte -->
+<script lang="ts">
+	import { TodoModel } from './model.svelte.ts';
+	import TodoList from './TodoList.svelte';
+	import AddTodo from './AddTodo.svelte';
+
+	const model = new TodoModel();
+</script>
+
+<AddTodo on:add={(e) => model.add(e.detail.text)} />
+<TodoList {model} />
+<p>{model.remaining} remaining</p>
+```
+
+## Composition and data flow
+
+- **Props (default)**: Pass the model instance (or slices of it) via props to child components. This keeps data flow explicit and traceable.
+- **Context (when needed)**: Use `setContext`/`getContext` only to avoid heavy prop drilling through deep trees. Avoid overuse.
+
+## Public API (`index.ts`)
+
+- **Barrel exports**: Re-export the feature’s entry component and any stable types/functions that constitute the public surface.
+- **Keep internals private**: Avoid exporting internal view components unless they are intentionally part of the API.
+
+```ts
+// src/lib/features/todos/index.ts
+export { default as Todos } from './Feature.svelte';
+export type { Todo } from './model.svelte.ts';
+```
+
+## Conventions
+
+- **Naming**: Use `Feature.svelte` as the orchestrator, `model.svelte.ts` for state, and semantic names for presentational components.
+- **Testing**: Prefer testing via the public API (render the entry component) and verify model behavior in isolation where helpful.
+- **Isolation**: Keep each feature directory independent; avoid cross-feature imports. Share only through public barrels in `src/lib/` if truly generic.
+
+## Rule: Build self-contained feature modules in Svelte 5
+
+Encapsulate each feature’s state, UI, and API within a dedicated directory, `src/lib/features/<feature>/`. This pattern yields clear, maintainable, and portable features.
+
+- **State management**: Prefer Runes inside `.svelte.ts` modules for fine-grained reactivity and compiler optimizations. Use classic stores only when required for interop with external libs or legacy code.
+- **Ownership**: Keep the model as the single source of truth. Expose state via getters and mutate state via methods on the model instance.
+- **No bare rune exports**: Do not export `$derived` or other runes directly from a module. Wrap them in class fields or getters to maintain clear ownership and context.
+- **Side effects**: Use `$effect` only for interactions with the outside world (DOM, network, subscriptions, timers, etc.).
+
+## Directory structure
+
+```
+src/lib/features/<feature>/
+  model.svelte.ts   # State logic: a class or factory using Runes
+  Feature.svelte    # Entry component that orchestrates the feature
+  *.svelte          # Presentational/view components
+  index.ts          # Public API barrel for the feature
+  types.ts          # (optional) Shared TypeScript types
+```
+
+## Model template (`model.svelte.ts`)
+
+```ts
+// src/lib/features/todos/model.svelte.ts
+export type Todo = { id: string; text: string; completed: boolean };
+
+export class TodoModel {
+	// State is local to the model instance
+	todos = $state<Todo[]>([]);
+
+	get remaining() {
+		return $derived(this.todos.filter((t) => !t.completed).length);
+	}
+
+	add(text: string) {
+		this.todos.push({
+			id: crypto.randomUUID(),
+			text,
+			completed: false
+		});
+	}
+
+	remove(id: string) {
+		this.todos = this.todos.filter((t) => t.id !== id);
+	}
+
+	toggle(id: string) {
+		const todo = this.todos.find((t) => t.id === id);
+		if (todo) {
+			todo.completed = !todo.completed;
+		}
+	}
+}
+```
+
+## Entry component template (`Feature.svelte`)
+
+```svelte
+<!-- src/lib/features/todos/Feature.svelte -->
+<script lang="ts">
+	import { TodoModel } from './model.svelte.ts';
+	import TodoList from './TodoList.svelte';
+	import AddTodo from './AddTodo.svelte';
+
+	const model = new TodoModel();
+</script>
+
+<AddTodo on:add={(e) => model.add(e.detail.text)} />
+<TodoList {model} />
+<p>{model.remaining} remaining</p>
+```
+
+## Composition and data flow
+
+- **Props (default)**: Pass the model instance (or slices of it) via props to child components. This keeps data flow explicit and traceable.
+- **Context (when needed)**: Use `setContext`/`getContext` only to avoid heavy prop drilling through deep trees. Avoid overuse.
+
+## Public API (`index.ts`)
+
+- **Barrel exports**: Re-export the feature’s entry component and any stable types/functions that constitute the public surface.
+- **Keep internals private**: Avoid exporting internal view components unless they are intentionally part of the API.
+
+```ts
+// src/lib/features/todos/index.ts
+export { default as Todos } from './Feature.svelte';
+export type { Todo } from './model.svelte.ts';
+```
+
+## Conventions
+
+- **Naming**: Use `Feature.svelte` as the orchestrator, `model.svelte.ts` for state, and semantic names for presentational components.
+- **Testing**: Prefer testing via the public API (render the entry component) and verify model behavior in isolation where helpful.
+- **Isolation**: Keep each feature directory independent; avoid cross-feature imports. Share only through public barrels in `src/lib/` if truly generic.
