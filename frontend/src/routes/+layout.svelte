@@ -3,15 +3,17 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import { Grid } from '$lib/features/grid';
 	import { createErrorInfo, handleError } from '$lib/stores/error';
-	import { gridVisibility } from '$lib/stores/grid';
-	import { Button } from '$lib/ui/button';
+	import { gridSettings } from '$lib/stores/settings';
+	import SettingsPopup from '$lib/components/SettingsPopup.svelte';
 	import { Toaster } from '$lib/ui/sonner';
 	import '$styles/app.css';
-	import Cog from '@lucide/svelte/icons/cog';
 	import { ModeWatcher } from 'mode-watcher';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	// Reactive accessor to grid visibility from settings
+	let showGrid = $derived(gridSettings.current.visible);
 
 	// Global error handling
 	onMount(() => {
@@ -44,27 +46,20 @@
 			handleError(error);
 		});
 	});
-
-	function toggleGrid() {
-		gridVisibility.current = !gridVisibility.current;
-	}
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-{#if gridVisibility.current}
+{#if showGrid}
 	<div class="fixed inset-0 -z-10">
 		<Grid />
 	</div>
 {/if}
 
 <div class="fixed bottom-4 right-4 z-50">
-	<Button on:click={toggleGrid} variant="outline" size="icon">
-		<Cog class="h-4 w-4" />
-		<span class="sr-only">Toggle Grid</span>
-	</Button>
+	<SettingsPopup />
 </div>
 
 <Tooltip.Provider>

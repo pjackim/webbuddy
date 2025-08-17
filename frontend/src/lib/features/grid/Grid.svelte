@@ -4,45 +4,40 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { gridSettings, performanceSettings } from '$lib/stores/settings';
 
 	type GridProps = {
-		pattern?: 'dots' | 'grid';
-		gridSize?: number;
-		dotRadius?: number;
-		lineThickness?: number;
-		majorDotRadius?: number;
-		majorLineThickness?: number;
-		majorLineInterval?: number;
-		minZoom?: number;
-		maxZoom?: number;
-		zoomSensitivity?: number;
-		dampingFactor?: number;
-		patternColor?: string;
-		majorLineColor?: string;
-		backgroundColor?: string;
 		class?: string;
 	};
 
 	const {
-		pattern = 'grid',
-		gridSize = 40,
-		dotRadius = 0.7,
-		lineThickness = 0.5,
-		majorDotRadius = 1.2,
-		majorLineThickness = 1,
-		majorLineInterval = 5,
-		minZoom = 0.2,
-		maxZoom = 8,
-		zoomSensitivity = 0.0012,
-		dampingFactor = 0.1,
-		patternColor = 'hsl(var(--foreground) / 0.1)',
-		majorLineColor,
-		backgroundColor = 'hsl(var(--background))',
 		class: additionalClasses = ''
 	}: GridProps = $props();
 
-	const finalMajorLineColor = majorLineColor ?? patternColor.replace(/[\d.]+\)$/, '0.2)');
+	// Get settings from stores
+	let settings = $derived(gridSettings.current);
+	let perfSettings = $derived(performanceSettings.current);
 
+	// Computed values from settings
+	let pattern = $derived(settings.pattern);
+	let gridSize = $derived(settings.size);
+	let dotRadius = $derived(settings.dotRadius);
+	let lineThickness = $derived(settings.lineThickness);
+	let majorDotRadius = $derived(settings.majorDotRadius);
+	let majorLineThickness = $derived(settings.majorLineThickness);
+	let majorLineInterval = $derived(settings.majorLineInterval);
+	let minZoom = $derived(perfSettings.minZoom);
+	let maxZoom = $derived(perfSettings.maxZoom);
+	let zoomSensitivity = $derived(perfSettings.zoomSensitivity);
+	let dampingFactor = $derived(perfSettings.animationDamping);
+	let backgroundColor = $derived(settings.backgroundColor);
+
+	// Computed colors with opacity
+	let patternColor = $derived(`${settings.color.replace(')', ` / ${settings.opacity})`)}`);
+	let finalMajorLineColor = $derived(`${settings.majorColor.replace(')', ` / ${settings.majorOpacity})`)}`);
+
+	// Don't render anything if animations are disabled
+	let enableAnimations = $derived(perfSettings.enableAnimations);
 	let canvasElement: HTMLCanvasElement | undefined = $state();
 	let pan = $state({ x: 0, y: 0 });
 	let zoom = $state(1);
@@ -199,16 +194,23 @@
 			const panDistance = Math.hypot(panTarget.x - pan.x, panTarget.y - pan.y);
 			const zoomDistance = Math.abs(zoomTarget - zoom);
 
-			if (panDistance > 0.01 || zoomDistance > 0.01) {
+			if (enableAnimations && (panDistance > 0.01 || zoomDistance > 0.01)) {
 				pan.x += (panTarget.x - pan.x) * dampingFactor;
 				pan.y += (panTarget.y - pan.y) * dampingFactor;
 				zoom += (zoomTarget - zoom) * dampingFactor;
+				frameId = requestAnimationFrame(animate);
+			} else if (!enableAnimations) {
+				// Snap immediately when animations are disabled
+				pan.x = panTarget.x;
+				pan.y = panTarget.y;
+				zoom = zoomTarget;
+				frameId = requestAnimationFrame(animate);
 			} else {
 				pan.x = panTarget.x;
 				pan.y = panTarget.y;
 				zoom = zoomTarget;
+				frameId = requestAnimationFrame(animate);
 			}
-			frameId = requestAnimationFrame(animate);
 		};
 		animate();
 
