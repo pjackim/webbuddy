@@ -1,4 +1,3 @@
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -16,8 +15,8 @@ class Screen(ScreenCreate):
 
 
 class ScreenUpdate(BaseModel):
-    name: Optional[str] = None
-    width: Optional[int] = Field(default=None, gt=0)
-    height: Optional[int] = Field(default=None, gt=0)
-    x: Optional[int] = None
-    y: Optional[int] = None
+    name: str | None = None
+    width: int | None = Field(default=None, gt=0)
+    height: int | None = Field(default=None, gt=0)
+    x: int | None = None
+    y: int | None = None

@@ -1,13 +1,12 @@
 import asyncio
 import json
-from typing import Set
 
 from fastapi import WebSocket
 
 
 class ConnectionManager:
     def __init__(self) -> None:
-        self.active: Set[WebSocket] = set()
+        self.active: set[WebSocket] = set()
         self._lock = asyncio.Lock()
 
     async def connect(self, websocket: WebSocket):

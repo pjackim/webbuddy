@@ -1,14 +1,15 @@
 import uuid
 from pathlib import Path
 
-from web_buddy_backend.core.config import settings
-from web_buddy_backend.models.asset_models import Asset, AssetCreate, AssetUpdate
-from web_buddy_backend.services.screen_service import SCREEN_CLIENT
-from web_buddy_backend.services.media_service import media_processor
-from web_buddy_backend.state.memory_state import STATE
-from web_buddy_backend.util.connection_manager import WS_MANAGER
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse, Response
+
+from web_buddy_backend.core.config import settings
+from web_buddy_backend.models.asset_models import Asset, AssetCreate, AssetUpdate
+from web_buddy_backend.services.media_service import media_processor
+from web_buddy_backend.services.screen_service import SCREEN_CLIENT
+from web_buddy_backend.state.memory_state import STATE
+from web_buddy_backend.util.connection_manager import WS_MANAGER
 
 router = APIRouter(prefix="/assets", tags=["assets"])
 
@@ -66,35 +67,35 @@ async def upload_media(file: UploadFile = File(...)):
     """
     # Read file content
     content = await file.read()
-    
+
     if not content:
         raise HTTPException(status_code=400, detail="Empty file uploaded")
-    
+
     # Validate file size (50MB max)
     max_size = 50 * 1024 * 1024  # 50MB
     if len(content) > max_size:
         raise HTTPException(status_code=413, detail=f"File too large. Maximum size: {max_size // (1024*1024)}MB")
-    
+
     # Process and validate the media file
     metadata = media_processor.process_upload(file, content)
-    
+
     # Generate unique filename with original extension
     suffix = Path(file.filename).suffix or ".bin"
     name = f"{uuid.uuid4()}{suffix}"
     dest = UPLOAD_DIR / name
-    
+
     # Save the file
     try:
         dest.write_bytes(content)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
-    
+        raise HTTPException(status_code=500, detail=f"Failed to save file: {e!s}")
+
     # Generate URL
     if settings.PUBLIC_BASE_URL:
         url = f"{settings.PUBLIC_BASE_URL.rstrip('/')}/uploads/{name}"
     else:
         url = f"/uploads/{name}"
-    
+
     # Return comprehensive response
     response_data = {
         "url": url,
@@ -104,7 +105,7 @@ async def upload_media(file: UploadFile = File(...)):
         "mime_type": metadata["mime_type"],
         "size": metadata["size"],
     }
-    
+
     # Add media-specific metadata
     if metadata["media_type"] == "image":
         if metadata.get("width") is not None:
@@ -117,7 +118,7 @@ async def upload_media(file: UploadFile = File(...)):
         response_data["duration"] = metadata["duration"]
         response_data["fps"] = metadata["fps"]
         response_data["frame_count"] = metadata["frame_count"]
-    
+
     return JSONResponse(response_data)
 
 
@@ -128,23 +129,23 @@ async def get_raw_media(filename: str):
     Useful for relaying content to other backend services.
     """
     file_path = UPLOAD_DIR / filename
-    
+
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found")
-    
+
     # Validate filename to prevent directory traversal
     if ".." in filename or "/" in filename or "\\" in filename:
         raise HTTPException(status_code=400, detail="Invalid filename")
-    
+
     try:
         content = media_processor.get_raw_bytes(file_path)
-        
+
         # Determine content type
         import mimetypes
         content_type, _ = mimetypes.guess_type(filename)
         if not content_type:
             content_type = "application/octet-stream"
-        
+
         return Response(
             content=content,
             media_type=content_type,
@@ -156,7 +157,7 @@ async def get_raw_media(filename: str):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error reading file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error reading file: {e!s}")
 
 
 @router.get("/info/{filename}")
@@ -165,32 +166,32 @@ async def get_media_info(filename: str):
     Get metadata information about an uploaded media file without downloading it.
     """
     file_path = UPLOAD_DIR / filename
-    
+
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found")
-    
+
     # Validate filename to prevent directory traversal
     if ".." in filename or "/" in filename or "\\" in filename:
         raise HTTPException(status_code=400, detail="Invalid filename")
-    
+
     try:
         content = file_path.read_bytes()
-        
+
         # Create a mock UploadFile for processing
         from io import BytesIO
-        
-        # Mock file object for metadata processing  
+
+        # Mock file object for metadata processing
         class MockUploadFile:
             def __init__(self, filename: str, content: bytes):
                 self.filename = filename
                 self.file = BytesIO(content)
-        
+
         mock_file = MockUploadFile(filename, content)
         metadata = media_processor.process_upload(mock_file, content)
-        
+
         return JSONResponse(metadata)
-        
+
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing file info: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing file info: {e!s}")

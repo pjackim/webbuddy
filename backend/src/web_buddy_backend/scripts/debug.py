@@ -4,13 +4,12 @@ def main():
     import signal
     import sys
     import threading
-    import time
 
     import uvicorn
 
     # Detect Windows/WSL environments where CLI freezing issues are common
     is_windows_like = platform.system() in ("Windows",) or "microsoft" in platform.uname().release.lower()
-    
+
     # On Windows/WSL, disable reload by default to prevent Ctrl+C issues
     reload_flag = os.getenv("DEBUG_RELOAD", "0" if is_windows_like else "1") in {"1", "true", "True"}
 
@@ -18,21 +17,21 @@ def main():
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", "8000"))
 
-    print(f"🚀 Starting Web Buddy dev server...")
+    print("🚀 Starting Web Buddy dev server...")
     print(f"   📍 URL: http://localhost:{port}")
     print(f"   🔗 Host: {host}")
     print(f"   🔄 Reload: {'ON' if reload_flag else 'OFF'}")
-    
+
     if is_windows_like:
         if not reload_flag:
-            print(f"   ℹ️  Auto-reload disabled on Windows/WSL (set DEBUG_RELOAD=1 to enable)")
-        print(f"   ⚠️  On Windows: Use Ctrl+Break or close terminal if Ctrl+C doesn't work")
-    
-    print(f"   🛑 Press Ctrl+C to quit\n")
+            print("   ℹ️  Auto-reload disabled on Windows/WSL (set DEBUG_RELOAD=1 to enable)")
+        print("   ⚠️  On Windows: Use Ctrl+Break or close terminal if Ctrl+C doesn't work")
+
+    print("   🛑 Press Ctrl+C to quit\n")
 
     # Enhanced signal handling with forced shutdown for Windows
     shutdown_event = threading.Event()
-    
+
     def signal_handler(sig, frame):
         print("\n🛑 Shutting down server...")
         shutdown_event.set()
@@ -52,7 +51,7 @@ def main():
     signal.signal(signal.SIGINT, signal_handler)
     if hasattr(signal, 'SIGTERM'):
         signal.signal(signal.SIGTERM, signal_handler)
-    
+
     # Additional Windows-specific signal handling
     if is_windows_like and hasattr(signal, 'SIGBREAK'):
         signal.signal(signal.SIGBREAK, signal_handler)
@@ -62,7 +61,7 @@ def main():
         if is_windows_like:
             monitor_thread = threading.Thread(target=force_shutdown_monitor, daemon=True)
             monitor_thread.start()
-        
+
         uvicorn.run(
             "web_buddy_backend.main:create_app",
             factory=True,

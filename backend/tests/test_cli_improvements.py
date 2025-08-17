@@ -17,16 +17,16 @@ def test_debug_command_starts_successfully():
         text=True,
         env={**os.environ, "PATH": f"{Path.home() / '.local/bin'}:{os.environ.get('PATH', '')}"}
     )
-    
+
     # Give it a moment to start
     time.sleep(2)
-    
+
     # Terminate the process
     process.terminate()
-    
+
     # Wait for it to finish
     stdout, _ = process.communicate(timeout=5)
-    
+
     # Check that it started correctly
     assert "Starting Web Buddy dev server" in stdout
     assert "Uvicorn running on" in stdout
@@ -42,7 +42,7 @@ def test_doctor_command_runs():
         text=True,
         env={**os.environ, "PATH": f"{Path.home() / '.local/bin'}:{os.environ.get('PATH', '')}"}
     )
-    
+
     assert result.returncode == 0
     assert "Web Buddy Backend Environment Diagnostics" in result.stdout
     assert "Platform:" in result.stdout
@@ -58,7 +58,7 @@ def test_test_command_runs():
         text=True,
         env={**os.environ, "PATH": f"{Path.home() / '.local/bin'}:{os.environ.get('PATH', '')}"}
     )
-    
+
     assert result.returncode == 0
     assert "Running tests" in result.stdout
     assert "pytest" in result.stdout
@@ -68,9 +68,9 @@ def test_windows_detection():
     """Test that Windows detection logic works."""
     # Import the detection logic
     is_windows_like = platform.system() in ("Windows",) or "microsoft" in platform.uname().release.lower()
-    
+
     # This should not crash and should return a boolean
     assert isinstance(is_windows_like, bool)
-    
+
     # In this CI environment, it should be False (Linux)
     assert is_windows_like is False

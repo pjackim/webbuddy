@@ -3,11 +3,6 @@ import os
 import platform
 from pathlib import Path
 
-from web_buddy_backend.api import api
-from web_buddy_backend.api.websocket import router as ws_router
-from web_buddy_backend.core.config import settings
-from web_buddy_backend.core.logging_config import configure_logging
-
 # from app.models.screen_models import ScreenCreate  # removed: no default seeding
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,6 +11,11 @@ from fastapi.openapi.docs import (
 )
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+
+from web_buddy_backend.api import api
+from web_buddy_backend.api.websocket import router as ws_router
+from web_buddy_backend.core.config import settings
+from web_buddy_backend.core.logging_config import configure_logging
 
 # Windows-specific optimizations to prevent CLI freezing
 is_windows_like = platform.system() in ("Windows",) or "microsoft" in platform.uname().release.lower()

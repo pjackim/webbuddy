@@ -5,8 +5,8 @@ import os
 import shutil
 import stat
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 PRUNE_DIRS = {".git", ".hg", ".svn", ".idea", ".vscode"}
 TARGET_DIRS = {
