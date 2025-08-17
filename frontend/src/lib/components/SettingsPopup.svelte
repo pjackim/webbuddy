@@ -83,7 +83,7 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-				{#if gridExpanded}
+				{#if gridExpanded && currentGridSettings}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="grid-visible" class="text-sm">Show Grid</Label>
@@ -186,7 +186,7 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-				{#if styleExpanded}
+				{#if styleExpanded && currentStyleSettings}
 					<div class="space-y-3 pl-6">
 						<div class="space-y-2">
 							<Label for="corner-radius" class="text-sm">Corner Radius: {currentStyleSettings.cornerRadius}px</Label>
@@ -255,7 +255,7 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-				{#if performanceExpanded}
+				{#if performanceExpanded && currentPerformanceSettings}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="enable-animations" class="text-sm">Enable Animations</Label>
@@ -331,7 +331,7 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-				{#if debugExpanded}
+				{#if debugExpanded && currentDebugSettings}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="debug-mode" class="text-sm">Debug Mode</Label>
@@ -367,7 +367,7 @@
 						</div>
 						<div class="pt-2">
 							<p class="text-xs text-muted-foreground mb-2">Debug info will appear when enabled</p>
-							{#if currentDebugSettings.debugMode}
+							{#if currentDebugSettings && currentDebugSettings.debugMode}
 								<div class="text-xs font-mono bg-muted/50 p-2 rounded space-y-1">
 									<div>Grid: {currentGridSettings.visible ? 'ON' : 'OFF'}</div>
 									<div>Pattern: {currentGridSettings.pattern}</div>

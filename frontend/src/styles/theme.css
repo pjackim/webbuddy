@@ -106,7 +106,7 @@
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
-	
+
 	/* Border radius utilities */
 	--radius-xs: 0.125rem;
 	--radius-2xl: calc(var(--radius) + 8px);
@@ -495,29 +495,6 @@
 		min-height: 0;
 		overflow: hidden;
 		position: relative;
-	}
-
-	/* Cross-browser scrollbar styling */
-	.scrollable-content {
-		scrollbar-width: thin;
-		scrollbar-color: oklch(var(--border-oklch) / 0.4) transparent;
-	}
-
-	.scrollable-content::-webkit-scrollbar {
-		width: 6px;
-	}
-
-	.scrollable-content::-webkit-scrollbar-track {
-		background: transparent;
-	}
-
-	.scrollable-content::-webkit-scrollbar-thumb {
-		background: oklch(var(--border-oklch) / 0.4);
-		border-radius: 3px;
-	}
-
-	.scrollable-content::-webkit-scrollbar-thumb:hover {
-		background: oklch(var(--border-oklch) / 0.6);
 	}
 
 	/* Dark mode responsive card styling */

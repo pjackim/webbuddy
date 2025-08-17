@@ -2,6 +2,7 @@
 	import * as Tooltip from '$lib/components/ui/tooltip';
 	import * as Menubar from '$lib/ui/menubar';
 	import * as Popover from '$lib/ui/popover';
+	import { Button } from '$lib/ui/button';
 	import {
 		Circle,
 		Eraser,
@@ -93,37 +94,19 @@
 <div class="fixed top-4 right-4 z-50">
 	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
 		<Menubar.Root class="border-0 bg-transparent">
-			<Menubar.Menu>
-				<Menubar.Trigger class="px-2 hover:bg-accent/20">Tools</Menubar.Trigger>
-				<Menubar.Content class="glassmorphism border border-border/50">
-					<Menubar.Item class="flex items-center gap-2">
-						<MousePointer class="h-4 w-4" />
-						Pointer Tool
-						<Menubar.Shortcut>V</Menubar.Shortcut>
-					</Menubar.Item>
-					<Menubar.Item class="flex items-center gap-2">
-						<Square class="h-4 w-4" />
-						Rectangle
-						<Menubar.Shortcut>R</Menubar.Shortcut>
-					</Menubar.Item>
-					<Menubar.Item class="flex items-center gap-2">
-						<Circle class="h-4 w-4" />
-						Circle
-						<Menubar.Shortcut>C</Menubar.Shortcut>
-					</Menubar.Item>
-					<Menubar.Item class="flex items-center gap-2">
-						<Type class="h-4 w-4" />
-						Text Tool
-						<Menubar.Shortcut>T</Menubar.Shortcut>
-					</Menubar.Item>
-					<Menubar.Separator />
-					<Menubar.Item class="flex items-center gap-2">
-						<Eraser class="h-4 w-4" />
-						Eraser
-						<Menubar.Shortcut>E</Menubar.Shortcut>
-					</Menubar.Item>
-				</Menubar.Content>
-			</Menubar.Menu>
+		<Menubar.Menu>
+			<Menubar.Trigger class="px-2 hover:bg-accent/20">Pages</Menubar.Trigger>
+			<Menubar.Content class="glassmorphism border border-border/50 p-2 w-64">
+				<div class="grid grid-cols-2 gap-2">
+					<Button variant="outline" href="/">Home</Button>
+					<Button variant="outline" href="/about">About</Button>
+					<Button variant="outline" href="/backup">Backup</Button>
+					<Button variant="outline" href="/error">Error</Button>
+					<Button variant="outline" href="/sidebar-02">Sidebar 02</Button>
+					<Button variant="outline" href="/sidebar-13">Sidebar 13</Button>
+				</div>
+			</Menubar.Content>
+		</Menubar.Menu>
 
 			<Menubar.Menu>
 				<Menubar.Trigger class="px-2 hover:bg-accent/20">Edit</Menubar.Trigger>
