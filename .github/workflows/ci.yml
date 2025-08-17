@@ -36,7 +36,12 @@ jobs:
         run: |
           cd frontend
           bun install
-      - name: Build
+      - name: Clean and build
         run: |
           cd frontend
-          bun run build
+          bun run clean
+          bun vite build
+      - name: Verify build
+        run: |
+          cd frontend
+          node scripts/build-verify.mjs

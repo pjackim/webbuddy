@@ -7,7 +7,7 @@
 	import { Label } from '$lib/ui/label';
 	import * as NavigationMenu from '$lib/ui/navigation-menu';
 	import { Switch } from '$lib/ui/switch';
-	import { Loader2 } from 'lucide-svelte';
+	import { Loader2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 
 	let name = $state('Screen');

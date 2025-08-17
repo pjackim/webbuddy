@@ -20,7 +20,7 @@ function formatBytes(bytes) {
 }
 
 async function verifyBuild() {
-  const buildDir = 'build';
+  const buildDir = '.svelte-kit/output';
   
   // Check if build directory exists
   if (!existsSync(buildDir)) {
@@ -30,11 +30,11 @@ async function verifyBuild() {
 
   log('Verifying build output...');
 
-  // Critical files that should exist
+  // Critical files that should exist (adjusted for SvelteKit output structure)
   const criticalFiles = [
-    'index.html',
-    '_app/immutable/entry/app.*.js',
-    '_app/version.json'
+    'server/index.js',
+    'client/_app/immutable/entry/app.*.js',
+    'server/.vite/manifest.json'
   ];
 
   let hasErrors = false;
