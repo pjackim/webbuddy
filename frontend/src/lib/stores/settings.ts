@@ -81,50 +81,87 @@ const defaultDebugSettings: DebugSettings = {
 	showGrid: false
 };
 
-// Create persistent stores
-export const gridSettings = new PersistedState('gridSettings', defaultGridSettings);
-export const styleSettings = new PersistedState('styleSettings', defaultStyleSettings);
-export const performanceSettings = new PersistedState('performanceSettings', defaultPerformanceSettings);
-export const debugSettings = new PersistedState('debugSettings', defaultDebugSettings);
+// Create persistent stores (internal)
+const _gridSettings = new PersistedState('gridSettings', defaultGridSettings);
+const _styleSettings = new PersistedState('styleSettings', defaultStyleSettings);
+const _performanceSettings = new PersistedState('performanceSettings', defaultPerformanceSettings);
+const _debugSettings = new PersistedState('debugSettings', defaultDebugSettings);
+
+// Reactive getters and setters for Svelte 5 compatibility
+export const gridSettings = {
+	get current() {
+		return _gridSettings.current;
+	},
+	get store() {
+		return _gridSettings;
+	}
+};
+
+export const styleSettings = {
+	get current() {
+		return _styleSettings.current;
+	},
+	get store() {
+		return _styleSettings;
+	}
+};
+
+export const performanceSettings = {
+	get current() {
+		return _performanceSettings.current;
+	},
+	get store() {
+		return _performanceSettings;
+	}
+};
+
+export const debugSettings = {
+	get current() {
+		return _debugSettings.current;
+	},
+	get store() {
+		return _debugSettings;
+	}
+};
 
 // Convenience functions to get current values
-export const getGridSettings = () => gridSettings.current;
-export const getStyleSettings = () => styleSettings.current;
-export const getPerformanceSettings = () => performanceSettings.current;
-export const getDebugSettings = () => debugSettings.current;
+export const getGridSettings = () => _gridSettings.current;
+export const getStyleSettings = () => _styleSettings.current;
+export const getPerformanceSettings = () => _performanceSettings.current;
+export const getDebugSettings = () => _debugSettings.current;
 
 // Update functions
 export const updateGridSettings = (updates: Partial<GridSettings>) => {
-	gridSettings.current = { ...gridSettings.current, ...updates };
+	_gridSettings.current = { ..._gridSettings.current, ...updates };
 };
 
 export const updateStyleSettings = (updates: Partial<StyleSettings>) => {
-	styleSettings.current = { ...styleSettings.current, ...updates };
+	_styleSettings.current = { ..._styleSettings.current, ...updates };
 };
 
 export const updatePerformanceSettings = (updates: Partial<PerformanceSettings>) => {
-	performanceSettings.current = { ...performanceSettings.current, ...updates };
+	_performanceSettings.current = { ..._performanceSettings.current, ...updates };
 };
 
 export const updateDebugSettings = (updates: Partial<DebugSettings>) => {
-	debugSettings.current = { ...debugSettings.current, ...updates };
+	_debugSettings.current = { ..._debugSettings.current, ...updates };
 };
 
 // Reset functions
 export const resetGridSettings = () => {
-	gridSettings.current = { ...defaultGridSettings };
+	_gridSettings.current = { ...defaultGridSettings };
 };
 
 export const resetStyleSettings = () => {
-	styleSettings.current = { ...defaultStyleSettings };
+	_styleSettings.current = { ...defaultStyleSettings };
 };
 
 export const resetPerformanceSettings = () => {
-	performanceSettings.current = { ...defaultPerformanceSettings };
+	_performanceSettings.current = { ...defaultPerformanceSettings };
 };
 
 export const resetDebugSettings = () => {
-	debugSettings.current = { ...defaultDebugSettings };
+	_debugSettings.current = { ...defaultDebugSettings };
 };
 
 export const resetAllSettings = () => {
