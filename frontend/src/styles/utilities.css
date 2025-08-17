@@ -87,3 +87,12 @@
 		0 4px 16px oklch(var(--background-oklch) / 0.08),
 		inset 0 1px 0 oklch(var(--border-oklch) / 0.08);
 }
+
+/* Disable text selection while dragging (toggled via <html class="dragging">) */
+html.dragging,
+html.dragging body,
+html.dragging :not(input):not(textarea):not([contenteditable="true"]) {
+	-webkit-user-select: none !important;
+	-ms-user-select: none !important;
+	user-select: none !important;
+}
