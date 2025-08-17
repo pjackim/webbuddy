@@ -1,5 +1,6 @@
 ---
 description: Svelte 5 Snippets -- most useful for flexible content injection and eliminating repetitive markup within the same file or component cluster. They excel at parameterized content patterns where you need the same structure with different data, but should be avoided for stateful components or cross-file reuse where regular components are better.
+globs: **/*.svelte,**/*.svelte.ts,**/*.ts
 alwaysApply: false
 ---
 # Rule: Svelte 5 Snippets — Master Guide

@@ -127,31 +127,51 @@ If online, you are required to use the `svelte5-documentation`, `konva-documenta
 
 Prioritize using components and logic described in the documentation. This will ensure consistency and maintainability across the project.
 
-## Testing Strategy
+## Testing Strategy (Unit-test focused)
 
-**IMPORTANT**: Testing is done through browser interaction, NOT unit tests.
+IMPORTANT: Testing will be done with unit and integration tests (not browser automation). The LLM MUST generate test code and fixtures; do NOT attempt to run tests. Prompt the user to run the test commands.
 
 ### Required Testing Process
-Before claiming any task is complete, you MUST:
+- The LLM must produce unit and integration tests covering backend and frontend areas described below.
+- After tests are generated, ask the user to run:
+  - Backend: pytest (python -m pytest) — tests live under backend/tests/ or app/tests/
+  - Frontend: use Bun/Vitest (ask user to run bun test or the equivalent) — tests live under frontend/tests/ or src/lib/**/__tests__/
+- Provide clear fixtures, mocks, and instructions for running tests and any setup (env vars, tmp directories). Do not run commands yourself.
 
-1. **No need to start the development server, it is always hot reloading**: you can see live logs here: `frontend\ERROR_CURRENT.log`
-2. **Test webpage via browser interaction** using:
-   - **Kapture MCP**: Browser automation for testing features and validating state
+### Backend (pytest / pytest-asyncio)
+Create tests that:
+- Validate Pydantic models (validation, default values, edge cases).
+- Test REST endpoints (screens, assets, upload) using httpx AsyncClient (or TestClient) with isolated test app fixtures.
+- Test WebSocket behavior (connection manager, broadcast semantics) using asyncio test client or mocking connection manager.
+- Use tmp_path fixtures for file uploads and ensure uploads directory is cleaned between tests.
+- Provide fixtures for in-memory state reset between tests.
+- Include negative tests (bad payloads, missing files, 404s).
+- Aim for clear, small test functions and reusable fixtures.
 
-### Backend Testing
-- Backend: `uv run test` (pytest) - only for critical backend logic
-- Primary validation through frontend browser testing
+Suggested structure:
+- backend/tests/conftest.py — app, client, temp uploads, state reset fixtures
+- backend/tests/test_models.py
+- backend/tests/test_api_screens.py
+- backend/tests/test_api_assets.py
+- backend/tests/test_ws.py
 
-## Port Configuration
-- Frontend dev server: 5173
-- Backend API: 8000
-- WebSocket: same as backend (8000/ws)
+### Frontend (Vitest + @testing-library/svelte)
+Create tests that:
+- Unit-test Svelte 5 components (Canvas, ScreenFrame, Toolbar) with @testing-library/svelte or appropriate Svelte 5 testing utilities.
+- Mock network calls (fetch/http client) and WebSocket interactions (mock WebSocket or replace lib/ws.ts with a mock).
+- Test stores and derived reactivity (use runes' test helpers where needed).
+- Keep tests deterministic and fast; avoid requiring a browser.
+- Suggested structure:
+  - frontend/tests/unit/components/...
+  - frontend/tests/unit/stores/...
 
-## Documentation References
-- Extensive documentation in `/frontend/docs/` directory:
-  - `shadcn-svelte/` - UI component documentation
-  - `Svelte-5-Documentation.md` - Svelte 5 patterns
-  - `svelte-konva-docs.md` - Canvas integration guide
-  - `runed/` - Svelte utility library docs
+### Quality & Coverage
+- Provide sensible assertions and test names.
+- Recommend coverage targets (e.g., >80%) and how to run coverage tools for backend (coverage.py) and frontend (Vitest coverage).
+- Emphasize tests should be small, independent, and fast.
 
-- No, you will never need to run `bun run dev`. Just continue on to testing with your Browser MCP servers
+### Output Requirements for the LLM
+- Generate complete test files (with import statements and fixtures).
+- Include comments explaining any non-obvious mocks or fixtures.
+- Do not modify production code unless a small, necessary change is required; explain rationale when you do.
+- After producing tests, explicitly prompt the user to run the test commands and provide the exact commands to execute.

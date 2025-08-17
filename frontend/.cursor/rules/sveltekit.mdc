@@ -27,18 +27,18 @@ Technical preferences:
 - Minimize the usage of client-side components to small, isolated components
 - Always add loading and error states to data fetching components
 - Implement error handling and error logging
-- (??? Double check this) Utilize Svelte stores for global state management
+- Use Svelte stores for cross-component/global state when necessary; prefer runes (`$state/$derived/$effect`) and context for local state. For SSR, avoid module-singleton state and create per-request instances for user-specific data.
 - Use TypeScript for all code
   - Prefer interfaces over types.
   - Avoid enums; use const objects instead.
-  - Use functional components with TypeScript interfaces for props.
+  - Use TypeScript interfaces to type props via `$props<Interface>()`.
   - Enable strict mode in TypeScript for better type safety.
 
 Svelte Runes
 
-> `$state/$derived/$effect` are first-class in Svelte 5; use them in components, classes, and `.svelte.ts` modules.
-> Runes must be in a `.svelte.ts` file so the compiler can transform them.
-> **Export state via a class or factory**.
+> `$state/$derived/$effect` are first-class in Svelte 5; use them in `.svelte` components and `.svelte.ts` modules.
+> Runes can be used in `.svelte` files and in `.svelte.ts` runic modules; they are not available in plain `.ts`/`.js` files.
+> **Export state via a class or factory** when sharing runic state across files.
 
 - `$state`: Declare reactive state
   ```typescript
@@ -70,10 +70,10 @@ Svelte Runes
 UI and Styling
 
 - Use Tailwind CSS v4 for utility-first styling approach.
-- Design and styling should originate from `$styles/theme.css` to mainting DRY code.
+- Design and styling should originate from `$styles/theme.css` to maintain DRY code. See [src/styles/theme.css](mdc:src/styles/theme.css).
 - Leverage Shadcn components for pre-built, customizable UI elements.
-- Import Shadcn components from `$lib/vendor/shadcn`.
-- (??? Double check this) Organize Tailwind classes using the `cn()` utility from `$lib/utils`.
+- Import Shadcn components from `$lib/vendor/shadcn`. See [src/lib/vendor/shadcn](mdc:src/lib/vendor/shadcn).
+- Organize Tailwind classes using the `cn()` utility from `$lib/utils` (clsx + tailwind-merge). See [src/lib/utils.ts](mdc:src/lib/utils.ts).
 - Use Svelte's built-in transition and animation features or leverage `tw-animate-css`.
 
 SvelteKit Project Structure
@@ -112,7 +112,7 @@ Performance Optimization
 - Use `{#key}` blocks to force re-rendering of components when needed.
 - Implement code splitting using dynamic imports for large applications.
 - Profile and monitor performance using browser developer tools.
-- Use `$effect.tracking()` to optimize effect dependencies.
+- Keep `$effect` bodies focused; read only the reactive state they need to minimize recomputation.
 - Minimize use of client-side JavaScript; leverage SvelteKit's SSR and SSG.
 - Implement proper lazy loading for images and other assets.
 
