@@ -8,6 +8,7 @@ from app.models.asset_models import (
     AssetUpdate,
     ImageAsset,
     TextAsset,
+    VideoAsset,
 )
 from app.models.screen_models import Screen, ScreenCreate, ScreenUpdate
 
@@ -64,6 +65,8 @@ class InMemoryState:
             aid = str(uuid.uuid4())
             if data.type == "image":
                 asset: Asset = ImageAsset(id=aid, **data.model_dump())  # type: ignore
+            elif data.type == "video":
+                asset = VideoAsset(id=aid, **data.model_dump())  # type: ignore
             else:
                 # default for text specifics
                 payload = data.model_dump()

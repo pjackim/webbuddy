@@ -12,7 +12,7 @@ class AssetBase(BaseModel):
     rotation: float = 0.0
     scale_x: float = 1.0
     scale_y: float = 1.0
-    type: Literal["image", "text"]
+    type: Literal["image", "text", "video"]
 
 
 class ImageAsset(AssetBase):
@@ -31,7 +31,20 @@ class TextAsset(AssetBase):
     color: str = "#ffffff"
 
 
-Asset = Annotated[Union[ImageAsset, TextAsset], Field(discriminator="type")]
+class VideoAsset(AssetBase):
+    type: Literal["video"] = "video"
+    src: HttpUrl
+    natural_width: Optional[int] = None
+    natural_height: Optional[int] = None
+    width: Optional[float] = None
+    height: Optional[float] = None
+    duration: Optional[float] = None  # Duration in seconds
+    autoplay: bool = False
+    loop: bool = False
+    muted: bool = False
+
+
+Asset = Annotated[Union[ImageAsset, TextAsset, VideoAsset], Field(discriminator="type")]
 
 
 class AssetCreate(BaseModel):
@@ -43,13 +56,17 @@ class AssetCreate(BaseModel):
     rotation: float = 0.0
     scale_x: float = 1.0
     scale_y: float = 1.0
-    type: Literal["image", "text"]
+    type: Literal["image", "text", "video"]
     src: Optional[HttpUrl] = None
     text: Optional[str] = None
     font_size: Optional[float] = 24
     color: Optional[str] = "#ffffff"
     width: Optional[float] = None
     height: Optional[float] = None
+    duration: Optional[float] = None
+    autoplay: Optional[bool] = False
+    loop: Optional[bool] = False
+    muted: Optional[bool] = False
 
 
 class AssetUpdate(BaseModel):
@@ -65,3 +82,7 @@ class AssetUpdate(BaseModel):
     color: Optional[str] = None
     width: Optional[float] = None
     height: Optional[float] = None
+    duration: Optional[float] = None
+    autoplay: Optional[bool] = None
+    loop: Optional[bool] = None
+    muted: Optional[bool] = None

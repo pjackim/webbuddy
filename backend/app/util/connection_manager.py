@@ -20,6 +20,10 @@ class ConnectionManager:
             self.active.discard(websocket)
 
     async def broadcast(self, event: str, data):
+        # Ensure data is JSON serializable
+        if hasattr(data, 'model_dump'):
+            # Pydantic model - serialize properly
+            data = data.model_dump(mode='json')
         payload = json.dumps({"event": event, "data": data}, ensure_ascii=False)
         dead: list[WebSocket] = []
         for ws in list(self.active):
