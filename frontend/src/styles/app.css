@@ -3,6 +3,7 @@
 /* Tailwind v4 plugins */
 @import 'tw-animate-css';
 /* DaisyUI plugin disabled for now (caused Unexpected `@plugin` option build errors) */
+@source "./lib/vendor/**";
 
 @import './theme.css';
 @import './base.css';

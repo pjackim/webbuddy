@@ -13,8 +13,11 @@ export default {
 	kit: {
 		adapter: adapter(),
 		alias: {
-			'@/*': './path/to/lib/*',
-			$styles: 'src/styles'
+			$styles: 'src/styles',
+			$vendor: 'src/lib/vendor',
+			$lib: 'src/lib',
+			$ui: 'src/lib/ui',
+			'@/*': 'src/lib/*'
 		}
 	}
 };
