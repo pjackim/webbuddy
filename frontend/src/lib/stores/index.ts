@@ -114,3 +114,6 @@ export function getScreen(id: string) {
 export function getAsset(id: string) {
 	return _snapshot.assets.find((a) => a.id === id);
 }
+
+// Export tools store
+export * from './tools';

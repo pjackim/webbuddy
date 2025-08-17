@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { Toolbar, Sidebar } from '$lib/features/floating-menus';
 	import { Canvas } from '$lib/features/canvas';
 	import * as Card from '$lib/ui/card';
@@ -76,7 +77,13 @@
 						</Card.Root>
 					</div>
 				{/if}
-				<Canvas />
+				{#if browser}
+					<Canvas />
+				{:else}
+					<div class="flex items-center justify-center h-full text-muted-foreground">
+						Loading Canvas...
+					</div>
+				{/if}
 			</div>
 		</div>
 	</ContextMenu.Trigger>

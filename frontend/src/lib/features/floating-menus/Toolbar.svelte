@@ -14,9 +14,7 @@
 		Type,
 		Undo
 	} from '@lucide/svelte';
-
-	// Selected drawing tool state
-	let selectedTool = $state<'pointer' | 'rectangle' | 'circle' | 'text' | 'eraser'>('pointer');
+	import { selectedTool, setTool, type ToolType } from '$lib/stores';
 
 	// Tools config for the centered horizontal toolbar
 	const tools = [
@@ -30,27 +28,36 @@
 	// Keyboard shortcuts: V/R/C/T/E
 	$effect(() => {
 		const onKey = (e: KeyboardEvent) => {
+			// Only handle if no input/textarea is focused
+			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+				return;
+			}
+			
 			switch (e.key.toLowerCase()) {
 				case 'v':
-					selectedTool = 'pointer';
+					setTool('pointer');
 					break;
 				case 'r':
-					selectedTool = 'rectangle';
+					setTool('rectangle');
 					break;
 				case 'c':
-					selectedTool = 'circle';
+					setTool('circle');
 					break;
 				case 't':
-					selectedTool = 'text';
+					setTool('text');
 					break;
 				case 'e':
-					selectedTool = 'eraser';
+					setTool('eraser');
 					break;
 			}
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
 	});
+
+	function handleToolSelect(toolId: ToolType) {
+		setTool(toolId);
+	}
 </script>
 
 <!-- Centered floating horizontal tools toolbar -->
@@ -63,9 +70,9 @@
 				{/if}
 				<Tooltip.Root>
 					<Tooltip.Trigger
-						class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md text-sm transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {selectedTool === tool.id ? 'bg-accent/25 border border-accent/50' : ''}"
-						onclick={() => (selectedTool = tool.id)}
-						aria-pressed={selectedTool === tool.id}
+						class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md text-sm transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {$selectedTool === tool.id ? 'bg-accent/25 border border-accent/50' : ''}"
+						onclick={() => handleToolSelect(tool.id)}
+						aria-pressed={$selectedTool === tool.id}
 						type="button"
 					>
 						<tool.icon class="h-4 w-4" />
@@ -79,7 +86,7 @@
 	</div>
 
 	<!-- Optional hint of the active tool for accessibility -->
-	<span class="sr-only">Active tool: {selectedTool}</span>
+	<span class="sr-only">Active tool: {$selectedTool}</span>
 </div>
 
 <!-- Top-right aligned application menubar (moved from center) -->
