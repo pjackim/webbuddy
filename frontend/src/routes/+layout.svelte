@@ -44,7 +44,38 @@
 			handleError(error);
 		});
 	});
+	
+	// Disable text selection during pointer drag (left mouse, touch, pen)
+	onMount(() => {
+		const html = document.documentElement;
+		let active = false;
 
+		const start = (e: PointerEvent) => {
+			// Only primary mouse button; allow touch/pen
+			if (e.pointerType === 'mouse' && e.button !== 0) return;
+			active = true;
+			html.classList.add('dragging');
+		};
+
+		const end = () => {
+			if (!active) return;
+			active = false;
+			html.classList.remove('dragging');
+		};
+
+		window.addEventListener('pointerdown', start, { passive: true });
+		window.addEventListener('pointerup', end, { passive: true });
+		window.addEventListener('pointercancel', end, { passive: true });
+		window.addEventListener('blur', end);
+
+		return () => {
+			window.removeEventListener('pointerdown', start);
+			window.removeEventListener('pointerup', end);
+			window.removeEventListener('pointercancel', end);
+			window.removeEventListener('blur', end);
+		};
+	});
+	
 	function toggleGrid() {
 		gridVisibility.current = !gridVisibility.current;
 	}
