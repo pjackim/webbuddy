@@ -50,7 +50,7 @@ help:
 
 .PHONY: start
 start: ## Run FastAPI via uvicorn (factory pattern)
-	@uv run uvicorn web_buddy_backend.main:create_app --factory --host 0.0.0.0 --port 8000
+	@uv run uvicorn web_buddy_backend.main:create_app --factory --host 127.0.0.1 --port 8000
 
 .PHONY: lint
 lint: ## Lint using project script (ruff/pre-commit as configured)
