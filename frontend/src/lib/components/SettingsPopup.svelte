@@ -1,23 +1,22 @@
 <script lang="ts">
-	import * as Popover from '$lib/ui/popover';
+	import {
+		debugSettings,
+		gridSettings,
+		performanceSettings,
+		resetAllSettings,
+		styleSettings,
+		updateDebugSettings,
+		updateGridSettings,
+		updatePerformanceSettings,
+		updateStyleSettings
+	} from '$lib/stores/settings';
 	import { Button } from '$lib/ui/button';
-	import { Input } from '$lib/ui/input';
 	import { Label } from '$lib/ui/label';
-	import { Switch } from '$lib/ui/switch';
+	import * as Popover from '$lib/ui/popover';
 	import * as Separator from '$lib/ui/separator';
 	import * as Slider from '$lib/ui/slider';
-	import {
-		gridSettings,
-		styleSettings, 
-		performanceSettings,
-		debugSettings,
-		updateGridSettings,
-		updateStyleSettings,
-		updatePerformanceSettings,
-		updateDebugSettings,
-		resetAllSettings
-	} from '$lib/stores/settings';
-	import { Settings, Grid3X3, Palette, Zap, Bug, RotateCcw, ChevronDown, ChevronRight } from '@lucide/svelte';
+	import { Switch } from '$lib/ui/switch';
+	import { Bug, ChevronDown, ChevronRight, Grid3X3, Palette, RotateCcw, Settings, Zap } from '@lucide/svelte';
 	import { onDestroy } from 'svelte';
 	// Access store values directly from PersistedState.current to avoid circular reactivity
 	let currentGridSettings = $derived(gridSettings.current);
@@ -31,14 +30,15 @@
 	let debugExpanded = $state(false);
 	// Helper function to handle slider values with proper typing and throttling
 	let updateTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
-	const handleSliderChange = (key: string, value: number[], callback: (val: number) => void) => {
+	const handleSliderChange = (key: string, value: number | number[], callback: (val: number) => void) => {
 		// Clear existing timeout for this key
 		if (updateTimeouts[key]) {
 			clearTimeout(updateTimeouts[key]);
 		}
-		// Throttle updates to prevent rapid-fire changes
+		// Normalize value for single slider and throttle updates
+		const numericValue = Array.isArray(value) ? value[0] : value;
 		updateTimeouts[key] = setTimeout(() => {
-			callback(value[0]);
+			callback(numericValue);
 			delete updateTimeouts[key];
 		}, 16); // ~60fps update rate
 	};
@@ -111,8 +111,8 @@
 						<div class="space-y-2">
 							<Label for="grid-size" class="text-sm">Size: {currentGridSettings.size}px</Label>
 							<Slider.Root type="single"
-								value={[currentGridSettings.size]}
-								onValueChange={(value: number[]) => handleSliderChange('grid-size', value, (val) => updateGridSettings({ size: val }))}
+								value={currentGridSettings.size}
+								onValueChange={(value) => handleSliderChange('grid-size', value, (val) => updateGridSettings({ size: val }))}
 								max={100}
 								min={10}
 								step={5}
@@ -122,8 +122,8 @@
 						<div class="space-y-2">
 							<Label for="grid-opacity" class="text-sm">Opacity: {Math.round(currentGridSettings.opacity * 100)}%</Label>
 							<Slider.Root type="single"
-								value={[currentGridSettings.opacity * 100]}
-								onValueChange={(value: number[]) => handleSliderChange('grid-opacity', value, (val) => updateGridSettings({ opacity: val / 100 }))}
+								value={currentGridSettings.opacity * 100}
+								onValueChange={(value) => handleSliderChange('grid-opacity', value, (val) => updateGridSettings({ opacity: val / 100 }))}
 								max={100}
 								min={0}
 								step={5}
@@ -134,8 +134,8 @@
 							<div class="space-y-2">
 								<Label for="line-thickness" class="text-sm">Line Thickness: {currentGridSettings.lineThickness}px</Label>
 								<Slider.Root type="single"
-									value={[currentGridSettings.lineThickness]}
-									onValueChange={(value: number[]) => handleSliderChange('line-thickness', value, (val) => updateGridSettings({ lineThickness: val }))}
+									value={currentGridSettings.lineThickness}
+									onValueChange={(value) => handleSliderChange('line-thickness', value, (val) => updateGridSettings({ lineThickness: val }))}
 									max={3}
 									min={0.1}
 									step={0.1}
@@ -146,8 +146,8 @@
 							<div class="space-y-2">
 								<Label for="dot-radius" class="text-sm">Dot Radius: {currentGridSettings.dotRadius}px</Label>
 								<Slider.Root type="single"
-									value={[currentGridSettings.dotRadius]}
-									onValueChange={(value: number[]) => handleSliderChange('dot-radius', value, (val) => updateGridSettings({ dotRadius: val }))}
+									value={currentGridSettings.dotRadius}
+									onValueChange={(value) => handleSliderChange('dot-radius', value, (val) => updateGridSettings({ dotRadius: val }))}
 									max={3}
 									min={0.1}
 									step={0.1}
@@ -158,8 +158,8 @@
 						<div class="space-y-2">
 							<Label for="major-interval" class="text-sm">Major Line Interval: {currentGridSettings.majorLineInterval}</Label>
 							<Slider.Root type="single"
-								value={[currentGridSettings.majorLineInterval]}
-								onValueChange={(value: number[]) => handleSliderChange('major-interval', value, (val) => updateGridSettings({ majorLineInterval: val }))}
+								value={currentGridSettings.majorLineInterval}
+								onValueChange={(value) => handleSliderChange('major-interval', value, (val) => updateGridSettings({ majorLineInterval: val }))}
 								max={10}
 								min={2}
 								step={1}
@@ -191,8 +191,8 @@
 						<div class="space-y-2">
 							<Label for="corner-radius" class="text-sm">Corner Radius: {currentStyleSettings.cornerRadius}px</Label>
 							<Slider.Root type="single"
-								value={[currentStyleSettings.cornerRadius]}
-								onValueChange={(value: number[]) => handleSliderChange('corner-radius', value, (val) => updateStyleSettings({ cornerRadius: val }))}
+								value={currentStyleSettings.cornerRadius}
+								onValueChange={(value) => handleSliderChange('corner-radius', value, (val) => updateStyleSettings({ cornerRadius: val }))}
 								max={24}
 								min={0}
 								step={1}
@@ -204,8 +204,8 @@
 							<div class="space-y-2">
 								<Label for="glass-blur" class="text-xs text-muted-foreground">Blur: {currentStyleSettings.glassBlur}px</Label>
 								<Slider.Root type="single"
-									value={[currentStyleSettings.glassBlur]}
-									onValueChange={(value: number[]) => handleSliderChange('glass-blur', value, (val) => updateStyleSettings({ glassBlur: val }))}
+									value={currentStyleSettings.glassBlur}
+									onValueChange={(value) => handleSliderChange('glass-blur', value, (val) => updateStyleSettings({ glassBlur: val }))}
 									max={32}
 									min={0}
 									step={2}
@@ -215,8 +215,8 @@
 							<div class="space-y-2">
 								<Label for="glass-opacity" class="text-xs text-muted-foreground">Background Opacity: {Math.round(currentStyleSettings.glassOpacity * 100)}%</Label>
 								<Slider.Root type="single"
-									value={[currentStyleSettings.glassOpacity * 100]}
-									onValueChange={(value: number[]) => handleSliderChange('glass-opacity', value, (val) => updateStyleSettings({ glassOpacity: val / 100 }))}
+									value={currentStyleSettings.glassOpacity * 100}
+									onValueChange={(value) => handleSliderChange('glass-opacity', value, (val) => updateStyleSettings({ glassOpacity: val / 100 }))}
 									max={80}
 									min={0}
 									step={5}
@@ -226,8 +226,8 @@
 							<div class="space-y-2">
 								<Label for="border-opacity" class="text-xs text-muted-foreground">Border Opacity: {Math.round(currentStyleSettings.borderOpacity * 100)}%</Label>
 								<Slider.Root type="single"
-									value={[currentStyleSettings.borderOpacity * 100]}
-									onValueChange={(value: number[]) => handleSliderChange('border-opacity', value, (val) => updateStyleSettings({ borderOpacity: val / 100 }))}
+									value={currentStyleSettings.borderOpacity * 100}
+									onValueChange={(value) => handleSliderChange('border-opacity', value, (val) => updateStyleSettings({ borderOpacity: val / 100 }))}
 									max={50}
 									min={0}
 									step={5}
@@ -268,8 +268,8 @@
 						<div class="space-y-2">
 							<Label for="animation-damping" class="text-sm">Animation Damping: {currentPerformanceSettings.animationDamping.toFixed(2)}</Label>
 							<Slider.Root type="single"
-								value={[currentPerformanceSettings.animationDamping * 100]}
-								onValueChange={(value: number[]) => handleSliderChange('animation-damping', value, (val) => updatePerformanceSettings({ animationDamping: val / 100 }))}
+								value={currentPerformanceSettings.animationDamping * 100}
+								onValueChange={(value) => handleSliderChange('animation-damping', value, (val) => updatePerformanceSettings({ animationDamping: val / 100 }))}
 								max={50}
 								min={1}
 								step={1}
@@ -279,8 +279,8 @@
 						<div class="space-y-2">
 							<Label for="zoom-sensitivity" class="text-sm">Zoom Sensitivity: {(currentPerformanceSettings.zoomSensitivity * 1000).toFixed(1)}</Label>
 							<Slider.Root type="single"
-								value={[currentPerformanceSettings.zoomSensitivity * 1000]}
-								onValueChange={(value: number[]) => handleSliderChange('zoom-sensitivity', value, (val) => updatePerformanceSettings({ zoomSensitivity: val / 1000 }))}
+								value={currentPerformanceSettings.zoomSensitivity * 1000}
+								onValueChange={(value) => handleSliderChange('zoom-sensitivity', value, (val) => updatePerformanceSettings({ zoomSensitivity: val / 1000 }))}
 								max={5}
 								min={0.1}
 								step={0.1}
@@ -291,8 +291,8 @@
 							<div class="space-y-2">
 								<Label for="min-zoom" class="text-sm">Min Zoom: {currentPerformanceSettings.minZoom.toFixed(1)}x</Label>
 								<Slider.Root type="single"
-									value={[currentPerformanceSettings.minZoom * 10]}
-									onValueChange={(value: number[]) => handleSliderChange('min-zoom', value, (val) => updatePerformanceSettings({ minZoom: val / 10 }))}
+									value={currentPerformanceSettings.minZoom * 10}
+									onValueChange={(value) => handleSliderChange('min-zoom', value, (val) => updatePerformanceSettings({ minZoom: val / 10 }))}
 									max={10}
 									min={1}
 									step={1}
@@ -302,8 +302,8 @@
 							<div class="space-y-2">
 								<Label for="max-zoom" class="text-sm">Max Zoom: {currentPerformanceSettings.maxZoom}x</Label>
 								<Slider.Root type="single"
-									value={[currentPerformanceSettings.maxZoom]}
-									onValueChange={(value: number[]) => handleSliderChange('max-zoom', value, (val) => updatePerformanceSettings({ maxZoom: val }))}
+									value={currentPerformanceSettings.maxZoom}
+									onValueChange={(value) => handleSliderChange('max-zoom', value, (val) => updatePerformanceSettings({ maxZoom: val }))}
 									max={20}
 									min={2}
 									step={1}
