@@ -1,4 +1,4 @@
-I need help fixing this project. When I run `uv run debug` (or run anything, even `pytest`), things seems to break. I get a clean log like:
+I need help fixing this project. When I run `uv run debug` (or run anything, even `pytest`), things seems to break (such as literally not working, freezing in the CLI, and be unable to escape the CLI via CTRL+C). When I run `uv run debug` I get a clean log like:
 
 ```
 > uv run debug
