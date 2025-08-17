@@ -1,4 +1,6 @@
 import logging
+import os
+import platform
 from pathlib import Path
 
 from web_buddy_backend.api import api
@@ -14,6 +16,13 @@ from fastapi.openapi.docs import (
 )
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+
+# Windows-specific optimizations to prevent CLI freezing
+is_windows_like = platform.system() in ("Windows",) or "microsoft" in platform.uname().release.lower()
+if is_windows_like:
+    # Set Windows-specific environment variables to prevent issues
+    os.environ.setdefault("PYTHONUNBUFFERED", "1")
+    os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
 
 configure_logging(logging.DEBUG if settings.ENV == "dev" else logging.INFO)
 # Disable default docs so we can provide a customized /docs route below
@@ -50,11 +59,8 @@ async def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.on_event("startup")
-async def seed_default_data() -> None:
-    # Do not auto-create a default screen.
-    # Startup only ensures storage dirs exist (handled above).
-    return None
+# Note: startup logic is handled inline during module import
+# (directory creation happens above), so no lifespan events needed currently
 
 
 @app.get("/docs", include_in_schema=False)
