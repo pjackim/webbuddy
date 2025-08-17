@@ -3,40 +3,19 @@
   Description: A Svelte 5 component for a modern, infinitely zoomable and pannable background grid or dot pattern with smooth animations.
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { gridSettings, performanceSettings } from '$lib/stores/settings';
+	import { onMount } from 'svelte';
 
 	type GridProps = {
 		class?: string;
 	};
 
-	const {
-		class: additionalClasses = ''
-	}: GridProps = $props();
+	const { class: additionalClasses = '' }: GridProps = $props();
 
-	// Direct access to store values - avoid derived chains that can cause infinite loops
+	// Get reactive access to settings directly from PersistedState
 	let settings = $derived(gridSettings.current);
 	let perfSettings = $derived(performanceSettings.current);
 
-	// Extract values directly from settings to avoid complex derived chains
-	let pattern = $derived(settings.pattern);
-	let gridSize = $derived(settings.size);
-	let dotRadius = $derived(settings.dotRadius);
-	let lineThickness = $derived(settings.lineThickness);
-	let majorDotRadius = $derived(settings.majorDotRadius);
-	let majorLineThickness = $derived(settings.majorLineThickness);
-	let majorLineInterval = $derived(settings.majorLineInterval);
-	let minZoom = $derived(perfSettings.minZoom);
-	let maxZoom = $derived(perfSettings.maxZoom);
-	let zoomSensitivity = $derived(perfSettings.zoomSensitivity);
-	let dampingFactor = $derived(perfSettings.animationDamping);
-	let backgroundColor = $derived(settings.backgroundColor);
-	let enableAnimations = $derived(perfSettings.enableAnimations);
-
-	// Computed colors with opacity  
-	let patternColor = $derived(`${settings.color.replace(')', ` / ${settings.opacity})`)}`);
-	let finalMajorLineColor = $derived(`${settings.majorColor.replace(')', ` / ${settings.majorOpacity})`)}`);
-	
 	let canvasElement: HTMLCanvasElement | undefined = $state();
 	let pan = $state({ x: 0, y: 0 });
 	let zoom = $state(1);
@@ -47,7 +26,7 @@
 	let dimensions = $state({ width: 0, height: 0 });
 
 	$effect(() => {
-		if (!canvasElement) return;
+		if (!canvasElement || !settings.visible) return;
 		const ctx = canvasElement.getContext('2d');
 		if (!ctx) return;
 
@@ -55,7 +34,7 @@
 
 		// Only paint a background if it's an explicit color. If it's transparent or a CSS var,
 		// skip filling so the page's CSS glow shows through.
-		const bg = (backgroundColor || '').trim().toLowerCase();
+		const bg = (settings.backgroundColor || '').trim().toLowerCase();
 		const skipBg =
 			!bg ||
 			bg === 'transparent' ||
@@ -64,7 +43,7 @@
 		if (skipBg) {
 			ctx.clearRect(0, 0, width, height);
 		} else {
-			ctx.fillStyle = backgroundColor;
+			ctx.fillStyle = settings.backgroundColor;
 			ctx.fillRect(0, 0, width, height);
 		}
 
@@ -79,22 +58,27 @@
 			y2: (height - pan.y) / zoom
 		};
 
-		const startIndexX = Math.floor(view.x1 / gridSize);
-		const startIndexY = Math.floor(view.y1 / gridSize);
-		const endIndexX = Math.ceil(view.x2 / gridSize);
-		const endIndexY = Math.ceil(view.y2 / gridSize);
+		const startIndexX = Math.floor(view.x1 / settings.size);
+		const startIndexY = Math.floor(view.y1 / settings.size);
+		const endIndexX = Math.ceil(view.x2 / settings.size);
+		const endIndexY = Math.ceil(view.y2 / settings.size);
 
-		if (pattern === 'dots') {
-			const scaledRadius = dotRadius / zoom;
-			const scaledMajorRadius = majorDotRadius / zoom;
+		// Compute colors with opacity
+		const patternColor = `${settings.color.replace(')', ` / ${settings.opacity})`)}`;
+		const majorLineColor = `${settings.majorColor.replace(')', ` / ${settings.majorOpacity})`)}`;
+
+		if (settings.pattern === 'dots') {
+			const scaledRadius = settings.dotRadius / zoom;
+			const scaledMajorRadius = settings.majorDotRadius / zoom;
 			const minorDots = new Path2D();
 			const majorDots = new Path2D();
 
 			for (let i = startIndexX; i <= endIndexX; i++) {
 				for (let j = startIndexY; j <= endIndexY; j++) {
-					const x = i * gridSize;
-					const y = j * gridSize;
-					const isMajor = i % majorLineInterval === 0 && j % majorLineInterval === 0;
+					const x = i * settings.size;
+					const y = j * settings.size;
+					const isMajor =
+						i % settings.majorLineInterval === 0 && j % settings.majorLineInterval === 0;
 					if (isMajor) {
 						majorDots.moveTo(x, y);
 						majorDots.arc(x, y, scaledMajorRadius, 0, 2 * Math.PI);
@@ -106,31 +90,31 @@
 			}
 			ctx.fillStyle = patternColor;
 			ctx.fill(minorDots);
-			ctx.fillStyle = finalMajorLineColor;
+			ctx.fillStyle = majorLineColor;
 			ctx.fill(majorDots);
-		} else if (pattern === 'grid') {
+		} else if (settings.pattern === 'grid') {
 			const minorLines = new Path2D();
 			const majorLines = new Path2D();
 
 			for (let i = startIndexX; i <= endIndexX; i++) {
-				const x = i * gridSize;
-				const isMajor = i % majorLineInterval === 0;
+				const x = i * settings.size;
+				const isMajor = i % settings.majorLineInterval === 0;
 				const path = isMajor ? majorLines : minorLines;
 				path.moveTo(x, view.y1);
 				path.lineTo(x, view.y2);
 			}
 			for (let j = startIndexY; j <= endIndexY; j++) {
-				const y = j * gridSize;
-				const isMajor = j % majorLineInterval === 0;
+				const y = j * settings.size;
+				const isMajor = j % settings.majorLineInterval === 0;
 				const path = isMajor ? majorLines : minorLines;
 				path.moveTo(view.x1, y);
 				path.lineTo(view.x2, y);
 			}
 			ctx.strokeStyle = patternColor;
-			ctx.lineWidth = lineThickness / zoom;
+			ctx.lineWidth = settings.lineThickness / zoom;
 			ctx.stroke(minorLines);
-			ctx.strokeStyle = finalMajorLineColor;
-			ctx.lineWidth = majorLineThickness / zoom;
+			ctx.strokeStyle = majorLineColor;
+			ctx.lineWidth = settings.majorLineThickness / zoom;
 			ctx.stroke(majorLines);
 		}
 
@@ -145,8 +129,11 @@
 		const mouseY = event.clientY - rect.top;
 		const worldX = (mouseX - pan.x) / zoom;
 		const worldY = (mouseY - pan.y) / zoom;
-		const zoomDelta = event.deltaY * zoomSensitivity;
-		const newZoom = Math.max(minZoom, Math.min(maxZoom, zoomTarget - zoomDelta));
+		const zoomDelta = event.deltaY * perfSettings.zoomSensitivity;
+		const newZoom = Math.max(
+			perfSettings.minZoom,
+			Math.min(perfSettings.maxZoom, zoomTarget - zoomDelta)
+		);
 		panTarget.x = mouseX - worldX * newZoom;
 		panTarget.y = mouseY - worldY * newZoom;
 		zoomTarget = newZoom;
@@ -206,12 +193,12 @@
 			const panDistance = Math.hypot(panTarget.x - pan.x, panTarget.y - pan.y);
 			const zoomDistance = Math.abs(zoomTarget - zoom);
 
-			if (enableAnimations && (panDistance > 0.01 || zoomDistance > 0.01)) {
-				pan.x += (panTarget.x - pan.x) * dampingFactor;
-				pan.y += (panTarget.y - pan.y) * dampingFactor;
-				zoom += (zoomTarget - zoom) * dampingFactor;
+			if (perfSettings.enableAnimations && (panDistance > 0.01 || zoomDistance > 0.01)) {
+				pan.x += (panTarget.x - pan.x) * perfSettings.animationDamping;
+				pan.y += (panTarget.y - pan.y) * perfSettings.animationDamping;
+				zoom += (zoomTarget - zoom) * perfSettings.animationDamping;
 				frameId = requestAnimationFrame(animate);
-			} else if (!enableAnimations) {
+			} else if (!perfSettings.enableAnimations) {
 				// Snap immediately when animations are disabled
 				pan.x = panTarget.x;
 				pan.y = panTarget.y;

@@ -81,7 +81,7 @@ const defaultDebugSettings: DebugSettings = {
 	showGrid: false
 };
 
-// Create persistent stores
+// Create persistent stores and export them directly
 export const gridSettings = new PersistedState('gridSettings', defaultGridSettings);
 export const styleSettings = new PersistedState('styleSettings', defaultStyleSettings);
 export const performanceSettings = new PersistedState('performanceSettings', defaultPerformanceSettings);

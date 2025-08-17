@@ -18,21 +18,35 @@
 		resetAllSettings
 	} from '$lib/stores/settings';
 	import { Settings, Grid3X3, Palette, Zap, Bug, RotateCcw, ChevronDown, ChevronRight } from '@lucide/svelte';
-
-	// Direct access to store values - no derived needed to avoid infinite loops
-
+	import { onDestroy } from 'svelte';
+	// Access store values directly from PersistedState.current to avoid circular reactivity
+	let currentGridSettings = $derived(gridSettings.current);
+	let currentStyleSettings = $derived(styleSettings.current);
+	let currentPerformanceSettings = $derived(performanceSettings.current);
+	let currentDebugSettings = $derived(debugSettings.current);
 	// Section expansion states
 	let gridExpanded = $state(true);
 	let styleExpanded = $state(false);
 	let performanceExpanded = $state(false);
 	let debugExpanded = $state(false);
-
-	// Helper function to handle slider values
-	const handleSliderChange = (value: number[], callback: (val: number) => void) => {
-		callback(value[0]);
+	// Helper function to handle slider values with proper typing and throttling
+	let updateTimeouts: Record<string, ReturnType<typeof setTimeout>> = {};
+	const handleSliderChange = (key: string, value: number[], callback: (val: number) => void) => {
+		// Clear existing timeout for this key
+		if (updateTimeouts[key]) {
+			clearTimeout(updateTimeouts[key]);
+		}
+		// Throttle updates to prevent rapid-fire changes
+		updateTimeouts[key] = setTimeout(() => {
+			callback(value[0]);
+			delete updateTimeouts[key];
+		}, 16); // ~60fps update rate
 	};
+	// Clean up timeouts on component destroy
+	onDestroy(() => {
+		Object.values(updateTimeouts).forEach(clearTimeout);
+	});
 </script>
-
 <Popover.Root>
 	<Popover.Trigger>
 		{#snippet child({ props })}
@@ -53,7 +67,6 @@
 					Configure your workspace preferences
 				</p>
 			</div>
-			
 			<!-- Grid Settings Section -->
 			<div class="space-y-2">
 				<button
@@ -70,23 +83,21 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-
 				{#if gridExpanded}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="grid-visible" class="text-sm">Show Grid</Label>
 							<Switch 
 								id="grid-visible"
-								checked={gridSettings.current.visible}
+								checked={currentGridSettings.visible}
 								onCheckedChange={(checked) => updateGridSettings({ visible: checked })}
 							/>
 						</div>
-
 						<div class="space-y-2">
 							<Label for="grid-pattern" class="text-sm">Pattern</Label>
 							<select 
 								id="grid-pattern"
-								value={gridSettings.current.pattern}
+								value={currentGridSettings.pattern}
 								onchange={(e) => {
 									const target = e.target as HTMLSelectElement;
 									updateGridSettings({ pattern: target.value as 'dots' | 'grid' });
@@ -97,37 +108,34 @@
 								<option value="dots">Dots</option>
 							</select>
 						</div>
-
 						<div class="space-y-2">
-							<Label for="grid-size" class="text-sm">Size: {gridSettings.current.size}px</Label>
-							<Slider.Root
-								value={[gridSettings.current.size]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updateGridSettings({ size: val }))}
+							<Label for="grid-size" class="text-sm">Size: {currentGridSettings.size}px</Label>
+							<Slider.Root type="single"
+								value={[currentGridSettings.size]}
+								onValueChange={(value: number[]) => handleSliderChange('grid-size', value, (val) => updateGridSettings({ size: val }))}
 								max={100}
 								min={10}
 								step={5}
 								class="w-full"
 							/>
 						</div>
-
 						<div class="space-y-2">
-							<Label for="grid-opacity" class="text-sm">Opacity: {Math.round(gridSettings.current.opacity * 100)}%</Label>
-							<Slider.Root
-								value={[gridSettings.current.opacity * 100]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updateGridSettings({ opacity: val / 100 }))}
+							<Label for="grid-opacity" class="text-sm">Opacity: {Math.round(currentGridSettings.opacity * 100)}%</Label>
+							<Slider.Root type="single"
+								value={[currentGridSettings.opacity * 100]}
+								onValueChange={(value: number[]) => handleSliderChange('grid-opacity', value, (val) => updateGridSettings({ opacity: val / 100 }))}
 								max={100}
 								min={0}
 								step={5}
 								class="w-full"
 							/>
 						</div>
-
-						{#if gridSettings.current.pattern === 'grid'}
+						{#if currentGridSettings.pattern === 'grid'}
 							<div class="space-y-2">
-								<Label for="line-thickness" class="text-sm">Line Thickness: {gridSettings.current.lineThickness}px</Label>
-								<Slider.Root
-									value={[gridSettings.current.lineThickness]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updateGridSettings({ lineThickness: val }))}
+								<Label for="line-thickness" class="text-sm">Line Thickness: {currentGridSettings.lineThickness}px</Label>
+								<Slider.Root type="single"
+									value={[currentGridSettings.lineThickness]}
+									onValueChange={(value: number[]) => handleSliderChange('line-thickness', value, (val) => updateGridSettings({ lineThickness: val }))}
 									max={3}
 									min={0.1}
 									step={0.1}
@@ -136,10 +144,10 @@
 							</div>
 						{:else}
 							<div class="space-y-2">
-								<Label for="dot-radius" class="text-sm">Dot Radius: {gridSettings.current.dotRadius}px</Label>
-								<Slider.Root
-									value={[gridSettings.current.dotRadius]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updateGridSettings({ dotRadius: val }))}
+								<Label for="dot-radius" class="text-sm">Dot Radius: {currentGridSettings.dotRadius}px</Label>
+								<Slider.Root type="single"
+									value={[currentGridSettings.dotRadius]}
+									onValueChange={(value: number[]) => handleSliderChange('dot-radius', value, (val) => updateGridSettings({ dotRadius: val }))}
 									max={3}
 									min={0.1}
 									step={0.1}
@@ -147,12 +155,11 @@
 								/>
 							</div>
 						{/if}
-
 						<div class="space-y-2">
-							<Label for="major-interval" class="text-sm">Major Line Interval: {gridSettings.current.majorLineInterval}</Label>
-							<Slider.Root
-								value={[gridSettings.current.majorLineInterval]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updateGridSettings({ majorLineInterval: val }))}
+							<Label for="major-interval" class="text-sm">Major Line Interval: {currentGridSettings.majorLineInterval}</Label>
+							<Slider.Root type="single"
+								value={[currentGridSettings.majorLineInterval]}
+								onValueChange={(value: number[]) => handleSliderChange('major-interval', value, (val) => updateGridSettings({ majorLineInterval: val }))}
 								max={10}
 								min={2}
 								step={1}
@@ -162,9 +169,7 @@
 					</div>
 				{/if}
 			</div>
-
 			<Separator.Root class="opacity-50" />
-
 			<!-- Style Settings Section -->
 			<div class="space-y-2">
 				<button
@@ -181,53 +186,48 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-
 				{#if styleExpanded}
 					<div class="space-y-3 pl-6">
 						<div class="space-y-2">
-							<Label for="corner-radius" class="text-sm">Corner Radius: {styleSettings.current.cornerRadius}px</Label>
-							<Slider.Root
-								value={[styleSettings.current.cornerRadius]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updateStyleSettings({ cornerRadius: val }))}
+							<Label for="corner-radius" class="text-sm">Corner Radius: {currentStyleSettings.cornerRadius}px</Label>
+							<Slider.Root type="single"
+								value={[currentStyleSettings.cornerRadius]}
+								onValueChange={(value: number[]) => handleSliderChange('corner-radius', value, (val) => updateStyleSettings({ cornerRadius: val }))}
 								max={24}
 								min={0}
 								step={1}
 								class="w-full"
 							/>
 						</div>
-
 						<div class="space-y-2">
 							<Label class="text-sm font-medium">Glassmorphism</Label>
-							
 							<div class="space-y-2">
-								<Label for="glass-blur" class="text-xs text-muted-foreground">Blur: {styleSettings.current.glassBlur}px</Label>
-								<Slider.Root
-									value={[styleSettings.current.glassBlur]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updateStyleSettings({ glassBlur: val }))}
+								<Label for="glass-blur" class="text-xs text-muted-foreground">Blur: {currentStyleSettings.glassBlur}px</Label>
+								<Slider.Root type="single"
+									value={[currentStyleSettings.glassBlur]}
+									onValueChange={(value: number[]) => handleSliderChange('glass-blur', value, (val) => updateStyleSettings({ glassBlur: val }))}
 									max={32}
 									min={0}
 									step={2}
 									class="w-full"
 								/>
 							</div>
-
 							<div class="space-y-2">
-								<Label for="glass-opacity" class="text-xs text-muted-foreground">Background Opacity: {Math.round(styleSettings.current.glassOpacity * 100)}%</Label>
-								<Slider.Root
-									value={[styleSettings.current.glassOpacity * 100]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updateStyleSettings({ glassOpacity: val / 100 }))}
+								<Label for="glass-opacity" class="text-xs text-muted-foreground">Background Opacity: {Math.round(currentStyleSettings.glassOpacity * 100)}%</Label>
+								<Slider.Root type="single"
+									value={[currentStyleSettings.glassOpacity * 100]}
+									onValueChange={(value: number[]) => handleSliderChange('glass-opacity', value, (val) => updateStyleSettings({ glassOpacity: val / 100 }))}
 									max={80}
 									min={0}
 									step={5}
 									class="w-full"
 								/>
 							</div>
-
 							<div class="space-y-2">
-								<Label for="border-opacity" class="text-xs text-muted-foreground">Border Opacity: {Math.round(styleSettings.current.borderOpacity * 100)}%</Label>
-								<Slider.Root
-									value={[styleSettings.current.borderOpacity * 100]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updateStyleSettings({ borderOpacity: val / 100 }))}
+								<Label for="border-opacity" class="text-xs text-muted-foreground">Border Opacity: {Math.round(currentStyleSettings.borderOpacity * 100)}%</Label>
+								<Slider.Root type="single"
+									value={[currentStyleSettings.borderOpacity * 100]}
+									onValueChange={(value: number[]) => handleSliderChange('border-opacity', value, (val) => updateStyleSettings({ borderOpacity: val / 100 }))}
 									max={50}
 									min={0}
 									step={5}
@@ -238,9 +238,7 @@
 					</div>
 				{/if}
 			</div>
-
 			<Separator.Root class="opacity-50" />
-
 			<!-- Performance Settings Section -->
 			<div class="space-y-2">
 				<button
@@ -257,60 +255,55 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-
 				{#if performanceExpanded}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="enable-animations" class="text-sm">Enable Animations</Label>
 							<Switch 
 								id="enable-animations"
-								checked={performanceSettings.current.enableAnimations}
+								checked={currentPerformanceSettings.enableAnimations}
 								onCheckedChange={(checked) => updatePerformanceSettings({ enableAnimations: checked })}
 							/>
 						</div>
-
 						<div class="space-y-2">
-							<Label for="animation-damping" class="text-sm">Animation Damping: {performanceSettings.current.animationDamping.toFixed(2)}</Label>
-							<Slider.Root
-								value={[performanceSettings.current.animationDamping * 100]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updatePerformanceSettings({ animationDamping: val / 100 }))}
+							<Label for="animation-damping" class="text-sm">Animation Damping: {currentPerformanceSettings.animationDamping.toFixed(2)}</Label>
+							<Slider.Root type="single"
+								value={[currentPerformanceSettings.animationDamping * 100]}
+								onValueChange={(value: number[]) => handleSliderChange('animation-damping', value, (val) => updatePerformanceSettings({ animationDamping: val / 100 }))}
 								max={50}
 								min={1}
 								step={1}
 								class="w-full"
 							/>
 						</div>
-
 						<div class="space-y-2">
-							<Label for="zoom-sensitivity" class="text-sm">Zoom Sensitivity: {(performanceSettings.current.zoomSensitivity * 1000).toFixed(1)}</Label>
-							<Slider.Root
-								value={[performanceSettings.current.zoomSensitivity * 1000]}
-								onValueChange={(value) => handleSliderChange(value, (val) => updatePerformanceSettings({ zoomSensitivity: val / 1000 }))}
+							<Label for="zoom-sensitivity" class="text-sm">Zoom Sensitivity: {(currentPerformanceSettings.zoomSensitivity * 1000).toFixed(1)}</Label>
+							<Slider.Root type="single"
+								value={[currentPerformanceSettings.zoomSensitivity * 1000]}
+								onValueChange={(value: number[]) => handleSliderChange('zoom-sensitivity', value, (val) => updatePerformanceSettings({ zoomSensitivity: val / 1000 }))}
 								max={5}
 								min={0.1}
 								step={0.1}
 								class="w-full"
 							/>
 						</div>
-
 						<div class="grid grid-cols-2 gap-3">
 							<div class="space-y-2">
-								<Label for="min-zoom" class="text-sm">Min Zoom: {performanceSettings.current.minZoom.toFixed(1)}x</Label>
-								<Slider.Root
-									value={[performanceSettings.current.minZoom * 10]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updatePerformanceSettings({ minZoom: val / 10 }))}
+								<Label for="min-zoom" class="text-sm">Min Zoom: {currentPerformanceSettings.minZoom.toFixed(1)}x</Label>
+								<Slider.Root type="single"
+									value={[currentPerformanceSettings.minZoom * 10]}
+									onValueChange={(value: number[]) => handleSliderChange('min-zoom', value, (val) => updatePerformanceSettings({ minZoom: val / 10 }))}
 									max={10}
 									min={1}
 									step={1}
 									class="w-full"
 								/>
 							</div>
-
 							<div class="space-y-2">
-								<Label for="max-zoom" class="text-sm">Max Zoom: {performanceSettings.current.maxZoom}x</Label>
-								<Slider.Root
-									value={[performanceSettings.current.maxZoom]}
-									onValueChange={(value) => handleSliderChange(value, (val) => updatePerformanceSettings({ maxZoom: val }))}
+								<Label for="max-zoom" class="text-sm">Max Zoom: {currentPerformanceSettings.maxZoom}x</Label>
+								<Slider.Root type="single"
+									value={[currentPerformanceSettings.maxZoom]}
+									onValueChange={(value: number[]) => handleSliderChange('max-zoom', value, (val) => updatePerformanceSettings({ maxZoom: val }))}
 									max={20}
 									min={2}
 									step={1}
@@ -321,9 +314,7 @@
 					</div>
 				{/if}
 			</div>
-
 			<Separator.Root class="opacity-50" />
-
 			<!-- Debug Settings Section -->
 			<div class="space-y-2">
 				<button
@@ -340,62 +331,55 @@
 						<ChevronRight class="h-4 w-4" />
 					{/if}
 				</button>
-
 				{#if debugExpanded}
 					<div class="space-y-3 pl-6">
 						<div class="flex items-center justify-between">
 							<Label for="debug-mode" class="text-sm">Debug Mode</Label>
 							<Switch 
 								id="debug-mode"
-								checked={debugSettings.current.debugMode}
+								checked={currentDebugSettings.debugMode}
 								onCheckedChange={(checked) => updateDebugSettings({ debugMode: checked })}
 							/>
 						</div>
-
 						<div class="flex items-center justify-between">
 							<Label for="show-fps" class="text-sm">Show FPS</Label>
 							<Switch 
 								id="show-fps"
-								checked={debugSettings.current.showFPS}
+								checked={currentDebugSettings.showFPS}
 								onCheckedChange={(checked) => updateDebugSettings({ showFPS: checked })}
 							/>
 						</div>
-
 						<div class="flex items-center justify-between">
 							<Label for="show-coordinates" class="text-sm">Show Coordinates</Label>
 							<Switch 
 								id="show-coordinates"
-								checked={debugSettings.current.showCoordinates}
+								checked={currentDebugSettings.showCoordinates}
 								onCheckedChange={(checked) => updateDebugSettings({ showCoordinates: checked })}
 							/>
 						</div>
-
 						<div class="flex items-center justify-between">
 							<Label for="show-grid-debug" class="text-sm">Show Grid Debug</Label>
 							<Switch 
 								id="show-grid-debug"
-								checked={debugSettings.current.showGrid}
+								checked={currentDebugSettings.showGrid}
 								onCheckedChange={(checked) => updateDebugSettings({ showGrid: checked })}
 							/>
 						</div>
-
 						<div class="pt-2">
 							<p class="text-xs text-muted-foreground mb-2">Debug info will appear when enabled</p>
-							{#if debugSettings.current.debugMode}
+							{#if currentDebugSettings.debugMode}
 								<div class="text-xs font-mono bg-muted/50 p-2 rounded space-y-1">
-									<div>Grid: {gridSettings.current.visible ? 'ON' : 'OFF'}</div>
-									<div>Pattern: {gridSettings.current.pattern}</div>
-									<div>Size: {gridSettings.current.size}px</div>
-									<div>FPS: {debugSettings.current.showFPS ? 'VISIBLE' : 'HIDDEN'}</div>
+									<div>Grid: {currentGridSettings.visible ? 'ON' : 'OFF'}</div>
+									<div>Pattern: {currentGridSettings.pattern}</div>
+									<div>Size: {currentGridSettings.size}px</div>
+									<div>FPS: {currentDebugSettings.showFPS ? 'VISIBLE' : 'HIDDEN'}</div>
 								</div>
 							{/if}
 						</div>
 					</div>
 				{/if}
 			</div>
-
 			<Separator.Root class="opacity-50" />
-
 			<div class="flex justify-between items-center pt-2">
 				<Button
 					variant="outline"
