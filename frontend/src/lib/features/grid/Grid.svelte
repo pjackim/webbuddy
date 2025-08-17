@@ -52,8 +52,21 @@
 		if (!ctx) return;
 
 		const { width, height } = dimensions;
-		ctx.fillStyle = backgroundColor;
-		ctx.fillRect(0, 0, width, height);
+
+		// Only paint a background if it's an explicit color. If it's transparent or a CSS var,
+		// skip filling so the page's CSS glow shows through.
+		const bg = (backgroundColor || '').trim().toLowerCase();
+		const skipBg =
+			!bg ||
+			bg === 'transparent' ||
+			bg.includes('var('); // e.g. "hsl(var(--background))" — let body background glow show
+
+		if (skipBg) {
+			ctx.clearRect(0, 0, width, height);
+		} else {
+			ctx.fillStyle = backgroundColor;
+			ctx.fillRect(0, 0, width, height);
+		}
 
 		ctx.save();
 		ctx.translate(pan.x, pan.y);

@@ -56,7 +56,7 @@ const defaultGridSettings: GridSettings = {
 	majorOpacity: 0.2,
 	color: 'hsl(var(--foreground))',
 	majorColor: 'hsl(var(--foreground))',
-	backgroundColor: 'hsl(var(--background))'
+	backgroundColor: 'transparent'
 };
 
 const defaultStyleSettings: StyleSettings = {
