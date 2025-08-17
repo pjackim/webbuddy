@@ -91,7 +91,7 @@
 							<select 
 								id="grid-pattern"
 								bind:value={currentGridSettings.pattern}
-								on:change={(e) => {
+								onchange={(e) => {
 									const target = e.target as HTMLSelectElement;
 									updateGridSettings({ pattern: target.value as 'dots' | 'grid' });
 								}}
