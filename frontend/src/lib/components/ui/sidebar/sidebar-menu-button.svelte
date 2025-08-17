@@ -94,6 +94,3 @@
 		</Tooltip.Content>
 	</Tooltip.Root>
 {/if}
-		</Tooltip.Content>
-	</Tooltip.Root>
-{/if}

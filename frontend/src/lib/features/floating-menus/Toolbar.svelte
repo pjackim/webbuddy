@@ -1,8 +1,9 @@
 <script lang="ts">
 	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { selectedTool, setTool, type ToolType } from '$lib/stores';
+	import { Button } from '$lib/ui/button';
 	import * as Menubar from '$lib/ui/menubar';
 	import * as Popover from '$lib/ui/popover';
-	import { Button } from '$lib/ui/button';
 	import {
 		Circle,
 		Eraser,
@@ -15,7 +16,6 @@
 		Type,
 		Undo
 	} from '@lucide/svelte';
-	import { selectedTool, setTool, type ToolType } from '$lib/stores';
 
 	// Tools config for the centered horizontal toolbar
 	const tools = [
@@ -33,7 +33,7 @@
 			if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
 				return;
 			}
-			
+
 			switch (e.key.toLowerCase()) {
 				case 'v':
 					setTool('pointer');
@@ -63,7 +63,7 @@
 
 <!-- Centered floating horizontal tools toolbar -->
 <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
+	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md rounded-lg">
 		<div class="flex items-center gap-1 px-2 py-1">
 			{#each tools as tool (tool.id)}
 				{#if tool.id === 'eraser'}
@@ -71,7 +71,7 @@
 				{/if}
 				<Tooltip.Root>
 					<Tooltip.Trigger
-						class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md text-sm transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {$selectedTool === tool.id ? 'bg-accent/25 border border-accent/50' : ''}"
+						class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-lg text-sm transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 {$selectedTool === tool.id ? 'bg-accent/25 border border-accent/50' : ''}"
 						onclick={() => handleToolSelect(tool.id)}
 						aria-pressed={$selectedTool === tool.id}
 						type="button"
@@ -92,11 +92,11 @@
 
 <!-- Top-right aligned application menubar (moved from center) -->
 <div class="fixed top-4 right-4 z-50">
-	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md">
+	<div class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md rounded-lg">
 		<Menubar.Root class="border-0 bg-transparent">
 		<Menubar.Menu>
 			<Menubar.Trigger class="px-2 hover:bg-accent/20">Pages</Menubar.Trigger>
-			<Menubar.Content class="glassmorphism border border-border/50 p-2 w-64">
+			<Menubar.Content class="glassmorphism border border-border/50 p-2 w-64 rounded-lg">
 				<div class="grid grid-cols-2 gap-2">
 					<Button variant="outline" href="/">Home</Button>
 					<Button variant="outline" href="/about">About</Button>
@@ -110,7 +110,7 @@
 
 			<Menubar.Menu>
 				<Menubar.Trigger class="px-2 hover:bg-accent/20">Edit</Menubar.Trigger>
-				<Menubar.Content class="glassmorphism border border-border/50">
+				<Menubar.Content class="glassmorphism border border-border/50 rounded-lg">
 					<Menubar.Item class="flex items-center gap-2">
 						<Undo class="h-4 w-4" />
 						Undo
@@ -130,7 +130,7 @@
 
 			<Menubar.Menu>
 				<Menubar.Trigger class="px-2 hover:bg-accent/20">View</Menubar.Trigger>
-				<Menubar.Content class="glassmorphism border border-border/50">
+				<Menubar.Content class="glassmorphism border border-border/50 rounded-lg">
 					<Menubar.Item class="flex items-center gap-2">
 						<Layers class="h-4 w-4" />
 						Show Layers
@@ -143,10 +143,10 @@
 
 			<div class="flex items-center pl-4 pr-2 gap-2">
 				<Popover.Root>
-					<Popover.Trigger class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-sm text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+					<Popover.Trigger class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-lg text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
 						<Settings class="h-4 w-4" />
 					</Popover.Trigger>
-					<Popover.Content class="glassmorphism border border-border/50 w-80">
+					<Popover.Content class="glassmorphism border border-border/50 w-80 rounded-lg">
 						<div class="space-y-4">
 							<div class="space-y-2">
 								<h4 class="font-medium leading-none">Quick Settings</h4>
@@ -182,7 +182,7 @@
 					</Popover.Content>
 				</Popover.Root>
 
-				<button class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-sm text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+				<button class="inline-flex items-center justify-center h-8 w-8 p-0 rounded-lg text-sm font-medium transition-colors hover:bg-accent/20 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
 					<Save class="h-4 w-4" />
 				</button>
 			</div>

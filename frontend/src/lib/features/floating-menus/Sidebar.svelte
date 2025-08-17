@@ -74,7 +74,7 @@
 		<!-- Collapsible sidebar with restored glassmorphism styling on the container -->
 		<Sidebar.Root
 			collapsible="offcanvas"
-			class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md"
+			class="glassmorphism border border-border/50 shadow-2xl backdrop-blur-md rounded-lg"
 		>
 			<Sidebar.Header class="border-b border-border/20 px-4 py-3 flex items-center justify-between">
 				<div class="flex items-center gap-2">
