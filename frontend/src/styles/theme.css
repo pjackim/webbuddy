@@ -99,19 +99,19 @@
 	--color-zinc-800: #27272a;
 	--color-zinc-900: #18181b;
 	--color-zinc-950: #09090b;
-}
 
-@theme inline {
+	/* Radius utilities */
+	--radius-xs: 0.125rem;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
 	--radius-xl: calc(var(--radius) + 4px);
-
-	/* Border radius utilities */
-	--radius-xs: 0.125rem;
 	--radius-2xl: calc(var(--radius) + 8px);
 	--radius-3xl: calc(var(--radius) + 12px);
 	--radius-full: 9999px;
+}
+
+@theme inline {
 
 	--color-background: oklch(var(--background-oklch));
 	--color-foreground: oklch(var(--foreground-oklch));
@@ -458,7 +458,7 @@
 /*
  * =================================================================
  * RESPONSIVE LAYOUT UTILITIES - MOVED TO utilities.css
- * 
+ *
  * @utility definitions have been moved to utilities.css to fix
  * Tailwind v4 nesting error. Utilities must be at top-level.
  * =================================================================

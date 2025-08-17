@@ -67,7 +67,7 @@
 	});
 </script>
 
-{#snippet Button({ props }: { props?: Record<string, unknown> })}
+{#snippet Button({ props } = { props: {} })}
 	{@const mergedProps = mergeProps(buttonProps, props)}
 	<button bind:this={ref} {...mergedProps}>
 		{@render children?.()}
@@ -75,11 +75,12 @@
 {/snippet}
 
 {#if !tooltipContent}
-	{@render Button({})}
+	{@render Button({ props: {} })}
 {:else}
 	<Tooltip.Root>
-		<!-- Use Bits-UI 'child' snippet instead of unsupported 'asChild' prop -->
-		<Tooltip.Trigger child={Button} />
+		<Tooltip.Trigger>
+			{@render Button({ props: {} })}
+		</Tooltip.Trigger>
 		<Tooltip.Content
 			side="right"
 			align="center"

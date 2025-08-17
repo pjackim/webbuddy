@@ -164,6 +164,46 @@
 		zoomTarget = 1;
 	}
 
+	function handleKeyDown(event: KeyboardEvent) {
+		if (!canvasElement) return;
+		const { width, height } = dimensions;
+		const panStep = 50;
+		const zoomStep = 0.1;
+
+		switch (event.key) {
+			case 'ArrowUp':
+				event.preventDefault();
+				panTarget.y -= panStep;
+				break;
+			case 'ArrowDown':
+				event.preventDefault();
+				panTarget.y += panStep;
+				break;
+			case 'ArrowLeft':
+				event.preventDefault();
+				panTarget.x -= panStep;
+				break;
+			case 'ArrowRight':
+				event.preventDefault();
+				panTarget.x += panStep;
+				break;
+			case '+':
+			case '=':
+				event.preventDefault();
+				zoomTarget = Math.min(perfSettings.maxZoom, zoomTarget + zoomStep);
+				break;
+			case '-':
+				event.preventDefault();
+				zoomTarget = Math.max(perfSettings.minZoom, zoomTarget - zoomStep);
+				break;
+			case '0':
+				event.preventDefault();
+				panTarget = { x: width / 2, y: height / 2 };
+				zoomTarget = 1;
+				break;
+		}
+	}
+
 	onMount(() => {
 		// capture a stable reference for use in closures
 		const el = canvasElement;
@@ -224,13 +264,18 @@
 	class="grid-container {additionalClasses}"
 	role="application"
 	aria-label="Interactive grid background that can be panned and zoomed"
+	aria-describedby="grid-instructions"
 	tabindex="0"
 	onmousedown={handleMouseDown}
 	onmouseup={handleMouseUp}
 	onmouseleave={handleMouseUp}
 	onmousemove={handleMouseMove}
 	ondblclick={handleDoubleClick}
+	onkeydown={handleKeyDown}
 >
+	<div id="grid-instructions" class="sr-only">
+		Use mouse to pan and scroll wheel to zoom. Use arrow keys to pan and +/- to zoom. Press 0 to reset view.
+	</div>
 	<canvas bind:this={canvasElement} onwheel={handleWheel} class:panning={isPanning}></canvas>
 </div>
 
@@ -258,5 +303,17 @@
 
 	.panning {
 		cursor: grabbing;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>
