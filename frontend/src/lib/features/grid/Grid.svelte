@@ -14,11 +14,11 @@
 		class: additionalClasses = ''
 	}: GridProps = $props();
 
-	// Get settings from stores
+	// Direct access to store values - avoid derived chains that can cause infinite loops
 	let settings = $derived(gridSettings.current);
 	let perfSettings = $derived(performanceSettings.current);
 
-	// Computed values from settings
+	// Extract values directly from settings to avoid complex derived chains
 	let pattern = $derived(settings.pattern);
 	let gridSize = $derived(settings.size);
 	let dotRadius = $derived(settings.dotRadius);
@@ -31,13 +31,12 @@
 	let zoomSensitivity = $derived(perfSettings.zoomSensitivity);
 	let dampingFactor = $derived(perfSettings.animationDamping);
 	let backgroundColor = $derived(settings.backgroundColor);
+	let enableAnimations = $derived(perfSettings.enableAnimations);
 
-	// Computed colors with opacity
+	// Computed colors with opacity  
 	let patternColor = $derived(`${settings.color.replace(')', ` / ${settings.opacity})`)}`);
 	let finalMajorLineColor = $derived(`${settings.majorColor.replace(')', ` / ${settings.majorOpacity})`)}`);
-
-	// Don't render anything if animations are disabled
-	let enableAnimations = $derived(perfSettings.enableAnimations);
+	
 	let canvasElement: HTMLCanvasElement | undefined = $state();
 	let pan = $state({ x: 0, y: 0 });
 	let zoom = $state(1);

@@ -77,10 +77,6 @@
 			window.removeEventListener('blur', end);
 		};
 	});
-	
-	function toggleGrid() {
-		gridVisibility.current = !gridVisibility.current;
-	}
 </script>
 
 <svelte:head>
