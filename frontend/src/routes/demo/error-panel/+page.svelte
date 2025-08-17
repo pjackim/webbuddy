@@ -27,15 +27,13 @@
 					throw new Error('Request timeout: Operation took longer than 30 seconds');
 				default:
 					// Create a nested function call for meaningful stack trace
-					function deepFunction() {
-						function nestedFunction() {
+					function deepFunction(): never {
+						function nestedFunction(): never {
 							throw new Error('Test error with real stack trace');
 						}
 						return nestedFunction();
 					}
 					return deepFunction();
-					// Satisfy TS return type (this line is never reached because deepFunction throws)
-					throw new Error('Unreachable');
 			}
 		} catch (error) {
 			return error instanceof Error ? error : new Error(String(error));
