@@ -1,6 +1,5 @@
 import asyncio
 import uuid
-from typing import Dict, List
 
 from web_buddy_backend.models.asset_models import (
     Asset,
@@ -15,11 +14,11 @@ from web_buddy_backend.models.screen_models import Screen, ScreenCreate, ScreenU
 
 class InMemoryState:
     def __init__(self) -> None:
-        self._screens: Dict[str, Screen] = {}
-        self._assets: Dict[str, Asset] = {}
+        self._screens: dict[str, Screen] = {}
+        self._assets: dict[str, Asset] = {}
         self._lock = asyncio.Lock()
 
-    async def list_screens(self) -> List[Screen]:
+    async def list_screens(self) -> list[Screen]:
         return list(self._screens.values())
 
     async def get_screen(self, screen_id: str) -> Screen | None:
@@ -56,7 +55,7 @@ class InMemoryState:
                 self._screens.pop(screen_id, None)
             return existed
 
-    async def list_assets(self, screen_id: str | None = None) -> List[Asset]:
+    async def list_assets(self, screen_id: str | None = None) -> list[Asset]:
         vals = list(self._assets.values())
         return [a for a in vals if (screen_id is None or a.screen_id == screen_id)]
 

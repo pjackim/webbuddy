@@ -56,6 +56,56 @@ git push origin main
 You are now ready to start development on your project!
 The CI/CD pipeline will be triggered when you open a pull request, merge to main, or when you create a new release.
 
+## Development Commands
+
+Web Buddy Backend provides several commands for development:
+
+### Core Commands
+```bash
+# Start development server with auto-reload
+uv run debug
+
+# Start production server
+uv run start
+
+# Run tests with enhanced signal handling
+uv run test
+
+# Check environment and diagnose issues
+uv run doctor
+
+# Format code
+uv run format
+
+# Lint code
+uv run lint
+```
+
+### Troubleshooting
+
+If you experience CLI freezing or Ctrl+C issues (common on Windows/WSL):
+
+```bash
+# Disable auto-reload to prevent CLI issues
+DEBUG_RELOAD=0 uv run debug
+
+# Use localhost binding if 0.0.0.0 causes problems
+HOST=127.0.0.1 uv run debug
+
+# Run environment diagnostics
+uv run doctor
+```
+
+#### Platform-Specific Notes:
+- **Windows/WSL**: Auto-reload disabled by default, use Ctrl+Break if Ctrl+C doesn't work
+- **Linux/macOS**: Full auto-reload support with standard signal handling
+- **All platforms**: Enhanced signal handling with automatic timeout mechanisms
+
+### Environment Variables
+- `HOST`: Server host binding (default: 127.0.0.1)
+- `PORT`: Server port (default: 8000)
+- `DEBUG_RELOAD`: Enable/disable auto-reload (default: platform-dependent)
+
 To finalize the set-up for publishing to PyPI, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/publishing/#set-up-for-pypi).
 For activating the automatic documentation with MkDocs, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/mkdocs/#enabling-the-documentation-on-github).
 To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/codecov/).

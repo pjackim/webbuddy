@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Optional, Union
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -18,10 +18,10 @@ class AssetBase(BaseModel):
 class ImageAsset(AssetBase):
     type: Literal["image"] = "image"
     src: HttpUrl
-    natural_width: Optional[int] = None
-    natural_height: Optional[int] = None
-    width: Optional[float] = None
-    height: Optional[float] = None
+    natural_width: int | None = None
+    natural_height: int | None = None
+    width: float | None = None
+    height: float | None = None
 
 
 class TextAsset(AssetBase):
@@ -34,17 +34,17 @@ class TextAsset(AssetBase):
 class VideoAsset(AssetBase):
     type: Literal["video"] = "video"
     src: HttpUrl
-    natural_width: Optional[int] = None
-    natural_height: Optional[int] = None
-    width: Optional[float] = None
-    height: Optional[float] = None
-    duration: Optional[float] = None  # Duration in seconds
+    natural_width: int | None = None
+    natural_height: int | None = None
+    width: float | None = None
+    height: float | None = None
+    duration: float | None = None  # Duration in seconds
     autoplay: bool = False
     loop: bool = False
     muted: bool = False
 
 
-Asset = Annotated[Union[ImageAsset, TextAsset, VideoAsset], Field(discriminator="type")]
+Asset = Annotated[ImageAsset | TextAsset | VideoAsset, Field(discriminator="type")]
 
 
 class AssetCreate(BaseModel):
@@ -57,32 +57,32 @@ class AssetCreate(BaseModel):
     scale_x: float = 1.0
     scale_y: float = 1.0
     type: Literal["image", "text", "video"]
-    src: Optional[HttpUrl] = None
-    text: Optional[str] = None
-    font_size: Optional[float] = 24
-    color: Optional[str] = "#ffffff"
-    width: Optional[float] = None
-    height: Optional[float] = None
-    duration: Optional[float] = None
-    autoplay: Optional[bool] = False
-    loop: Optional[bool] = False
-    muted: Optional[bool] = False
+    src: HttpUrl | None = None
+    text: str | None = None
+    font_size: float | None = 24
+    color: str | None = "#ffffff"
+    width: float | None = None
+    height: float | None = None
+    duration: float | None = None
+    autoplay: bool | None = False
+    loop: bool | None = False
+    muted: bool | None = False
 
 
 class AssetUpdate(BaseModel):
-    x: Optional[float] = None
-    y: Optional[float] = None
-    z_index: Optional[int] = None
-    rotation: Optional[float] = None
-    scale_x: Optional[float] = None
-    scale_y: Optional[float] = None
-    src: Optional[HttpUrl] = None
-    text: Optional[str] = None
-    font_size: Optional[float] = None
-    color: Optional[str] = None
-    width: Optional[float] = None
-    height: Optional[float] = None
-    duration: Optional[float] = None
-    autoplay: Optional[bool] = None
-    loop: Optional[bool] = None
-    muted: Optional[bool] = None
+    x: float | None = None
+    y: float | None = None
+    z_index: int | None = None
+    rotation: float | None = None
+    scale_x: float | None = None
+    scale_y: float | None = None
+    src: HttpUrl | None = None
+    text: str | None = None
+    font_size: float | None = None
+    color: str | None = None
+    width: float | None = None
+    height: float | None = None
+    duration: float | None = None
+    autoplay: bool | None = None
+    loop: bool | None = None
+    muted: bool | None = None

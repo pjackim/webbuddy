@@ -38,6 +38,7 @@ test = "web_buddy_backend.scripts.test:main"
 format = "web_buddy_backend.scripts.format:main"
 build = "web_buddy_backend.scripts.build:main"
 clean = "web_buddy_backend.scripts.clean:main"
+doctor = "web_buddy_backend.scripts.doctor:main"
 
 [project.urls]
 Homepage = "https://mort-sh.github.io/web-buddy-backend/"
