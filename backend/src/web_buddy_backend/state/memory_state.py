@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from typing import Dict, List
 
-from app.models.asset_models import (
+from web_buddy_backend.models.asset_models import (
     Asset,
     AssetCreate,
     AssetUpdate,
@@ -10,7 +10,7 @@ from app.models.asset_models import (
     TextAsset,
     VideoAsset,
 )
-from app.models.screen_models import Screen, ScreenCreate, ScreenUpdate
+from web_buddy_backend.models.screen_models import Screen, ScreenCreate, ScreenUpdate
 
 
 class InMemoryState:

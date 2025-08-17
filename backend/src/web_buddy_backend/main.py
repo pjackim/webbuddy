@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
 
-from app.api import api
-from app.api.websocket import router as ws_router
-from app.core.config import settings
-from app.core.logging_config import configure_logging
+from web_buddy_backend.api import api
+from web_buddy_backend.api.websocket import router as ws_router
+from web_buddy_backend.core.config import settings
+from web_buddy_backend.core.logging_config import configure_logging
 
 # from app.models.screen_models import ScreenCreate  # removed: no default seeding
 from fastapi import FastAPI
@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 # Static uploads
-UPLOAD_DIR = Path(__file__).resolve().parent.parent / "uploads"
+UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=str(UPLOAD_DIR)), name="uploads")
 

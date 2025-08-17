@@ -1,0 +1,52 @@
+site_name: web-buddy-backend
+repo_url: https://github.com/mort-sh/web-buddy-backend
+site_url: https://mort-sh.github.io/web-buddy-backend
+site_description: This is a template repository for Python projects that use uv for their dependency management.
+site_author: m0rt
+edit_uri: edit/main/docs/
+repo_name: mort-sh/web-buddy-backend
+copyright: Maintained by <a href="https://mort-sh.com">mort-sh</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src/web_buddy_backend"]
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mort-sh/web-buddy-backend
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/web-buddy-backend
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true

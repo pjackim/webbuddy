@@ -1,27 +1,28 @@
-FROM python:3.12-slim AS base
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+# FastAPI production image using uv + uvicorn
+FROM python:3.12-slim
+# System dependencies for runtime libraries
+RUN apt-get update && apt-get install -y --no-install-recommends libmagic1 && rm -rf /var/lib/apt/lists/*
+
+# Install uv (package manager)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
 WORKDIR /app
 
-# system deps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    curl \
- && rm -rf /var/lib/apt/lists/*
+# Copy lockfile and pyproject first for better caching
+COPY uv.lock /app/uv.lock
+COPY pyproject.toml /app/pyproject.toml
 
-# install uv (Python package manager)
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    mv /root/.local/bin/uv /usr/local/bin/uv
+# Install dependencies (no project install yet)
+RUN uv sync --frozen --no-install-project
 
-COPY pyproject.toml ./
-RUN uv pip install --system -e .
+# Copy the full project
+COPY . /app
 
-# Then copy application code
-COPY app ./app
-RUN mkdir -p /app/uploads
+# Sync the project environment with editable install
+RUN uv sync --frozen
 
-# Allow runtime override of host/port (compose will pass HOST/PORT)
-ENV HOST=0.0.0.0 \
-    PORT=8000
 EXPOSE 8000
-CMD ["sh", "-lc", "uvicorn app.main:app --host \"${HOST:-0.0.0.0}\" --port \"${PORT:-8000}\""]
+ENV HOST=0.0.0.0 PORT=8000
+
+# Use uv to run uvicorn in factory mode
+CMD ["uv", "run", "uvicorn", "web_buddy_backend.main:create_app", "--host", "0.0.0.0", "--port", "8000", "--factory"]

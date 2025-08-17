@@ -1,4 +1,4 @@
-from app.util.connection_manager import WS_MANAGER
+from web_buddy_backend.util.connection_manager import WS_MANAGER
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter()

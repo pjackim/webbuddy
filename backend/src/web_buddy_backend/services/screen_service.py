@@ -1,8 +1,8 @@
 import logging
 
-from app.core.config import settings
-from app.core.errors import ExternalServiceError
-from app.models.asset_models import Asset, ImageAsset, TextAsset
+from web_buddy_backend.core.config import settings
+from web_buddy_backend.core.errors import ExternalServiceError
+from web_buddy_backend.models.asset_models import Asset, ImageAsset, TextAsset
 
 log = logging.getLogger(__name__)
 

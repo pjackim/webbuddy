@@ -5,7 +5,7 @@ import tempfile
 from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
-from app.main import app
+from web_buddy_backend.main import app
 import cv2
 import numpy as np
 

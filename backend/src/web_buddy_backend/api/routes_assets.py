@@ -1,18 +1,19 @@
 import uuid
 from pathlib import Path
 
-from app.core.config import settings
-from app.models.asset_models import Asset, AssetCreate, AssetUpdate
-from app.services.screen_service import SCREEN_CLIENT
-from app.services.media_service import media_processor
-from app.state.memory_state import STATE
-from app.util.connection_manager import WS_MANAGER
+from web_buddy_backend.core.config import settings
+from web_buddy_backend.models.asset_models import Asset, AssetCreate, AssetUpdate
+from web_buddy_backend.services.screen_service import SCREEN_CLIENT
+from web_buddy_backend.services.media_service import media_processor
+from web_buddy_backend.state.memory_state import STATE
+from web_buddy_backend.util.connection_manager import WS_MANAGER
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import JSONResponse, Response
 
 router = APIRouter(prefix="/assets", tags=["assets"])
 
-UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "uploads"
+# Project root uploads directory (same as mounted in main.py)
+UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Expose uploads as static at /uploads (mounted in main)

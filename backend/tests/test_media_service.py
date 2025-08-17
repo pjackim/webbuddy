@@ -3,7 +3,7 @@ Tests for media service functionality.
 """
 import pytest
 from io import BytesIO
-from app.services.media_service import MediaProcessor, MediaValidationError
+from web_buddy_backend.services.media_service import MediaProcessor, MediaValidationError
 from fastapi import UploadFile
 from tests.conftest import create_test_image, create_test_video, create_test_svg, create_invalid_file
 

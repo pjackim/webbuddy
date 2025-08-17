@@ -1,175 +1,88 @@
-# Web Buddy — Backend (FastAPI)
+# web-buddy-backend
 
-Developer guide for running, configuring, and contributing to the backend service.
+[![Release](https://img.shields.io/github/v/release/mort-sh/web-buddy-backend)](https://img.shields.io/github/v/release/mort-sh/web-buddy-backend)
+[![Build status](https://img.shields.io/github/actions/workflow/status/mort-sh/web-buddy-backend/main.yml?branch=main)](https://github.com/mort-sh/web-buddy-backend/actions/workflows/main.yml?query=branch%3Amain)
+[![codecov](https://codecov.io/gh/mort-sh/web-buddy-backend/branch/main/graph/badge.svg)](https://codecov.io/gh/mort-sh/web-buddy-backend)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/mort-sh/web-buddy-backend)](https://img.shields.io/github/commit-activity/m/mort-sh/web-buddy-backend)
+[![License](https://img.shields.io/github/license/mort-sh/web-buddy-backend)](https://img.shields.io/github/license/mort-sh/web-buddy-backend)
 
-## Quick start
+This is a template repository for Python projects that use uv for their dependency management.
 
-- Requirements: Python 3.12+ (local dev), PowerShell, and optionally uv (fast Python package manager).
-- All commands are meant to be run from the `backend/` folder unless noted.
+- **Github repository**: <https://github.com/mort-sh/web-buddy-backend/>
+- **Documentation** <https://mort-sh.github.io/web-buddy-backend/>
 
-### Option A: Using uv (recommended)
+## Getting started with your project
 
-```powershell
-# From backend/
-uv sync            # install deps from pyproject.toml / uv.lock
-uv run debug       # start with auto-reload (dev)
-# or
-uv run start       # start without reload (prod-like)
+### 1. Create a New Repository
+
+First, create a repository on GitHub with the same name as this project, and then run the following commands:
+
+```bash
+git init -b main
+git add .
+git commit -m "init commit"
+git remote add origin git@github.com:mort-sh/web-buddy-backend.git
+git push -u origin main
 ```
 
-Services will listen on <http://localhost:8000> by default.
+### 2. Set Up Your Development Environment
 
-### Option B: Python venv
+Then, install the environment and the pre-commit hooks with
 
-```powershell
-# From backend/
-python -m venv .venv
-. .\.venv\Scripts\Activate.ps1
-python -m pip install -e .
-
-# Start (reload)
-python -m app.scripts.debug
-# or
-python -m app.scripts.start
+```bash
+make install
 ```
 
-Alternatively, run Uvicorn directly:
+This will also generate your `uv.lock` file
 
-```powershell
-python -m uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 --reload
+### 3. Run the pre-commit hooks
+
+Initially, the CI/CD pipeline might be failing due to formatting issues. To resolve those run:
+
+```bash
+uv run pre-commit run -a
 ```
 
-## Running with Docker
+### 4. Commit the changes
 
-From the repository root (not backend/):
+Lastly, commit the changes made by the two steps above to your repository.
 
-```powershell
-docker compose up --build
+```bash
+git add .
+git commit -m 'Fix formatting issues'
+git push origin main
 ```
 
-- Backend: <http://localhost:8000>
-- Frontend: <http://localhost:5173>
-- Uploads are persisted via the `backend_uploads` volume and served from `/uploads`.
+You are now ready to start development on your project!
+The CI/CD pipeline will be triggered when you open a pull request, merge to main, or when you create a new release.
 
-Note: The current Dockerfile uses `python:3.11-slim` while `pyproject.toml` declares `requires-python = ">=3.12"`. If you rely on Python 3.12-only features, consider updating the Docker base image to `python:3.12-slim`.
+To finalize the set-up for publishing to PyPI, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/publishing/#set-up-for-pypi).
+For activating the automatic documentation with MkDocs, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/mkdocs/#enabling-the-documentation-on-github).
+To enable the code coverage reports, see [here](https://fpgmaas.github.io/cookiecutter-uv/features/codecov/).
 
-## Configuration
+## Releasing a new version
 
-Configuration is provided via environment variables (and an optional `.env` file in `backend/`). Defaults are sensible for development.
 
-- APP_NAME: Service name (default: `preref-backend`).
-- ENV: Environment string, e.g. `dev`, `prod` (default: `dev`).
-- CORS_ORIGINS: JSON-style list of allowed origins. Example: `["http://localhost:5173"]`. Default allows `*` in dev.
-- PUBLIC_BASE_URL: Public base URL for this backend (used to build absolute asset URLs for uploads). Example: `http://localhost:8000`.
-- SCREEN_SERVICE_URL: Optional external screen-control service base URL.
-- SCREEN_SERVICE_TOKEN: Optional token for the external screen service.
-- EXTERNAL_ENABLED: `true`/`false`. When false, external service calls are skipped (dry run). Default: `false`.
-- POLL_INTERVAL_SEC: Number of seconds between polling an external source of truth (0 disables). Default: `0`.
-
-Example `.env` for local dev (place in `backend/.env`):
-
-```dotenv
-ENV=dev
-CORS_ORIGINS=["http://localhost:5173"]
-PUBLIC_BASE_URL=http://localhost:8000
-EXTERNAL_ENABLED=false
-POLL_INTERVAL_SEC=0
-```
-
-In Docker Compose (root `docker-compose.yml`), environment defaults are already set for local development.
-
-## Developer scripts
-
-The following scripts are exposed via `pyproject.toml` and work with either `uv run <script>` or `python -m app.scripts.<name>`.
-
-- start: Run the server (no reload)
-- debug: Run the server with reload
-- lint: Run Ruff checks
-- format: Apply Ruff formatting
-- test: Run pytest (forwards extra args)
-- build: Build the package (PEP 517)
-- clean: Remove build/cache artifacts
-
-Examples:
-
-```powershell
-uv run lint
-uv run format
-uv run test -q -k "my_test"
-uv run clean --dry-run
-```
-
-## API overview
-
-Base URL: `http://localhost:8000`
-
-- GET /health → { status: "ok" }
-- Static: /uploads/* (serves uploaded files)
-- WebSocket: /ws
-
-REST API (prefixed with `/api`):
-
-- Screens
-	- GET /api/screens → list screens
-	- POST /api/screens → create screen
-	- PUT /api/screens/{screen_id} → update screen
-	- DELETE /api/screens/{screen_id} → delete screen
-
-- Assets
-	- GET /api/assets[?screen_id=...] → list assets (optionally filtered by screen)
-	- POST /api/assets → create asset
-	- PUT /api/assets/{asset_id} → update asset
-	- DELETE /api/assets/{asset_id} → delete asset
-	- POST /api/assets/upload (multipart/form-data, field: `file`) → upload a file
-		- Returns `{ url, filename }`. If `PUBLIC_BASE_URL` is set, `url` is absolute; otherwise, it's a relative `/uploads/...` path.
-
-WebSocket events (broadcast to all connected clients via `/ws`):
-
-- screen_added, screen_updated, screen_deleted
-- asset_added, asset_updated, asset_deleted
-
-## Uploads
-
-- Files uploaded via `/api/assets/upload` are saved under `backend/uploads/` locally (or mounted volume in Docker) and served from `/uploads`.
-- Ensure `PUBLIC_BASE_URL` is set when you need absolute URLs returned to clients (e.g., `http://localhost:8000`).
-
-## Development tips
-
-- Use `uv run debug` for hot-reload during development.
-- CORS defaults to permissive in dev; set `CORS_ORIGINS` explicitly for stricter control.
-- In-memory state: The service uses an in-memory store (see `app/state/memory_state.py`). Data is reset on restart.
-
-## Testing, linting, formatting
-
-```powershell
-# Lint
-uv run lint
-
-# Format
-uv run format
-
-# Tests (pass any pytest args)
-uv run test -q
-```
-
-## Project layout (backend)
-
-- app/main.py: FastAPI app creation, CORS, static mounts, routers
-- app/api/: REST and WebSocket routes
-- app/core/: settings and logging config
-- app/models/: pydantic models for assets/screens
-- app/services/: external integrations (screen client)
-- app/state/: in-memory state layer
-- app/util/: utilities (WebSocket connection manager)
-- uploads/: local upload storage (mounted at /uploads)
-
-## Troubleshooting
-
-- Port in use: Change the `--port` in your run command or stop the conflicting process.
-- CORS errors: Set `CORS_ORIGINS` to include your frontend origin (e.g., `http://localhost:5173`).
-- Wrong URLs in uploads response: Ensure `PUBLIC_BASE_URL` points to how clients reach the backend (container vs host).
-- uv not installed: Either install uv (see Astral uv docs) or use a Python venv with `python -m app.scripts.*`.
 
 ---
 
-Happy hacking!
+Repository initiated with [fpgmaas/cookiecutter-uv](https://github.com/fpgmaas/cookiecutter-uv).
+
+## Running the API locally
+
+- Start (no reload):
+
+	```powershell
+	uv run start
+	```
+
+- Debug (auto-reload):
+
+	```powershell
+	# On Windows, reload is off by default to keep Ctrl+C working; enable with an env var if needed
+	$env:DEBUG_RELOAD = "1"; uv run debug
+	```
+
+The server binds to `127.0.0.1:8000` by default. Visit http://localhost:8000/docs.
+
+If Ctrl+C doesn’t stop the dev server on Windows PowerShell, prefer the non-reload mode (`uv run start`), or close the terminal. You can also set `DEBUG_RELOAD=0` to disable reload.
