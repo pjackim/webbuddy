@@ -14,7 +14,7 @@
 		class: additionalClasses = ''
 	}: GridProps = $props();
 
-	// Get reactive access to settings without complex derived chains
+	// Get reactive access to settings directly from PersistedState
 	let settings = $derived(gridSettings.current);
 	let perfSettings = $derived(performanceSettings.current);
 
