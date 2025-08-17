@@ -1,11 +1,29 @@
-@import 'tailwindcss';
+/*
+ * =================================================================
+ * APP STYLESHEET
+ *
+ * This is the main entry point for all global styles.
+ * The import order is critical for Tailwind CSS v4 to work correctly.
+ *
+ * 1. Theme       - Custom theme variables and @theme definitions.
+ * 2. Tailwind    - Core Tailwind styles and plugins.
+ * 3. Base        - Base element styles.
+ * 4. Components  - Custom component styles.
+ * 5. Utilities   - Custom utility classes.
+ * =================================================================
+ */
 
-/* Tailwind v4 plugins */
-@import 'tw-animate-css';
-/* DaisyUI plugin disabled for now (caused Unexpected `@plugin` option build errors) */
-@source "./lib/vendor/**";
-
+/* 1. Import custom theme definitions first */
 @import './theme.css';
+
+/* 2. Import Tailwind and its plugins */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* 3. Import base, component, and utility layers */
 @import './base.css';
 @import './components.css';
 @import './utilities.css';
+
+/* Vendor source for DaisyUI (if re-enabled) */
+@source "./lib/vendor/**";
